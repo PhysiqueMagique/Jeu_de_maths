@@ -1,11 +1,14 @@
 # Construit l'application Windows et la publie dans « Releases ».
-# Se lance quand on pousse une étiquette de version (ex. v0.2.0),
-# ou à la main depuis l'onglet Actions (« Run workflow »).
+# Se lance tout seul quand le numéro de version (src-tauri/tauri.conf.json) ou NOUVEAUTES.md change
+# sur la branche main, ou à la main depuis l'onglet Actions (« Run workflow »).
+# Si cette version est déjà publiée, il ne fait rien.
+# Les nouveautés affichées dans le jeu viennent de NOUVEAUTES.md.
 name: Publier l'application Windows
 
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: ['src-tauri/tauri.conf.json', 'NOUVEAUTES.md', '.github/workflows/publier.yml']
   workflow_dispatch:
 
 permissions:
@@ -16,19 +19,21 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # Le message de l'étiquette sert de « Nouveautés », affichées dans le jeu.
-      - name: Lire les nouveautés
-        id: notes
+      # Version à publier, et nouveautés correspondantes dans NOUVEAUTES.md.
+      - name: Lire la version et les nouveautés
+        id: infos
         shell: bash
         run: |
-          git fetch --force --tags
-          NOTES=""
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            NOTES=$(git tag -l --format='%(contents)' "${GITHUB_REF#refs/tags/}")
+          VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" > /dev/null; then
+            echo "La version $VERSION est déjà publiée : rien à faire."
+            echo "deja=oui" >> "$GITHUB_OUTPUT"
+          else
+            echo "deja=non" >> "$GITHUB_OUTPUT"
           fi
+          NOTES=$(awk -v v="## $VERSION" '$0==v {on=1; next} /^## / {on=0} on' NOUVEAUTES.md | sed '/./,$!d')
           [ -z "$NOTES" ] && NOTES="Améliorations du jeu."
           {
             echo 'texte<<FIN_DES_NOTES'
@@ -37,18 +42,23 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-node@v4
+        if: steps.infos.outputs.deja == 'non'
         with:
           node-version: 22
 
       - uses: dtolnay/rust-toolchain@stable
+        if: steps.infos.outputs.deja == 'non'
 
       - uses: swatinem/rust-cache@v2
+        if: steps.infos.outputs.deja == 'non'
         with:
           workspaces: './src-tauri -> target'
 
       - run: npm ci
+        if: steps.infos.outputs.deja == 'non'
 
       - uses: tauri-apps/tauri-action@v0
+        if: steps.infos.outputs.deja == 'non'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -56,6 +66,6 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: 'Jeu de maths v__VERSION__'
-          releaseBody: ${{ steps.notes.outputs.texte }}
+          releaseBody: ${{ steps.infos.outputs.texte }}
           releaseDraft: false
           prerelease: false

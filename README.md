@@ -75,14 +75,15 @@ En bas de l'accueil, **Copie de sauvegarde** permet de le télécharger et de le
 
 ## Publier une nouvelle version
 
-La publication est automatique (`.github/workflows/publier.yml`) : GitHub construit l'installateur sur un Windows
-virtuel, le signe et le publie dans Releases avec `latest.json`, le fichier que l'application consulte pour ses mises à jour.
+La publication est automatique (`.github/workflows/publier.yml`) : dès que le numéro de version change sur `main`,
+GitHub construit l'installateur sur un Windows virtuel, le signe et le publie dans Releases avec `latest.json`,
+le fichier que l'application consulte pour ses mises à jour.
 
 ```bash
 node scripts/nouvelle-version.mjs 0.2.0
+# ajouter une section « ## 0.2.0 » en haut de NOUVEAUTES.md (ce texte s'affiche dans le bandeau du jeu)
 git commit -am "Version 0.2.0"
-git tag -a v0.2.0 -m "Nouvelle activité : l'addition avec retenue!"   # ce texte s'affiche dans le bandeau du jeu
-git push && git push --tags
+git push
 ```
 
 La signature des mises à jour demande deux secrets dans **Settings → Secrets and variables → Actions** :

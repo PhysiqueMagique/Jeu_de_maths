@@ -17,6 +17,6 @@ modifier('src-tauri/tauri.conf.json', (s) => s.replace(/"version": "[^"]+"/, `"v
 modifier('package.json', (s) => s.replace(/"version": "[^"]+"/, `"version": "${v}"`));
 modifier('src-tauri/Cargo.toml', (s) => s.replace(/^version = "[^"]+"/m, `version = "${v}"`));
 console.log(`Version ${v}. Ensuite :`);
-console.log(`  git commit -am "Version ${v}"`);
-console.log(`  git tag -a v${v} -m "Ce qui est nouveau (affiché dans le jeu)"`);
-console.log('  git push && git push --tags');
+console.log(`  1. Ajouter une section « ## ${v} » en haut de NOUVEAUTES.md`);
+console.log(`  2. git commit -am "Version ${v}" && git push`);
+console.log('  GitHub construit et publie la nouvelle version tout seul.');
