@@ -1,0 +1,13 @@
+{
+  "name": "jeu-de-maths",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Jeu de maths pour le primaire — application Windows (Tauri)",
+  "scripts": {
+    "tauri": "tauri",
+    "web": "node scripts/preparer-web.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

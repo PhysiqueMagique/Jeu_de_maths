@@ -51,10 +51,14 @@ const Jeu = (() => {
 
   // ==========================================================
   //  Stockage
-  //  Pour l'instant : la mémoire du fureteur (localStorage).
-  //  L'application Windows remplacera ce bloc par le fichier
-  //  Documents\Jeu de maths\progres.json, avec le même contenu.
+  //  - Application Windows : Documents\Jeu de maths\progres.json
+  //  - Fureteur (pour tester) : la mémoire du fureteur (localStorage)
+  //  Le contenu est le même JSON dans les deux cas.
   // ==========================================================
+
+  const tauri = typeof window !== 'undefined' ? window.__TAURI__ : undefined;
+  const estApplication = !!(tauri && tauri.core);
+  let avertissement = null; // message à montrer si la sauvegarde était abîmée
 
   const stockageNavigateur = {
     async lire() {
@@ -66,7 +70,25 @@ const Jeu = (() => {
     },
   };
 
-  let stockage = stockageNavigateur;
+  const stockageFichier = {
+    async lire() {
+      const texte = await tauri.core.invoke('lire_progres');
+      if (!texte) return null;
+      try {
+        return JSON.parse(texte);
+      } catch (err) {
+        // On ne l'écrase jamais : il est renommé et gardé à côté.
+        const nom = await tauri.core.invoke('mettre_de_cote');
+        avertissement = `Le fichier de sauvegarde était abîmé. Il a été gardé sous le nom « ${nom} » et le jeu repart à neuf.`;
+        return null;
+      }
+    },
+    async ecrire(texte) {
+      await tauri.core.invoke('ecrire_progres', { contenu: texte });
+    },
+  };
+
+  let stockage = estApplication ? stockageFichier : stockageNavigateur;
   let etat = null; // copie en mémoire, chargée par demarrer()
 
   const estObjet = (x) => x !== null && typeof x === 'object' && !Array.isArray(x);
@@ -268,6 +290,48 @@ const Jeu = (() => {
   }
 
   // ==========================================================
+  //  Application Windows : version, emplacement, mises à jour
+  // ==========================================================
+
+  async function infosApplication() {
+    if (!estApplication) return null;
+    try {
+      return {
+        version: await tauri.app.getVersion(),
+        chemin: await tauri.core.invoke('chemin_progres'),
+      };
+    } catch (err) {
+      return null;
+    }
+  }
+
+  // Renvoie la mise à jour disponible, ou null (pas d'Internet, déjà à jour…).
+  async function verifierMiseAJour() {
+    if (!estApplication || !tauri.updater) return null;
+    try {
+      return await tauri.updater.check();
+    } catch (err) {
+      console.warn('Vérification des mises à jour impossible', err);
+      return null;
+    }
+  }
+
+  // Télécharge, installe, puis relance le jeu. progression(fraction entre 0 et 1, ou null)
+  async function installerMiseAJour(maj, progression = () => {}) {
+    await enregistrementEnCours; // la sauvegarde d'abord
+    let total = 0;
+    let recu = 0;
+    await maj.downloadAndInstall((ev) => {
+      if (ev.event === 'Started') total = ev.data.contentLength || 0;
+      else if (ev.event === 'Progress') {
+        recu += ev.data.chunkLength;
+        progression(total ? recu / total : null);
+      }
+    });
+    await tauri.process.relaunch();
+  }
+
+  // ==========================================================
   //  Dessin d'une médaille (SVG)
   // ==========================================================
 
@@ -310,6 +374,8 @@ const Jeu = (() => {
     verifierNom, creerJoueur, modifierJoueur, supprimerJoueur,
     progres, majProgres, nombreMedailles,
     exporter, importer,
+    estApplication, infosApplication, verifierMiseAJour, installerMiseAJour,
+    avertissement: () => avertissement,
     medailleSVG, echapper,
     // pour l'application Windows et les tests
     _migrer: migrer,

@@ -253,6 +253,23 @@ p { margin: 0 0 0.8em; }
 .pied p { color: var(--doux); font-size: 0.92rem; margin: 10px 0 0; }
 .message-sauvegarde { font-weight: 700; color: var(--vert) !important; }
 
+/* ---------- Bandeaux (mise à jour, avertissement) ---------- */
+
+.bandeau {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 0 auto 18px;
+  border-left: 8px solid var(--vert);
+  padding: 14px 18px;
+}
+.bandeau .icone { font-size: 1.8rem; }
+.bandeau .texte { flex: 1 1 240px; }
+.bandeau .notes { color: var(--doux); font-size: 0.92rem; white-space: pre-line; }
+.bandeau.oups { border-left-color: var(--orange); font-weight: 700; }
+#infos-app code { font-size: 0.85rem; word-break: break-all; }
+
 /* ---------- Barre du haut (activités) ---------- */
 
 .barre-haut {

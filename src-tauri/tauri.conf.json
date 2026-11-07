@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Jeu de maths",
+  "version": "0.1.0",
+  "identifier": "io.github.physiquemagique.jeudemaths",
+  "build": {
+    "frontendDist": "../dist",
+    "beforeBuildCommand": "node scripts/preparer-web.mjs",
+    "beforeDevCommand": "node scripts/preparer-web.mjs"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Jeu de maths",
+        "width": 1100,
+        "height": 820,
+        "minWidth": 420,
+        "minHeight": 560,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "createUpdaterArtifacts": true,
+    "publisher": "PhysiqueMagique",
+    "shortDescription": "Jeu de maths pour le primaire",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": ["French"],
+        "displayLanguageSelector": false
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDgwQUZCMzA0RjBDOEIxRUQKUldUdHNjandCTE92Z0lGMWZibnpRWVZKeFhLZzZaNG9zUnZVUE5EMUxLWmVLL1VobThNcHFtS1QK",
+      "endpoints": [
+        "https://github.com/PhysiqueMagique/Jeu_de_maths/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

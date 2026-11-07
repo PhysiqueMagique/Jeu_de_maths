@@ -1,0 +1,61 @@
+# Construit l'application Windows et la publie dans « Releases ».
+# Se lance quand on pousse une étiquette de version (ex. v0.2.0),
+# ou à la main depuis l'onglet Actions (« Run workflow »).
+name: Publier l'application Windows
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Le message de l'étiquette sert de « Nouveautés », affichées dans le jeu.
+      - name: Lire les nouveautés
+        id: notes
+        shell: bash
+        run: |
+          git fetch --force --tags
+          NOTES=""
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            NOTES=$(git tag -l --format='%(contents)' "${GITHUB_REF#refs/tags/}")
+          fi
+          [ -z "$NOTES" ] && NOTES="Améliorations du jeu."
+          {
+            echo 'texte<<FIN_DES_NOTES'
+            echo "$NOTES"
+            echo 'FIN_DES_NOTES'
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: v__VERSION__
+          releaseName: 'Jeu de maths v__VERSION__'
+          releaseBody: ${{ steps.notes.outputs.texte }}
+          releaseDraft: false
+          prerelease: false

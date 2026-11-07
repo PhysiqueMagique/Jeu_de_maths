@@ -18,6 +18,17 @@
       <p id="sous-titre">Choisis ton joueur, puis une activité.</p>
     </header>
 
+    <!-- Application Windows : mise à jour disponible / sauvegarde abîmée -->
+    <div id="bandeau-maj" class="carte bandeau" hidden>
+      <span class="icone" aria-hidden="true">🎁</span>
+      <div class="texte">
+        <b>Nouvelle version disponible!</b> <span id="maj-version"></span>
+        <div id="maj-notes" class="notes"></div>
+      </div>
+      <button id="btn-maj" class="bouton vert" type="button">Mettre à jour</button>
+    </div>
+    <div id="bandeau-avertissement" class="carte bandeau oups" hidden></div>
+
     <!-- Accueil : joueurs et activités -->
     <div id="vue-accueil" hidden>
       <section aria-labelledby="titre-joueurs">
@@ -41,6 +52,10 @@
             <input type="file" id="fichier-import" accept="application/json,.json" hidden>
           </div>
           <p id="msg-sauvegarde" class="message-sauvegarde" aria-live="polite"></p>
+          <div id="infos-app" hidden>
+            <p id="texte-infos-app"></p>
+            <button id="btn-verifier-maj" class="bouton secondaire" type="button">🔄 Vérifier les mises à jour</button>
+          </div>
         </details>
       </footer>
     </div>
@@ -257,6 +272,54 @@
         }
         ev.target.value = '';
       });
+
+      // ---------- Application Windows ----------
+
+      if (Jeu.avertissement()) {
+        $('bandeau-avertissement').textContent = Jeu.avertissement();
+        $('bandeau-avertissement').hidden = false;
+      }
+
+      let miseAJour = null;
+      async function chercherMiseAJour(manuel) {
+        if (manuel) msg.textContent = 'Recherche d’une nouvelle version…';
+        miseAJour = await Jeu.verifierMiseAJour();
+        if (miseAJour) {
+          $('maj-version').textContent = `(version ${ech(miseAJour.version)})`;
+          $('maj-notes').textContent = miseAJour.body || '';
+          $('bandeau-maj').hidden = false;
+          if (manuel) msg.textContent = '';
+          window.scrollTo(0, 0);
+        } else if (manuel) {
+          msg.textContent = 'Le jeu est déjà à jour ✔ (ou pas de connexion Internet).';
+        }
+      }
+
+      $('btn-maj').addEventListener('click', async () => {
+        if (!miseAJour) return;
+        const b = $('btn-maj');
+        b.disabled = true;
+        b.textContent = 'Téléchargement…';
+        try {
+          await Jeu.installerMiseAJour(miseAJour, (f) => {
+            if (f !== null) b.textContent = `Téléchargement… ${Math.round(f * 100)} %`;
+          });
+        } catch (err) {
+          b.disabled = false;
+          b.textContent = 'Réessayer';
+          $('maj-notes').textContent = 'La mise à jour n’a pas fonctionné. Vérifie la connexion Internet et réessaie.';
+        }
+      });
+
+      if (Jeu.estApplication) {
+        Jeu.infosApplication().then((infos) => {
+          if (!infos) return;
+          $('texte-infos-app').innerHTML = `Version ${ech(infos.version)}<br>Fichier de sauvegarde : <code>${ech(infos.chemin)}</code>`;
+          $('infos-app').hidden = false;
+        });
+        $('btn-verifier-maj').addEventListener('click', () => chercherMiseAJour(true));
+        chercherMiseAJour(false);
+      }
 
       // Revenir avec le bouton « précédent » doit montrer les nouvelles médailles.
       window.addEventListener('pageshow', (ev) => { if (ev.persisted) location.reload(); });

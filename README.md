@@ -1,12 +1,15 @@
 # Jeu de maths
 
-Petit jeu en HTML pour pratiquer des notions de mathématiques du primaire, en famille.
-Aucune installation : des pages HTML, du CSS et du JavaScript, sans librairie ni serveur.
+Petit jeu pour pratiquer des notions de mathématiques du primaire, en famille.
+Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une application Windows avec [Tauri](https://tauri.app).
 
 ## Jouer
 
-- **Sur l'ordi** : télécharger le dépôt et ouvrir `index.html` dans le fureteur.
-- Une application Windows (`.exe`) avec mise à jour intégrée est en préparation.
+- **Application Windows** : dans [Releases](../../releases/latest), télécharger `Jeu de maths_…_x64-setup.exe` et l'ouvrir.
+  Windows peut afficher « Windows a protégé votre ordinateur » (l'installateur n'est pas signé avec un certificat payant) :
+  cliquer sur **Informations complémentaires → Exécuter quand même**.
+  Ensuite, le jeu se met à jour lui-même : un bandeau « Nouvelle version disponible » apparaît sur l'accueil.
+- **Dans un fureteur** (pour tester) : ouvrir `index.html`. Le progrès est alors gardé dans le fureteur.
 
 ## Ce qu'il y a dedans
 
@@ -19,6 +22,9 @@ Aucune installation : des pages HTML, du CSS et du JavaScript, sans librairie ni
 | `js/soustraction-modele.js` | Logique de l'activité (emprunts, indices, génération des défis), sans affichage |
 | `js/soustraction-emprunt.js` | Affichage et déroulement : tutoriel, défis, médailles |
 | `css/soustraction.css` | Styles de l'activité |
+| `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
+| `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
+| `scripts/nouvelle-version.mjs` | Change le numéro de version partout |
 
 ### Activité : soustraction avec emprunt
 
@@ -62,8 +68,26 @@ Pour que les vieilles sauvegardes restent lisibles après une mise à jour :
 - le jeu ne supprime jamais un champ ou une section qu'il ne connaît pas;
 - si le format doit changer, on augmente `version` et on ajoute une étape dans `migrer()` (`js/commun.js`).
 
-Dans le fureteur, ce JSON est gardé dans le `localStorage` (clé `jeuDeMaths.v1`).
+Dans l'application Windows, ce JSON est le fichier **`Documents\Jeu de maths\progres.json`**.
+Il est écrit d'un coup (fichier temporaire puis renommage), et s'il est un jour illisible, il est renommé
+`progres-illisible-….json` plutôt qu'effacé. Dans un fureteur, le même JSON est gardé dans le `localStorage` (clé `jeuDeMaths.v1`).
 En bas de l'accueil, **Copie de sauvegarde** permet de le télécharger et de le restaurer.
+
+## Publier une nouvelle version
+
+La publication est automatique (`.github/workflows/publier.yml`) : GitHub construit l'installateur sur un Windows
+virtuel, le signe et le publie dans Releases avec `latest.json`, le fichier que l'application consulte pour ses mises à jour.
+
+```bash
+node scripts/nouvelle-version.mjs 0.2.0
+git commit -am "Version 0.2.0"
+git tag -a v0.2.0 -m "Nouvelle activité : l'addition avec retenue!"   # ce texte s'affiche dans le bandeau du jeu
+git push && git push --tags
+```
+
+La signature des mises à jour demande deux secrets dans **Settings → Secrets and variables → Actions** :
+`TAURI_SIGNING_PRIVATE_KEY` et `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. La clé publique correspondante est dans
+`src-tauri/tauri.conf.json`. **Ne pas perdre la clé privée** : sans elle, les jeux déjà installés refuseront les mises à jour.
 
 ## Modifier
 
