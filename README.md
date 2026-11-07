@@ -23,9 +23,10 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `js/soustraction-emprunt.js` | Affichage et déroulement : tutoriel, défis, médailles |
 | `css/activite.css` | Styles communs aux activités (menus, défis, bulles, clavier, fins) et grille de la soustraction |
 | `js/tables-moteur.js` | Moteur commun des activités « tables » : tutoriel, défis, médailles, pierres |
-| `activites/multiplication-tables.html`, `js/multiplication-tables.js` | Activité 2 : tables de multiplication (textes, niveaux, trucs) |
-| `activites/multiplication-course.html`, `js/multiplication-course.js`, `css/course.css` | Activité 3 : course des multiplications (table trouée, course chronométrée) |
+| `activites/multiplication-course.html`, `js/multiplication-course.js`, `css/course.css` | Activité 2 : course des multiplications (table trouée, course chronométrée) |
+| `activites/multiplication-colonnes.html`, `js/multiplication-colonnes.js`, `js/colonnes-modele.js`, `css/colonnes.css` | Activité 3 : multiplication en colonnes des grands nombres |
 | `activites/division-tables.html`, `js/division-tables.js` | Activité 4 : tables de division (textes, niveaux, trucs) |
+| `activites/multiplication-tables.html`, `js/multiplication-tables.js` | *En banque* : tables de multiplication axées sur la compréhension (pas affichée; voir `ACTIVITES` dans `js/commun.js`) |
 | `css/tables.css` | Styles des tables (équation, jetons en groupes, explication du diamant) |
 | `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
 | `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
@@ -55,7 +56,20 @@ Si on change d'idée, on reclique sur un chiffre barré pour défaire l'emprunt 
 Les réglages entre parenthèses sont au début de `js/soustraction-emprunt.js`.
 Les sons sont fabriqués par le fureteur (Web Audio, aucun fichier); le bouton 🔊 les coupe, et ce choix est gardé dans la sauvegarde.
 
-### Activité : tables de multiplication (de 1 à 12)
+### Activité : multiplication en colonnes (grands nombres)
+
+Méthode : une ligne par produit de deux chiffres, avec ses zéros, puis la somme. Pour 137 × 26 :
+6 × 7 = 42; 6 × 3 → 180; 6 × 1 → 600; 2 × 7 → 140; 2 × 3 → 600; 2 × 1 → 2000; somme 3562.
+Nombre de zéros = place du chiffre du haut + place du chiffre du bas (unités 0, dizaines 1, centaines 2).
+Les deux chiffres à multiplier sont en couleur; les zéros ajoutés s'affichent en rouge.
+
+1. **Tutoriel** : 43 × 2 et 24 × 13 tout expliqués (où et pourquoi placer les zéros), puis 137 × 26 avec indices.
+2. **Défis** : 🥉 2 chiffres × 1 chiffre (5 problèmes); 🥈 2 × 2 chiffres et 3 × 1 chiffre (4); 🥇 3 × 2 chiffres (3).
+   Les indices repèrent l'oubli d'un zéro, un mauvais nombre de zéros, ou la colonne fautive de la somme (avec retenues).
+3. **Pierres** (après l'or) : 💎 rubis, 3 multiplications or en 4 minutes; 💎 émeraude, sur papier (la réponse seulement),
+   une seule erreur; 💎 saphir, trois médailles sans faute; 💎 diamant, 3 chiffres × 3 chiffres (neuf lignes).
+
+### Activité en banque : tables de multiplication (de 1 à 12)
 
 1. **Tutoriel** en 3 parties : 3 × 4 avec des jetons (3 groupes de 4, compter par bonds); 5 × 6 en comptant par bonds;
    7 × 8 en découpant en morceaux faciles (5 × 8 + 2 × 8).

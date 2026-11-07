@@ -1,0 +1,54 @@
+/* ==========================================================
+   Activité : multiplication en colonnes
+   ========================================================== */
+
+.calcul { padding: 18px 22px 22px; }
+
+.grille-mult {
+  --c: clamp(32px, calc((min(100vw, 900px) - 230px) / (var(--w) + 4)), 50px);
+  display: grid;
+  grid-template-columns: var(--c) repeat(var(--w), var(--c)) minmax(0, auto);
+  align-items: center;
+  column-gap: 4px;
+  row-gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.grille-mult .signe { text-align: center; font-size: calc(var(--c) * 0.7); font-weight: 900; color: var(--bleu); }
+.grille-mult .chiffre {
+  height: calc(var(--c) * 1.05);
+  display: grid; place-items: center;
+  font-size: calc(var(--c) * 0.72);
+  font-weight: 900;
+  border-radius: 10px;
+}
+.grille-mult .chiffre.actif-haut { background: var(--orange); color: #fff; box-shadow: 0 3px 0 #d96a22; transform: scale(1.06); }
+.grille-mult .chiffre.actif-bas { background: #8a5cf0; color: #fff; box-shadow: 0 3px 0 #6b3fd0; transform: scale(1.06); }
+.grille-mult .chiffre.zero-ajoute { color: var(--rouge); }
+.grille-mult .chiffre.ligne-future { color: transparent; height: calc(var(--c) * 0.75); }
+.grille-mult .chiffre.pointilles { border-bottom: 3px dotted #ddd2bf; border-radius: 0; margin: 0 4px; }
+
+.grille-mult .trait { grid-column: 1 / -1; height: 5px; background: var(--encre); border-radius: 3px; margin: 4px 0; }
+.grille-mult .trait.fin { height: 7px; }
+
+/* La ligne en cours : une bande de cases où le nombre s'écrit de droite à gauche */
+.grille-mult .saisie { background: var(--bleu-pale); border: 3px solid var(--bleu); color: var(--encre); }
+.grille-mult .saisie.faux { background: #ffecec; border-color: var(--rouge); color: var(--rouge); }
+.grille-mult .saisie.vide-saisie { border-style: dashed; }
+.grille-mult .faite { background: transparent; }
+.grille-mult .faite.ok { color: #1f7a48; }
+.grille-mult .faite.ok.zero-ajoute { color: var(--rouge); }
+
+.grille-mult .etiquette-ligne { padding-left: 12px; font-size: 0.95rem; font-weight: 800; color: var(--doux); white-space: nowrap; }
+.grille-mult .etiquette-ligne .c-haut { color: #d96a22; }
+.grille-mult .etiquette-ligne .c-bas { color: #6b3fd0; }
+.grille-mult .badge-zeros { display: inline-block; margin-left: 6px; padding: 0.05em 0.5em; border-radius: 999px; background: #ffe3e3; color: var(--rouge); font-size: 0.8rem; }
+.grille-mult .etiquette-ligne.active { color: var(--encre); }
+
+.papier-note { text-align: center; font-weight: 800; color: var(--doux); margin-top: 10px; }
+
+@media (max-width: 560px) {
+  .grille-mult .etiquette-ligne { font-size: 0.75rem; padding-left: 6px; }
+  .grille-mult .badge-zeros { font-size: 0.68rem; margin-left: 3px; }
+  .grille-mult .badge-zeros .mot { display: none; }
+}

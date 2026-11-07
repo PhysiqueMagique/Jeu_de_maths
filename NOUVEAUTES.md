@@ -3,6 +3,11 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.8.0
+
+Nouvelle activité : la multiplication en colonnes des grands nombres (137 × 26), une ligne par multiplication avec les bons zéros, puis la somme!
+L'activité « Tables de multiplication » est retirée (la course des multiplications la remplace).
+
 ## 0.7.0
 
 Accueil : clique directement sur une activité pour la lancer.

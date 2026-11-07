@@ -36,6 +36,9 @@ const Jeu = (() => {
   const NOM_MAX = 20;
 
   // Pour ajouter une activité : une nouvelle entrée ici + sa page dans /activites.
+  // En banque (fichiers gardés, mais pas affichés) : activites/multiplication-tables.html
+  // (tables de multiplication axées sur la compréhension). Pour la remettre, rajouter son entrée ici :
+  // { id: 'multiplication-tables', titre: 'Tables de multiplication', page: 'activites/multiplication-tables.html', … }
   const ACTIVITES = [
     {
       id: 'soustraction-emprunt',
@@ -45,18 +48,18 @@ const Jeu = (() => {
       vignette: '52 − 28 = <span class="rouge">?</span>',
     },
     {
-      id: 'multiplication-tables',
-      titre: 'Tables de multiplication',
-      description: 'Des groupes égaux, des bonds et des trucs : les tables de 1 à 12.',
-      page: 'activites/multiplication-tables.html',
-      vignette: '7 × 8 = <span class="rouge">?</span>',
-    },
-    {
       id: 'multiplication-course',
       titre: 'Course des multiplications',
       description: 'Vite et de mémoire : fais avancer ton personnage jusqu’au drapeau!',
       page: 'activites/multiplication-course.html',
       vignette: '6 × 7 🏁',
+    },
+    {
+      id: 'multiplication-colonnes',
+      titre: 'Multiplication en colonnes',
+      description: 'Les grands nombres, chiffre par chiffre : 137 × 26, sans se perdre dans les zéros!',
+      page: 'activites/multiplication-colonnes.html',
+      vignette: '137 × 26',
     },
     {
       id: 'division-tables',
