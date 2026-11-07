@@ -68,14 +68,17 @@ chaque activité n'est qu'une configuration : textes, niveaux, façon de fabriqu
 
 ### Activité : course des multiplications (vitesse et mémorisation)
 
-Pour chaque niveau : 🥉 tables de 2, 3 et 5 (12 pas en 60 s); 🥈 tables de 2 à 7 (15 pas en 70 s); 🥇 tables de 2 à 10 (20 pas en 80 s).
-1. **Échauffement** : une table trouée (40 % des cases à remplir); la case suivante se choisit toute seule.
-   Il faut l'avoir fait une fois pour débloquer la course du niveau.
+Pour chaque niveau (sans « × 1 ») : 🥉 tables de 2, 3 et 5 (14 pas en 60 s); 🥈 tables de 2 à 7 (17 pas en 70 s);
+🥇 tables de 2 à 10 (22 pas en 80 s).
+1. **Échauffement** : une table trouée. Bronze : 40 % des cases des tables de 2, 3 et 5. Argent et or : seulement
+   les lignes des nouvelles tables (4, 6, 7 puis 8, 9, 10), en entier. Les deux nombres multipliés (ligne et colonne)
+   sont surlignés, et la case choisie montre la multiplication à faire en gris pâle. Une fois la table remplie,
+   elle reste affichée avec le message de réussite. Il faut l'avoir faite une fois pour débloquer la course du niveau.
 2. **Course** : compte à rebours, puis une barre de temps qui diminue. Chaque bonne réponse fait avancer l'avatar
    de l'enfant d'un pas; une erreur le fait reculer d'un pas, montre la bonne réponse, et la multiplication ratée revient plus tard.
    La réponse est validée dès qu'elle a le bon nombre de chiffres.
 3. **Pierres** (après l'or) : 💎 rubis, la course or en 50 s; 💎 émeraude, la grande table trouée de 2 à 10 (moitié des cases),
-   une seule erreur; 💎 saphir, les trois courses sans erreur; 💎 diamant, tables jusqu'à 12 × 12 (20 pas en 100 s).
+   une seule erreur; 💎 saphir, les trois courses sans erreur; 💎 diamant, tables jusqu'à 12 × 12 (22 pas en 100 s).
 
 Les temps, nombres de pas et proportions de trous sont au début de `js/multiplication-course.js`.
 

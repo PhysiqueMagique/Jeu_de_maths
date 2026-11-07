@@ -11,18 +11,28 @@ Jeu.demarrer().then(() => {
   const ACT = 'multiplication-course';
 
   // ---------- Réglages (faciles à changer) ----------
-  const F10 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  const F12 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const DE = (a, b) => Array.from({ length: b - a + 1 }, (_, k) => a + k);
-  const PROPORTION_TROUS = 0.4; // part des cases à remplir dans l'échauffement
+  const F10 = DE(2, 10); // pas de « × 1 » : trop facile
+  const F12 = DE(2, 12);
+  const PROPORTION_TROUS = 0.4; // part des cases à remplir dans l'échauffement (si pas précisé)
 
   const NIVEAUX = {
-    bronze: { titre: 'Course bronze', desc: 'Tables de 2, 3 et 5', tables: [2, 3, 5], facteurs: F10, pas: 12, temps: 60, requis: null },
-    argent: { titre: 'Course argent', desc: 'Tables de 2 à 7', tables: DE(2, 7), facteurs: F10, pas: 15, temps: 70, requis: 'bronze' },
-    or: { titre: 'Course or', desc: 'Tables de 2 à 10', tables: DE(2, 10), facteurs: F10, pas: 20, temps: 80, requis: 'argent' },
+    // nouvelles : les lignes à remplir dans l'échauffement (les autres sont déjà écrites)
+    bronze: {
+      titre: 'Course bronze', desc: 'Tables de 2, 3 et 5', tables: [2, 3, 5], nouvelles: [2, 3, 5], proportionTrous: 0.4,
+      facteurs: F10, pas: 14, temps: 60, requis: null,
+    },
+    argent: {
+      titre: 'Course argent', desc: 'Tables de 2 à 7', tables: DE(2, 7), nouvelles: [4, 6, 7], proportionTrous: 1,
+      facteurs: F10, pas: 17, temps: 70, requis: 'bronze',
+    },
+    or: {
+      titre: 'Course or', desc: 'Tables de 2 à 10', tables: DE(2, 10), nouvelles: [8, 9, 10], proportionTrous: 1,
+      facteurs: F10, pas: 22, temps: 80, requis: 'argent',
+    },
     // Accomplissements secrets (pierres précieuses), visibles après la médaille d'or
     rubis: {
-      titre: 'Course éclair', pierre: 'rubis', tables: DE(2, 10), facteurs: F10, pas: 20, temps: 50,
+      titre: 'Course éclair', pierre: 'rubis', tables: DE(2, 10), facteurs: F10, pas: 22, temps: 50,
       desc: 'La course or… en 50 secondes seulement!',
     },
     emeraude: {
@@ -32,8 +42,8 @@ Jeu.demarrer().then(() => {
     },
     saphir: { titre: 'Courses parfaites', pierre: 'saphir', desc: 'Gagne les courses bronze, argent et or sans aucune erreur.' },
     diamant: {
-      titre: 'Course des géants', pierre: 'diamant', tables: DE(2, 12), facteurs: F12, pas: 20, temps: 100,
-      desc: 'Les tables jusqu’à 12 × 12 : 20 pas en 100 secondes!',
+      titre: 'Course des géants', pierre: 'diamant', tables: DE(2, 12), facteurs: F12, pas: 22, temps: 100,
+      desc: 'Les tables jusqu’à 12 × 12 : 22 pas en 100 secondes!',
     },
   };
   const ORDRE = ['bronze', 'argent', 'or'];
@@ -230,6 +240,7 @@ Jeu.demarrer().then(() => {
     else if (a === 'course') demarrerCourse(b.dataset.niveau);
     else if (a === 'menu') afficherMenu();
     else if (a === 'recommencer' && T) demarrerTable(T.niv);
+    else if (a === 'voir-pierre' && T && T.resultat) afficherPierre(T.resultat);
     else if (a === 'continuer') dire(el.bulleTable, 'D’accord, on continue pour pratiquer!');
   }
   ecrans.menu.addEventListener('click', actionBouton);
@@ -244,18 +255,22 @@ Jeu.demarrer().then(() => {
 
   function demarrerTable(niv) {
     const N = NIVEAUX[niv];
-    const toutes = [];
-    for (const t of N.tables) for (const f of N.facteurs) toutes.push(cle(t, f));
-    const nbTrous = Math.max(1, Math.round(toutes.length * (N.proportionTrous || PROPORTION_TROUS)));
-    const trous = new Set(melanger([...toutes]).slice(0, nbTrous));
-    const ordre = toutes.filter((k) => trous.has(k)); // de gauche à droite, ligne par ligne
-    T = { niv, N, trous, ordre, saisie: {}, statut: {}, sel: ordre[0], erreurs: 0, derniereFausse: {} };
+    const lignes = N.nouvelles || N.tables;
+    const candidates = [];
+    for (const t of lignes) for (const f of N.facteurs) candidates.push(cle(t, f));
+    const nbTrous = Math.max(1, Math.round(candidates.length * (N.proportionTrous || PROPORTION_TROUS)));
+    const trous = new Set(melanger([...candidates]).slice(0, nbTrous));
+    const ordre = [];
+    for (const t of N.tables) for (const f of N.facteurs) if (trous.has(cle(t, f))) ordre.push(cle(t, f)); // ligne par ligne
+    T = { niv, N, trous, ordre, saisie: {}, statut: {}, sel: ordre[0], erreurs: 0, derniereFausse: {}, termine: false };
     montrer('table');
     el.titreTable.textContent = N.type === 'table' ? N.titre : `Échauffement — ${N.desc}`;
     rendreTable();
     const consigne = N.maxErreurs !== undefined
       ? `Remplis les cases vides de mémoire. <b>Attention : une seule erreur est permise</b> pour gagner ${Jeu.NOM_PIERRE[N.pierre]}.`
-      : 'Remplis les cases vides de la table. Chaque case = la ligne × la colonne. Tape la réponse, la case suivante se choisit toute seule!';
+      : N.nouvelles && N.nouvelles.length < N.tables.length
+        ? `Nouvelles tables : <b>${N.nouvelles.join(', ')}</b>! Remplis leurs lignes. Chaque case = le nombre de la ligne × celui de la colonne. Tape la réponse, la case suivante se choisit toute seule!`
+        : 'Remplis les cases vides de la table. Chaque case = le nombre de la ligne × celui de la colonne. Tape la réponse, la case suivante se choisit toute seule!';
     dire(el.bulleTable, consigne);
   }
 
@@ -266,12 +281,13 @@ Jeu.demarrer().then(() => {
 
   function rendreTable() {
     const { N } = T;
-    const ligneActive = T.sel ? Number(T.sel.split('x')[0]) : null;
-    let h = '<table class="table-trouee"><thead><tr><th class="coin">×</th>';
-    for (const f of N.facteurs) h += `<th>${f}</th>`;
+    const [ligneActive, colonneActive] = T.sel ? T.sel.split('x').map(Number) : [null, null];
+    let h = `<table class="table-trouee${N.facteurs.length > 10 ? ' grande' : ''}"><thead><tr><th class="coin">×</th>`;
+    for (const f of N.facteurs) h += `<th class="${f === colonneActive ? 'actif' : ''}">${f}</th>`;
     h += '</tr></thead><tbody>';
     for (const t of N.tables) {
-      h += `<tr class="${t === ligneActive ? 'ligne-active' : ''}"><th>${t}</th>`;
+      const nouvelle = (N.nouvelles || N.tables).includes(t) ? ' nouvelle' : '';
+      h += `<tr class="${t === ligneActive ? 'ligne-active' : ''}${nouvelle}"><th class="${t === ligneActive ? 'actif' : ''}">${t}</th>`;
       for (const f of N.facteurs) {
         const k = cle(t, f);
         if (!T.trous.has(k)) {
@@ -280,7 +296,9 @@ Jeu.demarrer().then(() => {
           const cls = ['trou'];
           if (T.sel === k) cls.push('choisi');
           if (T.statut[k]) cls.push(T.statut[k]);
-          h += `<td><button type="button" class="${cls.join(' ')}" data-cle="${k}" aria-label="${t} fois ${f}">${T.saisie[k] || ''}</button></td>`;
+          // Dans la case choisie et encore vide, la multiplication à faire est écrite en gris pâle.
+          const contenu = T.saisie[k] || (T.sel === k ? `<span class="indice-case">${t} × ${f}</span>` : '');
+          h += `<td><button type="button" class="${cls.join(' ')}" data-cle="${k}" aria-label="${t} fois ${f}">${contenu}</button></td>`;
         }
       }
       h += '</tr>';
@@ -295,14 +313,14 @@ Jeu.demarrer().then(() => {
 
   el.table.addEventListener('click', (ev) => {
     const b = ev.target.closest('.trou');
-    if (!b || !T || T.statut[b.dataset.cle] === 'ok') return;
+    if (!b || !T || T.termine || T.statut[b.dataset.cle] === 'ok') return;
     T.sel = b.dataset.cle;
     son('clic');
     rendreTable();
   });
 
   function entrerTable(d) {
-    if (!T || !T.sel) return;
+    if (!T || T.termine || !T.sel) return;
     const k = T.sel;
     if (T.statut[k] === 'faux') T.saisie[k] = ''; // on recommence la case
     T.statut[k] = null;
@@ -315,7 +333,7 @@ Jeu.demarrer().then(() => {
   }
 
   function effacerTable() {
-    if (!T || !T.sel || T.statut[T.sel] === 'ok') return;
+    if (!T || T.termine || !T.sel || T.statut[T.sel] === 'ok') return;
     T.saisie[T.sel] = (T.saisie[T.sel] || '').slice(0, -1);
     T.statut[T.sel] = null;
     son('clic');
@@ -357,26 +375,25 @@ Jeu.demarrer().then(() => {
     dire(el.bulleTable, `Pas tout à fait : ${t} × ${f} n’égale pas ${T.saisie[k]}. Réessaie!`, 'oups');
   }
 
+  // La table réussie reste affichée : le message et les boutons apparaissent dans la bulle.
   function finTable() {
     const { niv, N, erreurs } = T;
-    T = null;
+    T.termine = true;
+    T.sel = null;
+    rendreTable();
     if (N.pierre) { finPierreTable(niv, N, erreurs); return; }
     Jeu.majProgres(joueur.id, ACT, (q) => {
       if (!q.echauffements || typeof q.echauffements !== 'object') q.echauffements = {};
       q.echauffements[niv] = true;
     });
     Jeu.demanderPersistance();
-    ecrans.fin.innerHTML = `<div class="carte fin">
-        <div class="grande-medaille" style="font-size:90px" aria-hidden="true">🔥</div>
-        <h1>Échauffement réussi!</h1>
-        <p>${erreurs === 0 ? 'Aucune erreur, tu es en feu!' : `Tu as corrigé ${erreurs} erreur${erreurs > 1 ? 's' : ''}.`} Prêt pour la course?</p>
-        <div class="rangee">
-          <button class="bouton gros" type="button" data-action="course" data-niveau="${niv}">🏁 Lancer la course ▸</button>
-          <button class="bouton secondaire" type="button" data-action="table" data-niveau="${niv}">Refaire l’échauffement</button>
-          <button class="bouton secondaire" type="button" data-action="menu">Menu de l’activité</button>
-        </div>
-      </div>`;
-    montrer('fin');
+    dire(el.bulleTable, `<b>Échauffement réussi!</b> ${erreurs === 0 ? 'Aucune erreur, tu es en feu! 🔥' : `Tu as corrigé ${erreurs} erreur${erreurs > 1 ? 's' : ''}.`}
+      Regarde ta table, puis lance la course quand tu es prêt.
+      <div class="choix-bulle">
+        <button class="bouton" type="button" data-action="course" data-niveau="${niv}">🏁 Lancer la course ▸</button>
+        <button class="bouton secondaire" type="button" data-action="table" data-niveau="${niv}">Refaire l’échauffement</button>
+        <button class="bouton secondaire" type="button" data-action="menu">Menu</button>
+      </div>`, 'bravo');
     confettis(50);
     son('reussite');
   }
@@ -385,19 +402,22 @@ Jeu.demarrer().then(() => {
     const pierre = N.pierre;
     if (erreurs > N.maxErreurs) {
       son('oups');
-      ecrans.fin.innerHTML = `<div class="carte fin">
-          <div class="grande-medaille">${Jeu.pierreSVG(pierre, false, 110)}</div>
-          <h1>Presque!</h1>
-          <p>Tu as rempli toute la table avec ${erreurs} erreurs. Pour ${Jeu.NOM_PIERRE[pierre]}, une seule erreur est permise.</p>
-          <div class="rangee">
-            <button class="bouton gros" type="button" data-action="table" data-niveau="${niv}">Réessayer ▸</button>
-            <button class="bouton secondaire" type="button" data-action="menu">Menu de l’activité</button>
-          </div>
-        </div>`;
-      montrer('fin');
+      dire(el.bulleTable, `<b>Presque!</b> Tu as rempli toute la table avec ${erreurs} erreurs. Pour ${Jeu.NOM_PIERRE[pierre]}, une seule erreur est permise.
+        <div class="choix-bulle">
+          <button class="bouton orange" type="button" data-action="table" data-niveau="${niv}">↻ Réessayer</button>
+          <button class="bouton secondaire" type="button" data-action="menu">Menu</button>
+        </div>`, 'oups');
       return;
     }
-    gagnerPierre(niv, pierre, erreurs, null);
+    const resultat = enregistrerPierre(pierre, erreurs, null);
+    T.resultat = { niv, pierre, erreurs, ...resultat };
+    dire(el.bulleTable, `<b>Bravo!</b> La grande table est complète${erreurs === 0 ? ', sans aucune erreur' : ''}! Tu as trouvé ${Jeu.NOM_PIERRE[pierre]} 💎
+      <div class="choix-bulle">
+        <button class="bouton" type="button" data-action="voir-pierre">Voir ma pierre ▸</button>
+        <button class="bouton secondaire" type="button" data-action="menu">Menu</button>
+      </div>`, 'bravo');
+    confettis(80);
+    son('pierre');
   }
 
   // ==========================================================
@@ -644,7 +664,7 @@ Jeu.demarrer().then(() => {
   //  Pierres précieuses
   // ==========================================================
 
-  function gagnerPierre(niv, pierre, erreurs, temps) {
+  function enregistrerPierre(pierre, erreurs, temps) {
     const deja = progres().pierres[pierre];
     let nouveauRecord = false;
     Jeu.majProgres(joueur.id, ACT, (q) => {
@@ -658,6 +678,15 @@ Jeu.demarrer().then(() => {
       }
     });
     Jeu.demanderPersistance();
+    return { deja, nouveauRecord };
+  }
+
+  function gagnerPierre(niv, pierre, erreurs, temps) {
+    afficherPierre({ niv, pierre, erreurs, temps, ...enregistrerPierre(pierre, erreurs, temps) });
+    son('pierre');
+  }
+
+  function afficherPierre({ niv, pierre, erreurs, temps = null, deja, nouveauRecord }) {
     const nom = Jeu.NOM_PIERRE[pierre];
     let details = erreurs === 0 ? '⭐ Sans aucune erreur!' : `${erreurs} erreur${erreurs > 1 ? 's' : ''} en chemin.`;
     if (temps !== null) details = `⏱ Ton temps : ${formaterTemps(temps)}${nouveauRecord ? ' — nouveau record!' : ''}<br>${details}`;
@@ -675,7 +704,6 @@ Jeu.demarrer().then(() => {
       </div>`;
     montrer('fin');
     confettis(110);
-    son('pierre');
   }
 
   // ==========================================================

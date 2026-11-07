@@ -3,6 +3,11 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.7.0
+
+Accueil : clique directement sur une activité pour la lancer.
+Course des multiplications : 2 pas de plus, plus de « × 1 », une table d'échauffement plus grande qui montre la multiplication à faire, et seulement les nouvelles tables à remplir pour l'argent et l'or.
+
 ## 0.6.0
 
 Nouvelle activité : la course des multiplications! Échauffe-toi avec la table trouée, puis fais courir ton personnage jusqu'au drapeau avant la fin du temps 🏁

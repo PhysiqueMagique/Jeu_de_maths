@@ -147,16 +147,18 @@
           const pierres = p && p.medailles.or
             ? `<div class="rangee-pierres">${Jeu.PIERRES.map((x) => Jeu.pierreSVG(x, p.pierres[x], 30)).join('')}</div>`
             : '';
-          const bouton = courant
-            ? `<a class="bouton" href="${a.page}">Jouer ▸</a>`
-            : '<span class="bouton" aria-disabled="true">Jouer ▸</span>';
-          return `<article class="carte carte-activite">
+          // Toute la tuile lance l'activité (si un joueur est choisi)
+          const debut = courant
+            ? `<a class="carte carte-activite cliquable" href="${a.page}" aria-label="Jouer : ${a.titre}">`
+            : '<div class="carte carte-activite inactive" aria-disabled="true">';
+          const finTuile = courant ? '</a>' : '</div>';
+          return `${debut}
                     <div class="vignette" aria-hidden="true">${a.vignette}</div>
                     <h3>${a.titre}</h3>
                     <p>${a.description}</p>
                     ${pierres}
-                    <div class="bas-carte"><div class="rangee-medailles">${medailles}</div>${bouton}</div>
-                  </article>`;
+                    <div class="bas-carte"><div class="rangee-medailles">${medailles}</div><span class="fleche-jouer" aria-hidden="true">▸</span></div>
+                  ${finTuile}`;
         }).join('');
         html += `<article class="carte carte-activite a-venir">
                    <div class="vignette" aria-hidden="true">…</div>
