@@ -52,6 +52,13 @@ const Jeu = (() => {
       vignette: '7 × 8 = <span class="rouge">?</span>',
     },
     {
+      id: 'multiplication-course',
+      titre: 'Course des multiplications',
+      description: 'Vite et de mémoire : fais avancer ton personnage jusqu’au drapeau!',
+      page: 'activites/multiplication-course.html',
+      vignette: '6 × 7 🏁',
+    },
+    {
       id: 'division-tables',
       titre: 'Tables de division',
       description: 'Combien de groupes peut-on faire? Les tables de division jusqu’à 10.',

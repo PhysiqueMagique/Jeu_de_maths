@@ -24,7 +24,8 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `css/activite.css` | Styles communs aux activités (menus, défis, bulles, clavier, fins) et grille de la soustraction |
 | `js/tables-moteur.js` | Moteur commun des activités « tables » : tutoriel, défis, médailles, pierres |
 | `activites/multiplication-tables.html`, `js/multiplication-tables.js` | Activité 2 : tables de multiplication (textes, niveaux, trucs) |
-| `activites/division-tables.html`, `js/division-tables.js` | Activité 3 : tables de division (textes, niveaux, trucs) |
+| `activites/multiplication-course.html`, `js/multiplication-course.js`, `css/course.css` | Activité 3 : course des multiplications (table trouée, course chronométrée) |
+| `activites/division-tables.html`, `js/division-tables.js` | Activité 4 : tables de division (textes, niveaux, trucs) |
 | `css/tables.css` | Styles des tables (équation, jetons en groupes, explication du diamant) |
 | `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
 | `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
@@ -64,6 +65,19 @@ Les sons sont fabriqués par le fureteur (Web Audio, aucun fichier); le bouton �
 
 Les tables de multiplication et de division partagent le même moteur (`js/tables-moteur.js`);
 chaque activité n'est qu'une configuration : textes, niveaux, façon de fabriquer un problème et ses indices.
+
+### Activité : course des multiplications (vitesse et mémorisation)
+
+Pour chaque niveau : 🥉 tables de 2, 3 et 5 (12 pas en 60 s); 🥈 tables de 2 à 7 (15 pas en 70 s); 🥇 tables de 2 à 10 (20 pas en 80 s).
+1. **Échauffement** : une table trouée (40 % des cases à remplir); la case suivante se choisit toute seule.
+   Il faut l'avoir fait une fois pour débloquer la course du niveau.
+2. **Course** : compte à rebours, puis une barre de temps qui diminue. Chaque bonne réponse fait avancer l'avatar
+   de l'enfant d'un pas; une erreur le fait reculer d'un pas, montre la bonne réponse, et la multiplication ratée revient plus tard.
+   La réponse est validée dès qu'elle a le bon nombre de chiffres.
+3. **Pierres** (après l'or) : 💎 rubis, la course or en 50 s; 💎 émeraude, la grande table trouée de 2 à 10 (moitié des cases),
+   une seule erreur; 💎 saphir, les trois courses sans erreur; 💎 diamant, tables jusqu'à 12 × 12 (20 pas en 100 s).
+
+Les temps, nombres de pas et proportions de trous sont au début de `js/multiplication-course.js`.
 
 ### Activité : tables de division (sans reste, jusqu'à 10)
 

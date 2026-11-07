@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+  <title>Course des multiplications — Jeu de maths</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/activite.css">
+  <link rel="stylesheet" href="../css/tables.css">
+  <link rel="stylesheet" href="../css/course.css">
+</head>
+<body>
+  <header class="barre-haut">
+    <a id="btn-retour" class="lien-retour" href="../index.html">← Accueil</a>
+    <div class="droite">
+      <button id="btn-son" class="bouton-son" type="button" aria-pressed="true" title="Son">🔊</button>
+      <div id="badge-joueur" class="badge-joueur"></div>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- Menu de l'activité -->
+    <section id="ecran-menu"></section>
+
+    <!-- Échauffement : la table trouée -->
+    <section id="ecran-table" hidden>
+      <div class="entete-jeu">
+        <h2 id="titre-table"></h2>
+        <div class="infos-jeu">
+          <span id="compteur-table" class="chrono"></span>
+        </div>
+      </div>
+      <div class="carte zone-table"><div id="table" class="defilement"></div></div>
+      <div id="bulle-table" class="carte bulle" aria-live="polite"></div>
+      <div class="controles">
+        <div id="clavier-table" class="clavier" aria-label="Clavier de chiffres"></div>
+      </div>
+    </section>
+
+    <!-- La course -->
+    <section id="ecran-course" hidden>
+      <div class="entete-jeu">
+        <h2 id="titre-course"></h2>
+        <div class="infos-jeu"><span id="pas-course" class="chrono"></span></div>
+      </div>
+      <div class="temps-barre" aria-hidden="true"><div id="temps-rempli" class="rempli"></div><span id="temps-texte"></span></div>
+      <div class="carte piste-carte">
+        <div id="piste" class="piste"></div>
+        <div id="compte-rebours" class="compte-rebours" hidden></div>
+      </div>
+      <div class="zone-jeu">
+        <div id="equation-course" class="carte equation-carte"></div>
+      </div>
+      <div id="bulle-course" class="carte bulle" aria-live="polite"></div>
+      <div class="controles">
+        <div id="clavier-course" class="clavier" aria-label="Clavier de chiffres"></div>
+      </div>
+    </section>
+
+    <!-- Fin : médaille, pierre, temps écoulé -->
+    <section id="ecran-fin" hidden></section>
+  </main>
+
+  <script src="../js/commun.js"></script>
+  <script src="../js/multiplication-course.js"></script>
+</body>
+</html>
