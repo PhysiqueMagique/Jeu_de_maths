@@ -253,6 +253,25 @@ p { margin: 0 0 0.8em; }
 .pied p { color: var(--doux); font-size: 0.92rem; margin: 10px 0 0; }
 .message-sauvegarde { font-weight: 700; color: var(--vert) !important; }
 
+/* ---------- Bouton du son ---------- */
+
+.bouton-son {
+  font-size: 1.3rem;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 2px solid var(--bordure);
+  background: #fff;
+  box-shadow: 0 3px 0 var(--bordure);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.bouton-son[aria-pressed="false"] { opacity: 0.6; }
+.bouton-son.coin { position: absolute; top: 16px; right: 18px; }
+.page { position: relative; }
+
+.pierre { display: inline-block; vertical-align: middle; }
+.pierre.verrouillee { opacity: 0.6; }
+
 /* ---------- Bandeaux (mise à jour, avertissement) ---------- */
 
 .bandeau {

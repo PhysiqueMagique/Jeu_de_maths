@@ -39,6 +39,16 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 
 Chaque défi réussi donne sa médaille, visible sur la page d'accueil. Argent se débloque avec bronze, or avec argent.
 Pendant un défi, « Besoin d'aide? » donne l'indice de la prochaine étape et un lien pour revoir le tutoriel.
+Si on change d'idée, on reclique sur un chiffre barré pour défaire l'emprunt (le plus récent d'abord).
+
+**Accomplissements secrets** (révélés après la médaille d'or), des pierres précieuses :
+- 💎 **Rubis**, défi vitesse : 5 problèmes de niveau or en moins de 5 minutes (`CHRONO_RUBIS`);
+- 💎 **Émeraude**, défi sur papier : on ne peut plus cliquer pour emprunter, on écrit seulement la réponse; au plus 1 erreur (`MAX_ERREURS_EMERAUDE`);
+- 💎 **Saphir** : les médailles bronze, argent et or réussies sans aucune erreur;
+- 💎 **Diamant** : des nombres de 5 à 7 chiffres, jusqu'aux millions.
+
+Les réglages entre parenthèses sont au début de `js/soustraction-emprunt.js`.
+Les sons sont fabriqués par le fureteur (Web Audio, aucun fichier); le bouton 🔊 les coupe, et ce choix est gardé dans la sauvegarde.
 
 ## Profils et sauvegarde du progrès
 

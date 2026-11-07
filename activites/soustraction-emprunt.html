@@ -14,7 +14,10 @@
 <body>
   <header class="barre-haut">
     <a id="btn-retour" class="lien-retour" href="../index.html">← Accueil</a>
-    <div id="badge-joueur" class="badge-joueur"></div>
+    <div class="droite">
+      <button id="btn-son" class="bouton-son" type="button" aria-pressed="true" title="Son">🔊</button>
+      <div id="badge-joueur" class="badge-joueur"></div>
+    </div>
   </header>
 
   <main class="page">
@@ -25,7 +28,10 @@
     <section id="ecran-jeu" hidden>
       <div class="entete-jeu">
         <h2 id="titre-phase"></h2>
-        <div id="progression" class="progression"></div>
+        <div class="infos-jeu">
+          <span id="chrono" class="chrono" hidden></span>
+          <div id="progression" class="progression"></div>
+        </div>
       </div>
 
       <div class="zone-jeu">

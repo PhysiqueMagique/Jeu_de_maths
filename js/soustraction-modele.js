@@ -12,11 +12,12 @@
 'use strict';
 
 const Modele = (() => {
-  const NOMS = ['unités', 'dizaines', 'centaines', 'milliers'];
-  const UN_NOM = ['une unité', 'une dizaine', 'une centaine', 'un millier'];
-  const LE_NOM = ["l'unité", 'la dizaine', 'la centaine', 'le millier'];
-  const A_LA = ["à l'unité", 'à la dizaine', 'à la centaine', 'au millier'];
-  const LETTRES = ['U', 'D', 'C', 'M'];
+  // Noms des colonnes, de droite à gauche (unités, dizaines, … millions)
+  const NOMS = ['unités', 'dizaines', 'centaines', 'unités de mille', 'dizaines de mille', 'centaines de mille', 'millions'];
+  const UN_NOM = ['une unité', 'une dizaine', 'une centaine', 'une unité de mille', 'une dizaine de mille', 'une centaine de mille', 'un million'];
+  const LE_NOM = ["l'unité", 'la dizaine', 'la centaine', "l'unité de mille", 'la dizaine de mille', 'la centaine de mille', 'le million'];
+  const A_LA = ["à l'unité", 'à la dizaine', 'à la centaine', "à l'unité de mille", 'à la dizaine de mille', 'à la centaine de mille', 'au million'];
+  const LETTRES = ['U', 'D', 'C', 'UM', 'DM', 'CM', 'M'];
 
   // ---------- Création ----------
 
@@ -38,6 +39,7 @@ const Modele = (() => {
       recuAvant: Array(n).fill(false),
       recuApres: Array(n).fill(false),
       enMain: null, // colonne qui vient de prêter (la dizaine est « dans les mains »)
+      historique: [], // emprunts faits, dans l'ordre : { de, a, recu: 'avant' | 'apres' | null }
       reponse: Array(n).fill(null),
       statut: Array(n).fill(null), // 'ok' | 'faux' | null
     };
@@ -101,6 +103,7 @@ const Modele = (() => {
     const avant = val(P, i);
     P.prete[i] += 1;
     P.enMain = i;
+    P.historique.push({ de: i, a: i + 1, recu: null });
     return {
       ok: true,
       info: `Le ${avant} devient ${val(P, i)}. Tu tiens ${unNom(P, i)} (= 10 ${nom(P, i + 1)}).`,
@@ -117,6 +120,7 @@ const Modele = (() => {
     const avant = val(P, i);
     if (P.prete[i] > 0) P.recuApres[i] = true;
     else P.recuAvant[i] = true;
+    P.historique[P.historique.length - 1].recu = P.prete[i] > 0 ? 'apres' : 'avant';
     P.enMain = null;
     return {
       ok: true,
@@ -125,8 +129,40 @@ const Modele = (() => {
     };
   }
 
+  // Un chiffre déjà barré peut-il être cliqué pour défaire son emprunt?
+  const peutAnnuler = (P, i) => P.enMain === i || (P.enMain === null && P.prete[i] > 0);
+
+  // Défait l'emprunt fait par la colonne i (le plus récent seulement).
+  function annuler(P, i) {
+    const dernier = P.historique[P.historique.length - 1];
+    if (!dernier || dernier.de !== i) {
+      return { ok: false, msg: dernier
+        ? `Pour défaire cet emprunt, défais d'abord le plus récent : clique sur le chiffre barré des ${nom(P, dernier.de)}.`
+        : '' };
+    }
+    const r = dernier.a;
+    const avantI = val(P, i);
+    const avantR = val(P, r);
+    if (dernier.recu === 'avant') P.recuAvant[r] = false;
+    else if (dernier.recu === 'apres') P.recuApres[r] = false;
+    P.prete[i] -= 1;
+    P.historique.pop();
+    P.enMain = null;
+    const notes = [effacerSiChange(P, i), dernier.recu ? effacerSiChange(P, r) : null].filter(Boolean);
+    const info = dernier.recu
+      ? `Emprunt défait : le ${avantI} redevient ${val(P, i)} et le ${avantR} redevient ${val(P, r)}.`
+      : `Emprunt défait : le ${avantI} redevient ${val(P, i)}.`;
+    return { ok: true, info, efface: notes.join(' ') || null, colonnes: dernier.recu ? [i, r] : [i] };
+  }
+
   // L'élève écrit un chiffre dans la case réponse de la colonne i.
-  function poser(P, i, d) {
+  // libre = true : mode « sur papier », on ne vérifie pas les emprunts.
+  function poser(P, i, d, libre = false) {
+    if (libre) {
+      P.reponse[i] = d;
+      P.statut[i] = null;
+      return { ok: true };
+    }
     if (P.enMain !== null) {
       return { ok: false, msg: `Dépose d'abord ce que tu as emprunté dans la colonne des ${nom(P, P.enMain + 1)}.` };
     }
@@ -241,7 +277,31 @@ const Modele = (() => {
     },
   };
 
+  // Un nombre de n chiffres avec quelques zéros placés au hasard (jamais au début).
+  function nombreAvecZeros(n, nbZeros) {
+    const ch = [String(alea(1, 9))];
+    for (let i = 1; i < n; i++) ch.push(String(alea(1, 9)));
+    for (let z = 0; z < nbZeros; z++) ch[alea(1, n - 2)] = '0';
+    return Number(ch.join(''));
+  }
+
+  // Sur papier : un mélange d'argent et d'or
+  RECETTES.papier = (k) => [() => RECETTES.argent(2), () => RECETTES.or(0), () => RECETTES.argent(4), () => RECETTES.or(2), () => RECETTES.or(3)][k % 5]();
+
+  // Diamant : des nombres géants, de 5 à 7 chiffres
+  RECETTES.diamant = (k) => {
+    const n = [5, 5, 6, 6, 7][k % 5];
+    const zeros = [0, 1, 1, 2, 3][k % 5];
+    const minEmprunts = [3, 3, 3, 4, 4][k % 5];
+    return tirer(
+      () => { const a = nombreAvecZeros(n, zeros); return [a, alea(Math.floor(a / 4), a - 1)]; },
+      (an) => an.nb >= minEmprunts && (zeros === 0 || an.zero),
+    );
+  };
+
   const SECOURS = {
+    papier: [[741, 386], [403, 158], [523, 248], [600, 247], [5234, 1678]],
+    diamant: [[52341, 17865], [60423, 28757], [831524, 254876], [700305, 341678], [3004012, 1275436]],
     bronze: [[52, 37], [81, 46], [64, 29], [43, 7], [90, 58]],
     argent: [[352, 27], [628, 173], [741, 386], [523, 248], [912, 457]],
     or: [[403, 158], [702, 36], [600, 247], [5234, 1678], [4005, 1327]],
@@ -263,7 +323,7 @@ const Modele = (() => {
   return {
     creer, rang, nom, unNom, leNom, aLa, lettre, bas, val, valDessus,
     besoin, estCorrecte, resolu,
-    preter, recevoir, poser, conseil,
+    preter, recevoir, poser, conseil, annuler, peutAnnuler,
     analyse, genererNiveau,
   };
 })();

@@ -47,6 +47,8 @@
 .probleme { padding: 18px 22px 22px; }
 
 .grille {
+  /* les cases rapetissent pour les très grands nombres (défi diamant) */
+  --case: clamp(30px, calc((min(100vw, 900px) - 150px) / (var(--n) + 0.7)), 82px);
   display: grid;
   grid-template-columns: calc(var(--case) * 0.6) repeat(var(--n), var(--case));
   justify-content: center;
@@ -153,7 +155,7 @@
   color: var(--encre);
   background: #fff;
   border: 3px dashed #d8ccb6;
-  border-radius: 14px;
+  border-radius: calc(var(--case) * 0.18);
   cursor: pointer;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
@@ -230,6 +232,31 @@
   .actions .bouton { flex: 1; }
   .blocs { padding: 12px; }
 }
+
+/* ---------- Défis spéciaux ---------- */
+
+.barre-haut .droite { display: flex; align-items: center; gap: 12px; }
+.infos-jeu { display: flex; align-items: center; gap: 16px; }
+.chrono { font-weight: 900; font-size: 1.25rem; font-variant-numeric: tabular-nums; background: #fff; border-radius: 999px; padding: 0.2em 0.8em; box-shadow: var(--ombre); }
+.chrono.presse { color: #fff; background: var(--rouge); animation: pulse 1s infinite; }
+.grille.papier .case-haut { cursor: default; }
+.grille.papier .case-haut:hover { background: transparent; }
+
+.secrets { margin-top: 30px; padding: 18px; border-radius: var(--rayon); background: linear-gradient(135deg, #2b2d42, #3d3270); color: #fff; }
+.secrets h2 { color: #fff; }
+.secrets > p { color: #d9d6ff; margin-bottom: 14px; }
+.liste-pierres { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.carte-pierre { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; color: var(--encre); }
+.carte-pierre h3 { margin: 2px 0 0; font-size: 1.05rem; }
+.carte-pierre p { color: var(--doux); font-size: 0.85rem; margin: 0; }
+.carte-pierre .record { font-size: 0.8rem; font-weight: 800; color: var(--vert); min-height: 1.2em; }
+.carte-pierre .bouton { margin-top: auto; width: 100%; }
+.coches { font-size: 0.8rem; font-weight: 800; color: var(--doux); }
+.coches .oui { color: var(--vert); }
+@media (max-width: 760px) { .liste-pierres { grid-template-columns: repeat(2, 1fr); } }
+
+.bonus { display: flex; align-items: center; gap: 12px; text-align: left; background: #f3f0ff; border-radius: 14px; padding: 10px 14px; margin: 12px 0; font-weight: 700; }
+.indice-secret { background: #2b2d42; color: #fff; border-radius: 14px; padding: 10px 14px; font-weight: 700; }
 
 /* ---------- Écran de fin ---------- */
 

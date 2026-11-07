@@ -48,6 +48,10 @@ const Jeu = (() => {
 
   const NIVEAUX = ['bronze', 'argent', 'or'];
   const NOM_MEDAILLE = { bronze: 'de bronze', argent: "d'argent", or: "d'or" };
+  // Accomplissements secrets, révélés après la médaille d'or
+  const PIERRES = ['rubis', 'emeraude', 'saphir', 'diamant'];
+  const NOM_PIERRE = { rubis: 'le rubis', emeraude: "l'émeraude", saphir: 'le saphir', diamant: 'le diamant' };
+  const TITRE_PIERRE = { rubis: 'Rubis', emeraude: 'Émeraude', saphir: 'Saphir', diamant: 'Diamant' };
 
   // ==========================================================
   //  Stockage
@@ -238,6 +242,9 @@ const Jeu = (() => {
     r.medailles = { ...m };
     for (const niv of NIVEAUX) r.medailles[niv] = !!m[niv];
     r.records = estObjet(r.records) ? { ...r.records } : {};
+    const g = estObjet(r.pierres) ? r.pierres : {};
+    r.pierres = { ...g };
+    for (const pierre of PIERRES) r.pierres[pierre] = !!g[pierre];
     return r;
   }
 
@@ -264,6 +271,84 @@ const Jeu = (() => {
       for (const niv of NIVEAUX) if (p.medailles[niv]) n++;
     }
     return n;
+  }
+
+  function nombrePierres(joueurId) {
+    let n = 0;
+    for (const a of ACTIVITES) {
+      const p = progres(joueurId, a.id);
+      for (const pierre of PIERRES) if (p.pierres[pierre]) n++;
+    }
+    return n;
+  }
+
+  // ==========================================================
+  //  Sons (fabriqués par le fureteur : aucun fichier audio)
+  // ==========================================================
+
+  function sonActif() {
+    return !(estObjet(etat && etat.reglages) && etat.reglages.son === false);
+  }
+
+  function basculerSon() {
+    if (!estObjet(etat.reglages)) etat.reglages = {};
+    etat.reglages.son = !sonActif();
+    enregistrer();
+    if (sonActif()) jouer('clic');
+    return sonActif();
+  }
+
+  let audio = null;
+  function contexteAudio() {
+    if (!audio) {
+      const C = window.AudioContext || window.webkitAudioContext;
+      if (!C) return null;
+      audio = new C();
+    }
+    if (audio.state === 'suspended') audio.resume();
+    return audio;
+  }
+
+  // Une note : fréquence (Hz), début (s), durée (s), forme d'onde, volume, glissando vers « vers » Hz
+  function note(ctx, freq, debut, duree, forme = 'sine', volume = 0.18, vers = null) {
+    const t0 = ctx.currentTime + debut;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = forme;
+    osc.frequency.setValueAtTime(freq, t0);
+    if (vers) osc.frequency.exponentialRampToValueAtTime(vers, t0 + duree);
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(volume, t0 + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duree);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + duree + 0.02);
+  }
+
+  const SONS = {
+    clic:     (c) => note(c, 900, 0, 0.05, 'sine', 0.08),
+    chiffre:  (c) => note(c, 640, 0, 0.08, 'triangle', 0.16),
+    emprunt:  (c) => note(c, 720, 0, 0.16, 'triangle', 0.18, 380),
+    depot:    (c) => { note(c, 420, 0, 0.12, 'sine', 0.2, 900); note(c, 1250, 0.1, 0.1, 'sine', 0.1); },
+    annuler:  (c) => { note(c, 600, 0, 0.09, 'triangle', 0.14); note(c, 420, 0.08, 0.12, 'triangle', 0.14); },
+    oups:     (c) => note(c, 300, 0, 0.18, 'sine', 0.16, 200),
+    erreur:   (c) => { note(c, 220, 0, 0.14, 'square', 0.06); note(c, 165, 0.13, 0.22, 'square', 0.06); },
+    bon:      (c) => { note(c, 660, 0, 0.1, 'triangle', 0.16); note(c, 990, 0.08, 0.14, 'triangle', 0.16); },
+    reussite: (c) => [523, 659, 784, 1047].forEach((f, k) => note(c, f, k * 0.09, 0.22, 'triangle', 0.18)),
+    medaille: (c) => {
+      [523, 659, 784, 1047, 784, 1047].forEach((f, k) => note(c, f, k * 0.12, 0.25, 'triangle', 0.18));
+      note(c, 1319, 0.72, 0.6, 'triangle', 0.18);
+    },
+    pierre:   (c) => [1568, 2093, 1760, 2349, 2093, 2637, 3136].forEach((f, k) => note(c, f, k * 0.07, 0.35, 'sine', 0.12)),
+    tic:      (c) => note(c, 1400, 0, 0.03, 'square', 0.04),
+  };
+
+  function jouer(nom) {
+    if (!sonActif() || !SONS[nom]) return;
+    try {
+      const ctx = contexteAudio();
+      if (ctx) SONS[nom](ctx);
+    } catch (err) { /* pas de son, tant pis */ }
   }
 
   // ==========================================================
@@ -362,21 +447,47 @@ const Jeu = (() => {
     </svg>`;
   }
 
+  // Pierres précieuses (SVG) : une gemme taillée, avec ses facettes
+  const COULEURS_PIERRE = {
+    rubis:    ['#8f0a3a', '#d81b5c', '#ff7aa5', '#ffd0df'],
+    emeraude: ['#06603a', '#12a865', '#5fe3a3', '#c9fbe3'],
+    saphir:   ['#132f80', '#2457d6', '#7aa2ff', '#d6e3ff'],
+    diamant:  ['#6aaed6', '#b9e3fb', '#e9f8ff', '#ffffff'],
+  };
+  function pierreSVG(pierre, gagnee, taille = 40) {
+    const label = `${TITRE_PIERRE[pierre]}${gagnee ? '' : ' (secret)'}`;
+    const c = gagnee ? COULEURS_PIERRE[pierre] : ['#b9b2a5', '#d6d0c5', '#e8e3da', '#f4f1eb'];
+    const brillance = gagnee
+      ? '<path d="M33 3l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" fill="#fff" opacity=".95"/>'
+      : '<text x="20" y="27" text-anchor="middle" font-size="12" font-weight="900" fill="#a39b8c" font-family="sans-serif">?</text>';
+    return `<svg class="pierre${gagnee ? '' : ' verrouillee'}" width="${taille}" height="${taille}" viewBox="0 0 40 40" role="img" aria-label="${label}">
+      <polygon points="6,15 13,6 16,15" fill="${c[2]}"/>
+      <polygon points="13,6 27,6 24,15 16,15" fill="${c[3]}"/>
+      <polygon points="27,6 34,15 24,15" fill="${c[1]}"/>
+      <polygon points="6,15 16,15 20,36" fill="${c[1]}"/>
+      <polygon points="16,15 24,15 20,36" fill="${c[2]}"/>
+      <polygon points="24,15 34,15 20,36" fill="${c[0]}"/>
+      <polygon points="6,15 13,6 27,6 34,15 20,36" fill="none" stroke="${c[0]}" stroke-width="1.4" stroke-linejoin="round"/>
+      ${brillance}
+    </svg>`;
+  }
+
   // Pour afficher un nom tapé par l'utilisateur dans du HTML sans risque.
   function echapper(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   return {
-    AVATARS, COULEURS, NOM_MAX, ACTIVITES, NIVEAUX, NOM_MEDAILLE,
+    AVATARS, COULEURS, NOM_MAX, ACTIVITES, NIVEAUX, NOM_MEDAILLE, PIERRES, NOM_PIERRE, TITRE_PIERRE,
     demarrer, demanderPersistance,
     joueurs, joueur, joueurCourant, choisirJoueur,
     verifierNom, creerJoueur, modifierJoueur, supprimerJoueur,
-    progres, majProgres, nombreMedailles,
+    progres, majProgres, nombreMedailles, nombrePierres,
+    jouer, sonActif, basculerSon,
     exporter, importer,
     estApplication, infosApplication, verifierMiseAJour, installerMiseAJour,
     avertissement: () => avertissement,
-    medailleSVG, echapper,
+    medailleSVG, pierreSVG, echapper,
     // pour l'application Windows et les tests
     _migrer: migrer,
     _utiliserStockage(s) { stockage = s; },

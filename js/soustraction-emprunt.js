@@ -12,20 +12,45 @@ Jeu.demarrer().then(() => {
   const ACT = 'soustraction-emprunt';
   const NB_DEFIS = 5;
   const ORDRE = ['bronze', 'argent', 'or'];
+  // Réglages des accomplissements secrets (faciles à changer)
+  const CHRONO_RUBIS = 300; // secondes pour réussir les 5 problèmes du défi vitesse
+  const MAX_ERREURS_EMERAUDE = 1; // erreurs permises dans le défi sur papier
+
   const NIVEAUX = {
     bronze: {
-      titre: 'Défi bronze', desc: 'Nombres à 2 chiffres', requis: null,
+      titre: 'Défi bronze', desc: 'Nombres à 2 chiffres', requis: null, generer: 'bronze',
       intro: '',
     },
     argent: {
-      titre: 'Défi argent', desc: 'Nombres à 3 chiffres, parfois 2 emprunts', requis: 'bronze',
+      titre: 'Défi argent', desc: 'Nombres à 3 chiffres, parfois 2 emprunts', requis: 'bronze', generer: 'argent', coupDePouce: true,
       intro: 'Maintenant avec des centaines! Ça marche pareil : une colonne à la fois, de droite à gauche. Je t’aide pour ce premier problème.',
     },
     or: {
-      titre: 'Défi or', desc: 'Des zéros qui compliquent tout… et des milliers!', requis: 'argent',
+      titre: 'Défi or', desc: 'Des zéros qui compliquent tout… et des unités de mille!', requis: 'argent', generer: 'or', coupDePouce: true,
       intro: 'Nouveau truc : parfois, la colonne voisine vaut 0 et n’a rien à prêter. Je t’aide pour ce premier problème.',
     },
+    // Accomplissements secrets (pierres précieuses), visibles après la médaille d'or
+    rubis: {
+      titre: 'Défi vitesse', pierre: 'rubis', generer: 'or', chrono: CHRONO_RUBIS,
+      desc: `5 problèmes de niveau or en moins de ${CHRONO_RUBIS / 60} minutes!`,
+      intro: `Défi vitesse! Tu as ${CHRONO_RUBIS / 60} minutes pour réussir les 5 problèmes. Le chrono part maintenant!`,
+    },
+    emeraude: {
+      titre: 'Défi sur papier', pierre: 'emeraude', generer: 'papier', papier: true, maxErreurs: MAX_ERREURS_EMERAUDE,
+      desc: `Fais tes emprunts sur une feuille : ici, tu écris seulement la réponse. Au plus ${MAX_ERREURS_EMERAUDE} erreur.`,
+      intro: 'Défi sur papier! Prends une feuille et un crayon. Recopie la soustraction, fais tes emprunts sur ta feuille, puis écris seulement la réponse ici.',
+    },
+    saphir: {
+      titre: 'Sans faute', pierre: 'saphir',
+      desc: 'Réussis les défis bronze, argent et or sans aucune erreur.',
+    },
+    diamant: {
+      titre: 'Défi diamant', pierre: 'diamant', generer: 'diamant',
+      desc: 'Des nombres géants, jusqu’aux millions!',
+      intro: 'Défi diamant! Des nombres géants… mais la méthode est toujours la même : une colonne à la fois, de droite à gauche.',
+    },
   };
+  const ORDRE_PIERRES = ['rubis', 'emeraude', 'saphir', 'diamant'];
   const BRAVOS = ['Bravo!', 'Super!', 'Wow, bien joué!', 'Excellent!', 'Tu l’as!', 'Parfait!', 'Génial!'];
   const PETITS_BRAVOS = ['Oui!', 'Exact!', 'Bien!', 'Bravo!'];
 
@@ -83,12 +108,21 @@ Jeu.demarrer().then(() => {
     retour: $('#btn-retour'), badge: $('#badge-joueur'),
     titre: $('#titre-phase'), progression: $('#progression'),
     probleme: $('#probleme'), blocs: $('#blocs'), bulle: $('#bulle'), choix: $('#choix'),
-    clavier: $('#clavier'), actions: $('.actions'), verifier: $('#btn-verifier'), suivant: $('#btn-suivant'), aide: $('#btn-aide'),
+    clavier: $('#clavier'), actions: $('.actions'), chrono: $('#chrono'), son: $('#btn-son'), verifier: $('#btn-verifier'), suivant: $('#btn-suivant'), aide: $('#btn-aide'),
   };
 
   el.badge.innerHTML = `<span class="avatar petit" style="--couleur:${joueur.couleur}" aria-hidden="true">${joueur.emoji}</span>${Jeu.echapper(joueur.nom)}`;
 
   let S = null; // la partie en cours
+
+  function rendreSon() {
+    el.son.textContent = Jeu.sonActif() ? '🔊' : '🔇';
+    el.son.setAttribute('aria-pressed', String(Jeu.sonActif()));
+    el.son.title = Jeu.sonActif() ? 'Couper le son' : 'Remettre le son';
+  }
+  el.son.addEventListener('click', () => { Jeu.basculerSon(); rendreSon(); });
+  rendreSon();
+  const son = (nom) => Jeu.jouer(nom);
 
   const choisir = (liste) => liste[Math.floor(Math.random() * liste.length)];
   const etape = () => ETAPES_TUTO[S.etape];
@@ -103,6 +137,7 @@ Jeu.demarrer().then(() => {
 
   function montrer(nom) {
     for (const [k, e] of Object.entries(ecrans)) e.hidden = k !== nom;
+    if (nom !== 'jeu') arreterChrono();
     document.querySelectorAll('.confetti, .jeton-volant').forEach((c) => c.remove());
     if (nom === 'menu') {
       el.retour.textContent = '← Accueil';
@@ -122,6 +157,7 @@ Jeu.demarrer().then(() => {
   });
 
   function afficherMenu() {
+    arreterChrono();
     S = null;
     const p = Jeu.progres(joueur.id, ACT);
     let h = `<header class="entete-activite">
@@ -153,11 +189,101 @@ Jeu.demarrer().then(() => {
         </article>`;
     }
     h += '</div>';
+    if (p.medailles.or) h += htmlSecrets(p);
     if (p.tutorielFait) {
       h += '<div class="revoir"><button class="bouton secondaire" type="button" data-action="tuto">📖 Revoir le tutoriel</button></div>';
     }
     ecrans.menu.innerHTML = h;
     montrer('menu');
+  }
+
+  function sansFaute(p) {
+    return ORDRE.map((niv) => !!(p.records[niv] && p.records[niv].erreurs === 0));
+  }
+
+  function htmlSecrets(p) {
+    let h = `<section class="secrets"><h2>💎 Accomplissements secrets</h2>
+      <p>Tu as la médaille d’or! Voici des défis cachés pour gagner des pierres précieuses.</p>
+      <div class="liste-pierres">`;
+    for (const pierre of ORDRE_PIERRES) {
+      const N = NIVEAUX[pierre];
+      const gagnee = p.pierres[pierre];
+      const rec = p.records[pierre];
+      let detail = '';
+      if (rec && rec.temps) detail = `Meilleur temps : ${formaterTemps(rec.temps)}`;
+      else if (gagnee) detail = '✔ Trouvé!';
+      let action;
+      if (pierre === 'saphir') {
+        const ok = sansFaute(p);
+        action = `<div class="coches">${ORDRE.map((niv, k) =>
+          `<span class="${ok[k] ? 'oui' : ''}">${ok[k] ? '✔' : '✗'} ${niv}</span>`).join(' · ')}</div>`;
+      } else {
+        action = `<button class="bouton${gagnee ? ' secondaire' : ''}" type="button" data-action="defi" data-niveau="${pierre}">${gagnee ? 'Rejouer' : 'Jouer ▸'}</button>`;
+      }
+      h += `<article class="carte carte-pierre">
+          ${Jeu.pierreSVG(pierre, gagnee, 54)}
+          <h3>${Jeu.TITRE_PIERRE[pierre]} — ${N.titre}</h3>
+          <p>${N.desc}</p>
+          <div class="record">${detail}</div>
+          ${action}
+        </article>`;
+    }
+    return h + '</div></section>';
+  }
+
+  function formaterTemps(sec) {
+    const s = Math.max(0, Math.round(sec));
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  }
+
+  // ---------- Chrono (défi vitesse) ----------
+
+  let minuterie = null;
+  function demarrerChrono(secondes) {
+    arreterChrono();
+    S.chrono = { fin: Date.now() + secondes * 1000, total: secondes, dernier: null };
+    el.chrono.hidden = false;
+    minuterie = setInterval(tic, 200);
+    tic();
+  }
+
+  function resteChrono() {
+    return S && S.chrono ? Math.max(0, (S.chrono.fin - Date.now()) / 1000) : 0;
+  }
+
+  function tic() {
+    if (!S || !S.chrono) { arreterChrono(); return; }
+    const reste = resteChrono();
+    const sec = Math.ceil(reste);
+    el.chrono.textContent = `⏱ ${formaterTemps(sec)}`;
+    el.chrono.classList.toggle('presse', sec <= 30);
+    if (sec <= 10 && sec !== S.chrono.dernier && sec > 0) son('tic');
+    S.chrono.dernier = sec;
+    if (reste <= 0) tempsEcoule();
+  }
+
+  function arreterChrono() {
+    if (minuterie) clearInterval(minuterie);
+    minuterie = null;
+    el.chrono.hidden = true;
+  }
+
+  function tempsEcoule() {
+    const reussis = S.index + (S.fini ? 1 : 0);
+    const niv = S.niveau;
+    arreterChrono();
+    S = null;
+    son('oups');
+    ecrans.fin.innerHTML = `<div class="carte fin">
+        <div class="grande-medaille" style="font-size:90px" aria-hidden="true">⏱</div>
+        <h1>Temps écoulé!</h1>
+        <p>Tu as réussi ${reussis} problème${reussis > 1 ? 's' : ''} sur ${NB_DEFIS}. Essaie encore, tu vas y arriver!</p>
+        <div class="rangee">
+          <button class="bouton gros" type="button" data-action="defi" data-niveau="${niv}">Réessayer ▸</button>
+          <button class="bouton secondaire" type="button" data-action="menu">Menu de l’activité</button>
+        </div>
+      </div>`;
+    montrer('fin');
   }
 
   function actionBouton(ev) {
@@ -182,6 +308,7 @@ Jeu.demarrer().then(() => {
   }
 
   function demarrerTutoriel() {
+    arreterChrono();
     nouvellePartie({ type: 'tuto', partie: 1, mode: 'tuto', etape: 0, P: M.creer(52, 28) });
     el.titre.textContent = 'Tutoriel : un exemple expliqué';
     el.progression.textContent = 'Partie 1 sur 2';
@@ -201,15 +328,17 @@ Jeu.demarrer().then(() => {
   }
 
   function demarrerDefi(niveau) {
-    nouvellePartie({ type: 'defi', niveau, liste: M.genererNiveau(niveau, NB_DEFIS), index: 0, erreurs: 0 });
+    const N = NIVEAUX[niveau];
+    nouvellePartie({ type: 'defi', niveau, papier: !!N.papier, liste: M.genererNiveau(N.generer, NB_DEFIS), index: 0, erreurs: 0 });
     chargerDefi();
+    if (N.chrono) demarrerChrono(N.chrono);
   }
 
   function chargerDefi() {
     const [a, b] = S.liste[S.index];
     Object.assign(S, {
       P: M.creer(a, b),
-      mode: S.index === 0 && S.niveau !== 'bronze' ? 'semi' : 'defi',
+      mode: S.index === 0 && NIVEAUX[S.niveau].coupDePouce ? 'semi' : 'defi',
       fini: false, sel: null, cible: null, aideVisible: false, dernierRecu: null, dernierPrete: null,
     });
     const N = NIVEAUX[S.niveau];
@@ -221,6 +350,7 @@ Jeu.demarrer().then(() => {
     montrer('jeu');
     rendre();
     if (S.mode === 'semi') dire(`${N.intro}<br>${M.conseil(S.P).texte}`);
+    else if (S.index === 0 && N.intro) dire(N.intro);
     else if (S.index === 0) dire('Problème 1 : à toi de jouer! Clique sur un chiffre du haut pour emprunter, écris ta réponse en bas, puis clique sur <b>Vérifier</b>.');
     else dire(`Problème ${S.index + 1} : à toi de jouer!`);
   }
@@ -243,6 +373,7 @@ Jeu.demarrer().then(() => {
   }
 
   function refuser(e, msg) {
+    son('oups');
     dire(msg, 'oups');
     secouer(e);
   }
@@ -284,7 +415,7 @@ Jeu.demarrer().then(() => {
 
   function rendreProbleme(P) {
     const cols = [...Array(P.n).keys()];
-    let h = `<div class="grille" style="--n:${P.n}">`;
+    let h = `<div class="grille${S.papier ? ' papier' : ''}" style="--n:${P.n}">`;
     h += '<span></span>' + cols.map((i) => `<span class="etiquette">${M.lettre(P, i)}</span>`).join('');
     h += '<span></span>' + cols.map((i) => {
       const cls = ['case-haut'];
@@ -352,7 +483,7 @@ Jeu.demarrer().then(() => {
     const a = S.mode === 'tuto' ? etape().attente : null;
     el.clavier.hidden = a ? a.type !== 'reponse' : S.fini;
     el.verifier.hidden = !(S.mode === 'defi' && !S.fini);
-    el.aide.hidden = !(S.mode === 'defi' && !S.fini);
+    el.aide.hidden = !(S.mode === 'defi' && !S.fini && !S.papier);
     el.suivant.hidden = !(a ? a.type === 'suivant' : S.fini);
     el.actions.hidden = el.verifier.hidden && el.aide.hidden && el.suivant.hidden;
   }
@@ -375,6 +506,10 @@ Jeu.demarrer().then(() => {
   function clicHaut(i) {
     const P = S.P;
     if (S.fini) return;
+    if (S.papier) {
+      refuser(caseHaut(i), 'Défi sur papier : fais tes emprunts sur ta feuille, puis écris seulement la réponse en bas.');
+      return;
+    }
     const type = P.enMain !== null ? 'recevoir' : 'preter';
     if (S.mode === 'tuto') {
       const a = etape().attente;
@@ -382,6 +517,22 @@ Jeu.demarrer().then(() => {
         refuser(caseHaut(i), pasTouteDeSuite());
         return;
       }
+    } else if (M.peutAnnuler(P, i)) {
+      // Recliquer sur un chiffre barré défait l'emprunt.
+      const r = M.annuler(P, i);
+      if (!r.ok) {
+        refuser(caseHaut(i), r.msg);
+        return;
+      }
+      S.dernierRecu = null;
+      S.dernierPrete = null;
+      S.aideVisible = false;
+      majCibleEtSelection();
+      rendre();
+      son('annuler');
+      const note = r.efface ? ` <i>${r.efface}</i>` : '';
+      dire(S.mode === 'semi' ? `${r.info} ${M.conseil(P).texte}${note}` : `${r.info}${note}`);
+      return;
     }
     const depart = type === 'recevoir' ? caseHaut(P.enMain).getBoundingClientRect() : null;
     const r = type === 'recevoir' ? M.recevoir(P, i) : M.preter(P, i);
@@ -391,6 +542,7 @@ Jeu.demarrer().then(() => {
     }
     S.dernierRecu = type === 'recevoir' ? i : null;
     S.dernierPrete = type === 'preter' ? i : null;
+    son(type === 'recevoir' ? 'depot' : 'emprunt');
     S.aideVisible = false;
     if (S.mode === 'tuto') S.etape++;
     majCibleEtSelection();
@@ -400,7 +552,7 @@ Jeu.demarrer().then(() => {
     const note = r.efface ? ` <i>${r.efface}</i>` : '';
     if (S.mode === 'tuto') dire(etape().texte);
     else if (S.mode === 'semi') dire(`${r.info} ${M.conseil(P).texte}${note}`);
-    else dire(`${r.info}${type === 'preter' ? ' Où vas-tu la déposer?' : ''}${note}`);
+    else dire(`${r.info}${type === 'preter' ? ' Où vas-tu la déposer? (Si tu changes d’idée, reclique sur le chiffre barré.)' : ''}${note}`);
   }
 
   function selectionner(i) {
@@ -415,6 +567,7 @@ Jeu.demarrer().then(() => {
     S.sel = i;
     S.dernierRecu = null;
     S.dernierPrete = null;
+    son('clic');
     rendre();
   }
 
@@ -435,7 +588,7 @@ Jeu.demarrer().then(() => {
       return;
     }
     if (S.mode !== 'defi' && P.statut[i] === 'ok') return;
-    const r = M.poser(P, i, d);
+    const r = M.poser(P, i, d, S.papier);
     if (!r.ok) {
       refuser(caseReponse(i), r.msg);
       return;
@@ -445,6 +598,7 @@ Jeu.demarrer().then(() => {
     S.dernierPrete = null;
 
     if (S.mode === 'defi') {
+      son('chiffre');
       // En défi, on vérifie seulement quand l'élève clique sur « Vérifier ».
       if (i > 0 && P.reponse[i - 1] === null) S.sel = i - 1;
       majCibleEtSelection();
@@ -455,6 +609,7 @@ Jeu.demarrer().then(() => {
     // Tutoriel et coup de pouce : on vérifie tout de suite.
     if (d === P.attendu[i]) {
       P.statut[i] = 'ok';
+      son('bon');
       if (S.mode === 'tuto') S.etape++;
       if (S.mode === 'semi' && M.resolu(P)) {
         reussite();
@@ -470,6 +625,7 @@ Jeu.demarrer().then(() => {
       }
     } else {
       P.statut[i] = 'faux';
+      son('erreur');
       rendre();
       secouer(caseReponse(i));
       const indice = S.mode === 'tuto'
@@ -485,6 +641,7 @@ Jeu.demarrer().then(() => {
     if (S.mode === 'semi' && P.statut[S.sel] === 'ok') return;
     P.reponse[S.sel] = null;
     P.statut[S.sel] = null;
+    son('clic');
     rendre();
   }
 
@@ -492,9 +649,11 @@ Jeu.demarrer().then(() => {
     const a = etape().attente;
     const o = a.options[k];
     if (!o.bon) {
+      son('oups');
       dire(o.msg, 'oups');
       return;
     }
+    son('bon');
     S.etape++;
     majCibleEtSelection();
     rendre();
@@ -531,9 +690,13 @@ Jeu.demarrer().then(() => {
       }
     }
     S.sel = premiere;
+    son('erreur');
     rendre();
     secouer(el.probleme);
-    dire('Oups! Il y a une erreur (en rouge). Corrige-la, puis vérifie encore. <button type="button" class="lien-tuto" data-action="aide">Un indice?</button>', 'oups');
+    const indice = S.papier ? '' : ' <button type="button" class="lien-tuto" data-action="aide">Un indice?</button>';
+    const limite = NIVEAUX[S.niveau].maxErreurs;
+    const compte = limite !== undefined ? ` (${S.erreurs} erreur${S.erreurs > 1 ? 's' : ''} jusqu’ici)` : '';
+    dire(`Oups! Il y a une erreur (en rouge). Corrige-la, puis vérifie encore.${compte}${indice}`, 'oups');
   }
 
   function aide() {
@@ -548,12 +711,18 @@ Jeu.demarrer().then(() => {
 
   function reussite() {
     S.fini = true;
+    // Défi vitesse : le chrono s'arrête dès que le dernier problème est réussi.
+    if (S.chrono && S.index === S.liste.length - 1) {
+      S.tempsFinal = S.chrono.total - resteChrono();
+      arreterChrono();
+    }
     S.cible = null;
     S.sel = null;
     S.dernierRecu = null;
     S.dernierPrete = null;
     rendre();
     confettis();
+    son('reussite');
     const P = S.P;
     if (S.type === 'tuto') {
       dire(`Bravo! <b>${P.a} − ${P.b} = ${P.a - P.b}</b>. Tu as compris la soustraction avec emprunt!`, 'bravo');
@@ -611,17 +780,34 @@ Jeu.demarrer().then(() => {
   }
 
   function finNiveau() {
+    if (NIVEAUX[S.niveau].pierre) { finPierre(); return; }
     const niv = S.niveau;
     const erreurs = S.erreurs;
-    const deja = Jeu.progres(joueur.id, ACT).medailles[niv];
-    Jeu.majProgres(joueur.id, ACT, (p) => {
-      p.medailles[niv] = true;
-      const r = p.records[niv];
-      if (!r || erreurs < r.erreurs) p.records[niv] = { erreurs, date: new Date().toISOString().slice(0, 10) };
+    const avant = Jeu.progres(joueur.id, ACT);
+    const deja = avant.medailles[niv];
+    let nouveauSaphir = false;
+    const p = Jeu.majProgres(joueur.id, ACT, (q) => {
+      q.medailles[niv] = true;
+      const r = q.records[niv];
+      if (!r || erreurs < r.erreurs) q.records[niv] = { erreurs, date: new Date().toISOString().slice(0, 10) };
+      // Saphir : les trois médailles réussies sans aucune erreur
+      if (!q.pierres.saphir && sansFaute(q).every(Boolean)) {
+        q.pierres.saphir = true;
+        nouveauSaphir = true;
+      }
     });
     Jeu.demanderPersistance();
     const nomMed = Jeu.NOM_MEDAILLE[niv];
     const prochain = ORDRE[ORDRE.indexOf(niv) + 1];
+    const premierOr = niv === 'or' && !deja;
+    let bonus = '';
+    if (nouveauSaphir) {
+      bonus += `<div class="bonus">${Jeu.pierreSVG('saphir', true, 64)}
+        <div>Accomplissement secret : <b>le saphir!</b><br>Tu as réussi les trois médailles sans aucune erreur.</div></div>`;
+    }
+    if (premierOr) {
+      bonus += '<p class="indice-secret">🤫 Psst… des accomplissements secrets viennent d’apparaître dans le menu de l’activité!</p>';
+    }
     ecrans.fin.innerHTML = `<div class="carte fin">
         <div class="grande-medaille">${Jeu.medailleSVG(niv, true, 120)}</div>
         <h1>${deja ? 'Défi réussi encore une fois!' : `Médaille ${nomMed}!`}</h1>
@@ -629,8 +815,72 @@ Jeu.demarrer().then(() => {
           ? `Tu avais déjà la médaille ${nomMed}. Bravo pour la pratique!`
           : `${Jeu.echapper(joueur.nom)}, tu as gagné la médaille ${nomMed}! Elle est maintenant sur la page d’accueil.`}</p>
         <p>${erreurs === 0 ? '⭐ Sans aucune erreur, wow!' : `Tu as corrigé ${erreurs} erreur${erreurs > 1 ? 's' : ''} en chemin.`}</p>
+        ${bonus}
         <div class="rangee">
           ${prochain ? `<button class="bouton gros" type="button" data-action="defi" data-niveau="${prochain}">${NIVEAUX[prochain].titre} ▸</button>` : ''}
+          ${premierOr ? '<button class="bouton gros" type="button" data-action="menu">Voir les secrets 💎</button>' : ''}
+          <button class="bouton secondaire" type="button" data-action="defi" data-niveau="${niv}">Rejouer ce défi</button>
+          ${premierOr ? '' : '<button class="bouton secondaire" type="button" data-action="menu">Menu de l’activité</button>'}
+          <a class="bouton secondaire" href="../index.html">Page d’accueil</a>
+        </div>
+      </div>`;
+    S = null;
+    montrer('fin');
+    confettis(90);
+    son(nouveauSaphir ? 'pierre' : 'medaille');
+    if (nouveauSaphir) setTimeout(() => son('medaille'), 900);
+    return p;
+  }
+
+  // Fin d'un défi secret : on gagne (ou pas) une pierre précieuse.
+  function finPierre() {
+    const niv = S.niveau;
+    const N = NIVEAUX[niv];
+    const pierre = N.pierre;
+    const erreurs = S.erreurs;
+    const temps = N.chrono ? (S.tempsFinal !== undefined ? S.tempsFinal : N.chrono - resteChrono()) : null;
+    arreterChrono();
+
+    // Défi sur papier : trop d'erreurs, pas d'émeraude cette fois
+    if (N.maxErreurs !== undefined && erreurs > N.maxErreurs) {
+      S = null;
+      son('oups');
+      ecrans.fin.innerHTML = `<div class="carte fin">
+          <div class="grande-medaille">${Jeu.pierreSVG(pierre, false, 110)}</div>
+          <h1>Presque!</h1>
+          <p>Tu as fini les ${NB_DEFIS} problèmes avec ${erreurs} erreurs. Pour ${Jeu.NOM_PIERRE[pierre]}, il faut au plus ${N.maxErreurs} erreur.</p>
+          <p>Prends ton temps sur ta feuille, et vérifie avec une addition!</p>
+          <div class="rangee">
+            <button class="bouton gros" type="button" data-action="defi" data-niveau="${niv}">Réessayer ▸</button>
+            <button class="bouton secondaire" type="button" data-action="menu">Menu de l’activité</button>
+          </div>
+        </div>`;
+      montrer('fin');
+      return;
+    }
+
+    const deja = Jeu.progres(joueur.id, ACT).pierres[pierre];
+    let nouveauRecord = false;
+    Jeu.majProgres(joueur.id, ACT, (q) => {
+      q.pierres[pierre] = true;
+      const r = q.records[pierre];
+      const meilleur = !r || (temps !== null ? temps < r.temps : erreurs < r.erreurs);
+      if (meilleur) {
+        q.records[pierre] = { erreurs, date: new Date().toISOString().slice(0, 10) };
+        if (temps !== null) q.records[pierre].temps = Math.round(temps);
+        nouveauRecord = !!r;
+      }
+    });
+    Jeu.demanderPersistance();
+    const nom = Jeu.NOM_PIERRE[pierre];
+    let details = erreurs === 0 ? '⭐ Sans aucune erreur!' : `Tu as corrigé ${erreurs} erreur${erreurs > 1 ? 's' : ''} en chemin.`;
+    if (temps !== null) details = `⏱ Ton temps : ${formaterTemps(temps)}${nouveauRecord ? ' — nouveau record!' : ''}<br>${details}`;
+    ecrans.fin.innerHTML = `<div class="carte fin">
+        <div class="grande-medaille">${Jeu.pierreSVG(pierre, true, 130)}</div>
+        <h1>${deja ? 'Défi secret réussi encore!' : `Tu as trouvé ${nom}!`}</h1>
+        <p>${deja ? 'Tu l’avais déjà, mais quelle pratique!' : `${Jeu.echapper(joueur.nom)}, ${nom} brille maintenant sur la page d’accueil.`}</p>
+        <p>${details}</p>
+        <div class="rangee">
           <button class="bouton secondaire" type="button" data-action="defi" data-niveau="${niv}">Rejouer ce défi</button>
           <button class="bouton secondaire" type="button" data-action="menu">Menu de l’activité</button>
           <a class="bouton secondaire" href="../index.html">Page d’accueil</a>
@@ -638,7 +888,8 @@ Jeu.demarrer().then(() => {
       </div>`;
     S = null;
     montrer('fin');
-    confettis(90);
+    confettis(110);
+    son('pierre');
   }
 
   // ==========================================================
