@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+  <title>Jeu de maths</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="page">
+    <header class="entete-accueil">
+      <span class="logo">+ − × ÷</span>
+      <h1>Jeu de maths</h1>
+      <p id="sous-titre">Choisis ton joueur, puis une activité.</p>
+    </header>
+
+    <!-- Accueil : joueurs et activités -->
+    <div id="vue-accueil" hidden>
+      <section aria-labelledby="titre-joueurs">
+        <div class="section-titre"><h2 id="titre-joueurs">Qui joue?</h2></div>
+        <div id="joueurs" class="grille-joueurs"></div>
+      </section>
+
+      <section aria-labelledby="titre-activites">
+        <div class="section-titre"><h2 id="titre-activites">Activités</h2></div>
+        <div id="activites" class="grille-activites"></div>
+      </section>
+
+      <footer class="pied">
+        <details>
+          <summary>Copie de sauvegarde</summary>
+          <p>Les profils et le progrès sont gardés sur cet appareil seulement.
+            Pour ne rien perdre (ou pour continuer sur un autre appareil), télécharge une copie de temps en temps.</p>
+          <div class="rangee">
+            <button id="btn-exporter" class="bouton secondaire" type="button">⬇ Télécharger une copie</button>
+            <label class="bouton secondaire" for="fichier-import">⬆ Restaurer une copie</label>
+            <input type="file" id="fichier-import" accept="application/json,.json" hidden>
+          </div>
+          <p id="msg-sauvegarde" class="message-sauvegarde" aria-live="polite"></p>
+        </details>
+      </footer>
+    </div>
+
+    <!-- Création / modification d'un profil -->
+    <section id="vue-profil" class="carte panneau-profil" hidden aria-labelledby="titre-profil">
+      <h2 id="titre-profil">Nouveau joueur</h2>
+      <div class="apercu">
+        <span id="apercu-avatar" class="avatar grand" aria-hidden="true"></span>
+        <span id="apercu-nom" class="apercu-nom"></span>
+      </div>
+
+      <label class="etiquette-champ" for="champ-nom">Ton nom ou ton surnom</label>
+      <input id="champ-nom" class="champ" type="text" autocomplete="off" spellcheck="false">
+      <p id="erreur-nom" class="erreur" aria-live="polite"></p>
+
+      <p class="etiquette-champ">Choisis ton avatar</p>
+      <div id="choix-avatar" class="choix-avatar" role="group" aria-label="Avatars"></div>
+
+      <p class="etiquette-champ">Choisis ta couleur</p>
+      <div id="choix-couleur" class="choix-couleur" role="group" aria-label="Couleurs"></div>
+
+      <div class="rangee-boutons">
+        <button id="btn-enregistrer" class="bouton vert gros" type="button">✔ Enregistrer</button>
+        <button id="btn-annuler" class="bouton secondaire gros" type="button">Annuler</button>
+      </div>
+
+      <div id="zone-supprimer" class="zone-supprimer">
+        <button id="btn-supprimer" class="lien-danger" type="button">Supprimer ce joueur</button>
+        <div id="confirmer-suppression" class="confirmer" hidden>
+          <p id="texte-confirmer"></p>
+          <button id="btn-oui-supprimer" class="bouton rouge" type="button">Oui, supprimer</button>
+          <button id="btn-non-supprimer" class="bouton secondaire" type="button">Non</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/commun.js"></script>
+  <script>
+    'use strict';
+    Jeu.demarrer().then(() => {
+      const $ = (s) => document.getElementById(s);
+      const vues = { accueil: $('vue-accueil'), profil: $('vue-profil') };
+      const zoneJoueurs = $('joueurs');
+      const zoneActivites = $('activites');
+      const ech = Jeu.echapper;
+
+      function montrer(nom) {
+        for (const [k, v] of Object.entries(vues)) v.hidden = k !== nom;
+        $('sous-titre').textContent = nom === 'accueil'
+          ? 'Choisis ton joueur, puis une activité.'
+          : 'Ton profil reste seulement sur cet appareil.';
+        window.scrollTo(0, 0);
+      }
+
+      // ---------- Accueil ----------
+
+      function rendreAccueil() {
+        const liste = Jeu.joueurs();
+        if (!liste.length) { ouvrirProfil(null); return; }
+        const courant = Jeu.joueurCourant();
+
+        zoneJoueurs.innerHTML = liste.map((j) => {
+          const n = Jeu.nombreMedailles(j.id);
+          const choisi = courant && courant.id === j.id;
+          return `<div class="carte-joueur${choisi ? ' choisi' : ''}" style="--couleur:${j.couleur}">
+                    <button type="button" class="choisir-joueur" data-id="${j.id}" aria-pressed="${!!choisi}">
+                      <span class="avatar" aria-hidden="true">${j.emoji}</span>
+                      <span class="nom">${ech(j.nom)}</span>
+                      <span class="compte">${n ? `🏅 ${n} médaille${n > 1 ? 's' : ''}` : ''}</span>
+                    </button>
+                    <button type="button" class="modifier-joueur" data-id="${j.id}" aria-label="Modifier le profil de ${ech(j.nom)}" title="Modifier">✏️</button>
+                  </div>`;
+        }).join('') + `<button type="button" class="carte-joueur nouveau-joueur" id="btn-nouveau">
+                         <span class="avatar plus" aria-hidden="true">+</span>
+                         <span class="nom">Nouveau joueur</span>
+                       </button>`;
+
+        let html = '';
+        if (!courant) html += '<p class="invite" style="grid-column:1/-1">👆 Clique sur ton nom pour commencer!</p>';
+        html += Jeu.ACTIVITES.map((a) => {
+          const p = courant ? Jeu.progres(courant.id, a.id) : null;
+          const medailles = Jeu.NIVEAUX.map((niv) => Jeu.medailleSVG(niv, p ? p.medailles[niv] : false, 34)).join('');
+          const bouton = courant
+            ? `<a class="bouton" href="${a.page}">Jouer ▸</a>`
+            : '<span class="bouton" aria-disabled="true">Jouer ▸</span>';
+          return `<article class="carte carte-activite">
+                    <div class="vignette" aria-hidden="true">${a.vignette}</div>
+                    <h3>${a.titre}</h3>
+                    <p>${a.description}</p>
+                    <div class="bas-carte"><div class="rangee-medailles">${medailles}</div>${bouton}</div>
+                  </article>`;
+        }).join('');
+        html += `<article class="carte carte-activite a-venir">
+                   <div class="vignette" aria-hidden="true">…</div>
+                   <h3>D'autres activités s'en viennent!</h3>
+                 </article>`;
+        zoneActivites.innerHTML = html;
+        montrer('accueil');
+      }
+
+      zoneJoueurs.addEventListener('click', (ev) => {
+        const choisir = ev.target.closest('.choisir-joueur');
+        const modifier = ev.target.closest('.modifier-joueur');
+        if (modifier) ouvrirProfil(modifier.dataset.id);
+        else if (choisir) {
+          Jeu.choisirJoueur(choisir.dataset.id);
+          Jeu.demanderPersistance();
+          rendreAccueil();
+        } else if (ev.target.closest('#btn-nouveau')) ouvrirProfil(null);
+      });
+
+      // ---------- Formulaire de profil ----------
+
+      const champNom = $('champ-nom');
+      champNom.maxLength = Jeu.NOM_MAX;
+      let edition = null; // { id (null = nouveau), avatar, couleur }
+
+      function ouvrirProfil(id) {
+        const premier = Jeu.joueurs().length === 0;
+        const j = id ? Jeu.joueur(id) : null;
+        const pris = new Set(Jeu.joueurs().map((x) => x.emoji));
+        edition = {
+          id,
+          avatar: j ? j.emoji : (Jeu.AVATARS.find((a) => !pris.has(a)) || Jeu.AVATARS[0]),
+          couleur: j ? j.couleur : Jeu.COULEURS[Jeu.joueurs().length % Jeu.COULEURS.length],
+        };
+        $('titre-profil').textContent = j ? 'Modifier le profil' : premier ? 'Bienvenue! Crée ton profil' : 'Nouveau joueur';
+        champNom.value = j ? j.nom : '';
+        $('erreur-nom').textContent = '';
+        $('btn-annuler').hidden = premier;
+        $('zone-supprimer').hidden = !j;
+        $('confirmer-suppression').hidden = true;
+        $('btn-supprimer').hidden = false;
+        rendreFormulaire();
+        montrer('profil');
+        champNom.focus();
+      }
+
+      function rendreFormulaire() {
+        $('choix-avatar').innerHTML = Jeu.AVATARS.map((a) =>
+          `<button type="button" class="option-avatar" data-avatar="${a}" aria-pressed="${a === edition.avatar}">${a}</button>`).join('');
+        $('choix-couleur').innerHTML = Jeu.COULEURS.map((c) =>
+          `<button type="button" class="option-couleur" data-couleur="${c}" style="--couleur:${c}" aria-pressed="${c === edition.couleur}" aria-label="Couleur ${c}"></button>`).join('');
+        rendreApercu();
+      }
+
+      function rendreApercu() {
+        const a = $('apercu-avatar');
+        a.textContent = edition.avatar;
+        a.style.setProperty('--couleur', edition.couleur);
+        $('apercu-nom').textContent = champNom.value.trim() || '…';
+      }
+
+      champNom.addEventListener('input', () => { $('erreur-nom').textContent = ''; rendreApercu(); });
+      champNom.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') enregistrer(); });
+      $('choix-avatar').addEventListener('click', (ev) => {
+        const b = ev.target.closest('[data-avatar]');
+        if (b) { edition.avatar = b.dataset.avatar; rendreFormulaire(); }
+      });
+      $('choix-couleur').addEventListener('click', (ev) => {
+        const b = ev.target.closest('[data-couleur]');
+        if (b) { edition.couleur = b.dataset.couleur; rendreFormulaire(); }
+      });
+
+      function enregistrer() {
+        const erreur = Jeu.verifierNom(champNom.value, edition.id);
+        if (erreur) {
+          $('erreur-nom').textContent = erreur;
+          champNom.focus();
+          return;
+        }
+        const donnees = { nom: champNom.value, avatar: edition.avatar, couleur: edition.couleur };
+        if (edition.id) Jeu.modifierJoueur(edition.id, donnees);
+        else Jeu.creerJoueur(donnees);
+        Jeu.demanderPersistance();
+        rendreAccueil();
+      }
+
+      $('btn-enregistrer').addEventListener('click', enregistrer);
+      $('btn-annuler').addEventListener('click', rendreAccueil);
+      $('btn-supprimer').addEventListener('click', () => {
+        const j = Jeu.joueur(edition.id);
+        $('texte-confirmer').textContent = `Supprimer ${j.nom} et tout son progrès (médailles comprises)?`;
+        $('confirmer-suppression').hidden = false;
+        $('btn-supprimer').hidden = true;
+      });
+      $('btn-non-supprimer').addEventListener('click', () => {
+        $('confirmer-suppression').hidden = true;
+        $('btn-supprimer').hidden = false;
+      });
+      $('btn-oui-supprimer').addEventListener('click', () => {
+        Jeu.supprimerJoueur(edition.id);
+        rendreAccueil();
+      });
+
+      // ---------- Copie de sauvegarde ----------
+
+      const msg = $('msg-sauvegarde');
+      $('btn-exporter').addEventListener('click', () => {
+        Jeu.exporter();
+        msg.textContent = 'Copie téléchargée ✔';
+      });
+      $('fichier-import').addEventListener('change', async (ev) => {
+        const f = ev.target.files[0];
+        if (!f) return;
+        try {
+          await Jeu.importer(f);
+          rendreAccueil();
+          msg.textContent = 'Copie restaurée ✔';
+        } catch (err) {
+          msg.textContent = "Oups : ce fichier n'est pas une sauvegarde du jeu.";
+        }
+        ev.target.value = '';
+      });
+
+      // Revenir avec le bouton « précédent » doit montrer les nouvelles médailles.
+      window.addEventListener('pageshow', (ev) => { if (ev.persisted) location.reload(); });
+      rendreAccueil();
+    });
+  </script>
+</body>
+</html>
