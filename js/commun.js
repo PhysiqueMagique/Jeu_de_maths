@@ -341,7 +341,27 @@ const Jeu = (() => {
     },
     pierre:   (c) => [1568, 2093, 1760, 2349, 2093, 2637, 3136].forEach((f, k) => note(c, f, k * 0.07, 0.35, 'sine', 0.12)),
     tic:      (c) => note(c, 1400, 0, 0.03, 'square', 0.04),
+    nav:      (c) => { note(c, 520, 0, 0.06, 'sine', 0.12); note(c, 780, 0.05, 0.08, 'sine', 0.12); },
+    retour:   (c) => { note(c, 780, 0, 0.06, 'sine', 0.12); note(c, 520, 0.05, 0.08, 'sine', 0.12); },
   };
+
+  // Sons des menus : un lien joue « nav » (ou « retour » pour .lien-retour) puis change de page;
+  // un bouton avec data-son="…" joue ce son.
+  function brancherSonsNavigation() {
+    document.addEventListener('click', (ev) => {
+      if (ev.defaultPrevented || ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+      const lien = ev.target.closest('a[href]');
+      if (lien && lien.getAttribute('href') !== '#' && !lien.hasAttribute('download')) {
+        if (!sonActif()) return;
+        ev.preventDefault();
+        jouer(lien.classList.contains('lien-retour') ? 'retour' : 'nav');
+        setTimeout(() => { location.href = lien.href; }, 140);
+        return;
+      }
+      const b = ev.target.closest('[data-son]');
+      if (b) jouer(b.dataset.son);
+    });
+  }
 
   function jouer(nom) {
     if (!sonActif() || !SONS[nom]) return;
@@ -447,28 +467,79 @@ const Jeu = (() => {
     </svg>`;
   }
 
-  // Pierres précieuses (SVG) : une gemme taillée, avec ses facettes
+  // Pierres précieuses (SVG) : chaque pierre a sa propre taille (forme).
+  // Grise tant qu'elle n'est pas gagnée; en couleur, avec un reflet qui passe, une fois gagnée.
   const COULEURS_PIERRE = {
+    //          foncé      moyen      clair      très clair
     rubis:    ['#8f0a3a', '#d81b5c', '#ff7aa5', '#ffd0df'],
     emeraude: ['#06603a', '#12a865', '#5fe3a3', '#c9fbe3'],
     saphir:   ['#132f80', '#2457d6', '#7aa2ff', '#d6e3ff'],
-    diamant:  ['#6aaed6', '#b9e3fb', '#e9f8ff', '#ffffff'],
+    diamant:  ['#5d9cc4', '#b9e3fb', '#e9f8ff', '#ffffff'],
   };
+  const GRIS = ['#9c958a', '#c4bdb1', '#d9d3c9', '#ebe7e0'];
+
+  // Contour de chaque pierre (sert aussi à « couper » le reflet)
+  const CONTOURS = {
+    // Rubis : taille en cœur
+    rubis: 'M20 35 L6.5 21 C2.5 16.5 3.5 8 11 7.5 C15 7.2 18 9.6 20 12.6 C22 9.6 25 7.2 29 7.5 C36.5 8 37.5 16.5 33.5 21 Z',
+    // Émeraude : taille émeraude (rectangle aux coins coupés)
+    emeraude: 'M11 6 H29 L35 12 V28 L29 34 H11 L5 28 V12 Z',
+    // Saphir : taille ovale
+    saphir: 'M20 4 C28 4 33 11 33 20 C33 29 28 36 20 36 C12 36 7 29 7 20 C7 11 12 4 20 4 Z',
+    // Diamant : taille brillant
+    diamant: 'M6 15 L13 6 H27 L34 15 L20 36 Z',
+  };
+
+  function facettes(pierre, c) {
+    switch (pierre) {
+      case 'rubis':
+        return `<rect x="0" y="0" width="20" height="40" fill="${c[1]}"/>
+          <rect x="20" y="0" width="20" height="40" fill="${c[0]}"/>
+          <polygon points="20,12.6 13,20 20,35" fill="${c[2]}"/>
+          <polygon points="20,12.6 27,20 20,35" fill="${c[1]}"/>
+          <polygon points="11,7.5 16,9.5 13,20 5,17" fill="${c[3]}" opacity=".85"/>
+          <polygon points="29,7.5 35,17 27,20 24,9.5" fill="${c[2]}" opacity=".7"/>`;
+      case 'emeraude':
+        return `<rect x="0" y="0" width="40" height="40" fill="${c[1]}"/>
+          <polygon points="11,6 29,6 26,11 14,11" fill="${c[3]}"/>
+          <polygon points="11,34 29,34 26,29 14,29" fill="${c[0]}"/>
+          <polygon points="5,12 11,6 14,11 10,15 10,25 14,29 11,34 5,28" fill="${c[2]}"/>
+          <polygon points="35,12 29,6 26,11 30,15 30,25 26,29 29,34 35,28" fill="${c[0]}" opacity=".9"/>
+          <polygon points="14,11 26,11 30,15 30,25 26,29 14,29 10,25 10,15" fill="${c[1]}"/>
+          <polygon points="16,14 24,14 26,16 26,24 24,26 16,26 14,24 14,16" fill="${c[2]}" opacity=".55"/>`;
+      case 'saphir':
+        return `<rect x="0" y="0" width="40" height="40" fill="${c[1]}"/>
+          <polygon points="0,0 40,0 24,12 16,12" fill="${c[3]}"/>
+          <polygon points="40,0 40,40 24,28 27,20 24,12" fill="${c[0]}"/>
+          <polygon points="0,40 40,40 24,28 16,28" fill="${c[0]}" opacity=".85"/>
+          <polygon points="0,0 0,40 16,28 13,20 16,12" fill="${c[2]}"/>
+          <polygon points="16,12 24,12 27,20 24,28 16,28 13,20" fill="${c[1]}"/>
+          <polygon points="17.5,15 22.5,15 24,20 22.5,25 17.5,25 16,20" fill="${c[2]}" opacity=".6"/>`;
+      default: // diamant
+        return `<polygon points="6,15 13,6 16,15" fill="${c[2]}"/>
+          <polygon points="13,6 27,6 24,15 16,15" fill="${c[3]}"/>
+          <polygon points="27,6 34,15 24,15" fill="${c[1]}"/>
+          <polygon points="6,15 16,15 20,36" fill="${c[1]}"/>
+          <polygon points="16,15 24,15 20,36" fill="${c[2]}"/>
+          <polygon points="24,15 34,15 20,36" fill="${c[0]}"/>`;
+    }
+  }
+
+  let compteurPierres = 0;
   function pierreSVG(pierre, gagnee, taille = 40) {
-    const label = `${TITRE_PIERRE[pierre]}${gagnee ? '' : ' (secret)'}`;
-    const c = gagnee ? COULEURS_PIERRE[pierre] : ['#b9b2a5', '#d6d0c5', '#e8e3da', '#f4f1eb'];
-    const brillance = gagnee
-      ? '<path d="M33 3l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" fill="#fff" opacity=".95"/>'
-      : '<text x="20" y="27" text-anchor="middle" font-size="12" font-weight="900" fill="#a39b8c" font-family="sans-serif">?</text>';
-    return `<svg class="pierre${gagnee ? '' : ' verrouillee'}" width="${taille}" height="${taille}" viewBox="0 0 40 40" role="img" aria-label="${label}">
-      <polygon points="6,15 13,6 16,15" fill="${c[2]}"/>
-      <polygon points="13,6 27,6 24,15 16,15" fill="${c[3]}"/>
-      <polygon points="27,6 34,15 24,15" fill="${c[1]}"/>
-      <polygon points="6,15 16,15 20,36" fill="${c[1]}"/>
-      <polygon points="16,15 24,15 20,36" fill="${c[2]}"/>
-      <polygon points="24,15 34,15 20,36" fill="${c[0]}"/>
-      <polygon points="6,15 13,6 27,6 34,15 20,36" fill="none" stroke="${c[0]}" stroke-width="1.4" stroke-linejoin="round"/>
-      ${brillance}
+    const id = `forme-pierre-${++compteurPierres}`;
+    const label = `${TITRE_PIERRE[pierre]}${gagnee ? '' : ' (pas encore trouvé)'}`;
+    const c = gagnee ? COULEURS_PIERRE[pierre] : GRIS;
+    const contour = CONTOURS[pierre];
+    const eclat = gagnee
+      ? `<g clip-path="url(#${id})"><g transform="rotate(25 20 20)"><rect class="reflet" x="-8" y="-12" width="6" height="64" fill="#fff" opacity=".7"/></g></g>
+         <path class="etincelle" d="M33 2.5l1.1 2.6 2.6 1.1-2.6 1.1-1.1 2.6-1.1-2.6-2.6-1.1 2.6-1.1z" fill="#fff" stroke="${c[2]}" stroke-width=".6"/>`
+      : '';
+    return `<svg class="pierre pierre-${pierre}${gagnee ? ' gagnee' : ' verrouillee'}" width="${taille}" height="${taille}" viewBox="0 0 40 40" role="img" aria-label="${label}">
+      <defs><clipPath id="${id}"><path d="${contour}"/></clipPath></defs>
+      <g clip-path="url(#${id})">${facettes(pierre, c)}</g>
+      ${eclat}
+      <path d="${contour}" fill="none" stroke="${c[0]}" stroke-width="1.4" stroke-linejoin="round"/>
     </svg>`;
   }
 
@@ -483,7 +554,7 @@ const Jeu = (() => {
     joueurs, joueur, joueurCourant, choisirJoueur,
     verifierNom, creerJoueur, modifierJoueur, supprimerJoueur,
     progres, majProgres, nombreMedailles, nombrePierres,
-    jouer, sonActif, basculerSon,
+    jouer, sonActif, basculerSon, brancherSonsNavigation,
     exporter, importer,
     estApplication, infosApplication, verifierMiseAJour, installerMiseAJour,
     avertissement: () => avertissement,

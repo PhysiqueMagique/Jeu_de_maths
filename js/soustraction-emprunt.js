@@ -13,7 +13,7 @@ Jeu.demarrer().then(() => {
   const NB_DEFIS = 5;
   const ORDRE = ['bronze', 'argent', 'or'];
   // Réglages des accomplissements secrets (faciles à changer)
-  const CHRONO_RUBIS = 300; // secondes pour réussir les 5 problèmes du défi vitesse
+  const CHRONO_RUBIS = 120; // secondes pour réussir les 5 problèmes du défi vitesse
   const MAX_ERREURS_EMERAUDE = 1; // erreurs permises dans le défi sur papier
 
   const NIVEAUX = {
@@ -123,6 +123,7 @@ Jeu.demarrer().then(() => {
   el.son.addEventListener('click', () => { Jeu.basculerSon(); rendreSon(); });
   rendreSon();
   const son = (nom) => Jeu.jouer(nom);
+  Jeu.brancherSonsNavigation();
 
   const choisir = (liste) => liste[Math.floor(Math.random() * liste.length)];
   const etape = () => ETAPES_TUTO[S.etape];
@@ -152,6 +153,7 @@ Jeu.demarrer().then(() => {
   el.retour.addEventListener('click', (ev) => {
     if (ecrans.menu.hidden) {
       ev.preventDefault();
+      son('retour');
       afficherMenu();
     }
   });
@@ -159,7 +161,13 @@ Jeu.demarrer().then(() => {
   function afficherMenu() {
     arreterChrono();
     S = null;
-    const p = Jeu.progres(joueur.id, ACT);
+    let p = Jeu.progres(joueur.id, ACT);
+    // Saphir mérité avant l'apparition des pierres (bronze, argent et or déjà sans faute) : on le donne maintenant.
+    let saphirRetroactif = false;
+    if (!p.pierres.saphir && sansFaute(p).every(Boolean)) {
+      p = Jeu.majProgres(joueur.id, ACT, (q) => { q.pierres.saphir = true; });
+      saphirRetroactif = true;
+    }
     let h = `<header class="entete-activite">
         <h1>Soustraction avec emprunt</h1>
         <p>Quand le chiffre du haut est trop petit, on emprunte à la dizaine (ou à la centaine).</p>
@@ -193,8 +201,13 @@ Jeu.demarrer().then(() => {
     if (p.tutorielFait) {
       h += '<div class="revoir"><button class="bouton secondaire" type="button" data-action="tuto">📖 Revoir le tutoriel</button></div>';
     }
+    if (saphirRetroactif) {
+      h = `<div class="carte bonus annonce">${Jeu.pierreSVG('saphir', true, 64)}
+        <div>Accomplissement secret débloqué : <b>le saphir!</b><br>Tu avais déjà réussi les trois médailles sans aucune erreur.</div></div>` + h;
+    }
     ecrans.menu.innerHTML = h;
     montrer('menu');
+    if (saphirRetroactif) { confettis(80); setTimeout(() => son('pierre'), 200); }
   }
 
   function sansFaute(p) {
@@ -290,6 +303,7 @@ Jeu.demarrer().then(() => {
     const b = ev.target.closest('[data-action]');
     if (!b) return;
     const a = b.dataset.action;
+    if (a !== 'aide') son(a === 'menu' ? 'retour' : 'nav');
     if (a === 'tuto' || a === 'revoir') demarrerTutoriel();
     else if (a === 'defi') demarrerDefi(b.dataset.niveau);
     else if (a === 'menu') afficherMenu();

@@ -256,6 +256,7 @@
 @media (max-width: 760px) { .liste-pierres { grid-template-columns: repeat(2, 1fr); } }
 
 .bonus { display: flex; align-items: center; gap: 12px; text-align: left; background: #f3f0ff; border-radius: 14px; padding: 10px 14px; margin: 12px 0; font-weight: 700; }
+.bonus.annonce { margin: 0 0 18px; animation: rebond 0.6s both; }
 .indice-secret { background: #2b2d42; color: #fff; border-radius: 14px; padding: 10px 14px; font-weight: 700; }
 
 /* ---------- Écran de fin ---------- */

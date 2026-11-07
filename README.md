@@ -42,9 +42,9 @@ Pendant un défi, « Besoin d'aide? » donne l'indice de la prochaine étape et 
 Si on change d'idée, on reclique sur un chiffre barré pour défaire l'emprunt (le plus récent d'abord).
 
 **Accomplissements secrets** (révélés après la médaille d'or), des pierres précieuses :
-- 💎 **Rubis**, défi vitesse : 5 problèmes de niveau or en moins de 5 minutes (`CHRONO_RUBIS`);
+- 💎 **Rubis**, défi vitesse : 5 problèmes de niveau or en moins de 2 minutes (`CHRONO_RUBIS`);
 - 💎 **Émeraude**, défi sur papier : on ne peut plus cliquer pour emprunter, on écrit seulement la réponse; au plus 1 erreur (`MAX_ERREURS_EMERAUDE`);
-- 💎 **Saphir** : les médailles bronze, argent et or réussies sans aucune erreur;
+- 💎 **Saphir** : les médailles bronze, argent et or réussies sans aucune erreur (accordé aussi après coup, si c'était déjà le cas);
 - 💎 **Diamant** : des nombres de 5 à 7 chiffres, jusqu'aux millions.
 
 Les réglages entre parenthèses sont au début de `js/soustraction-emprunt.js`.

@@ -26,7 +26,7 @@
         <b>Nouvelle version disponible!</b> <span id="maj-version"></span>
         <div id="maj-notes" class="notes"></div>
       </div>
-      <button id="btn-maj" class="bouton vert" type="button">Mettre à jour</button>
+      <button id="btn-maj" class="bouton vert" type="button" data-son="nav">Mettre à jour</button>
     </div>
     <div id="bandeau-avertissement" class="carte bandeau oups" hidden></div>
 
@@ -44,18 +44,18 @@
 
       <footer class="pied">
         <details>
-          <summary>Copie de sauvegarde</summary>
+          <summary data-son="clic">Copie de sauvegarde</summary>
           <p>Les profils et le progrès sont gardés sur cet appareil seulement.
             Pour ne rien perdre (ou pour continuer sur un autre appareil), télécharge une copie de temps en temps.</p>
           <div class="rangee">
-            <button id="btn-exporter" class="bouton secondaire" type="button">⬇ Télécharger une copie</button>
+            <button id="btn-exporter" class="bouton secondaire" type="button" data-son="clic">⬇ Télécharger une copie</button>
             <label class="bouton secondaire" for="fichier-import">⬆ Restaurer une copie</label>
             <input type="file" id="fichier-import" accept="application/json,.json" hidden>
           </div>
           <p id="msg-sauvegarde" class="message-sauvegarde" aria-live="polite"></p>
           <div id="infos-app" hidden>
             <p id="texte-infos-app"></p>
-            <button id="btn-verifier-maj" class="bouton secondaire" type="button">🔄 Vérifier les mises à jour</button>
+            <button id="btn-verifier-maj" class="bouton secondaire" type="button" data-son="clic">🔄 Vérifier les mises à jour</button>
           </div>
         </details>
       </footer>
@@ -81,15 +81,15 @@
 
       <div class="rangee-boutons">
         <button id="btn-enregistrer" class="bouton vert gros" type="button">✔ Enregistrer</button>
-        <button id="btn-annuler" class="bouton secondaire gros" type="button">Annuler</button>
+        <button id="btn-annuler" class="bouton secondaire gros" type="button" data-son="retour">Annuler</button>
       </div>
 
       <div id="zone-supprimer" class="zone-supprimer">
-        <button id="btn-supprimer" class="lien-danger" type="button">Supprimer ce joueur</button>
+        <button id="btn-supprimer" class="lien-danger" type="button" data-son="clic">Supprimer ce joueur</button>
         <div id="confirmer-suppression" class="confirmer" hidden>
           <p id="texte-confirmer"></p>
-          <button id="btn-oui-supprimer" class="bouton rouge" type="button">Oui, supprimer</button>
-          <button id="btn-non-supprimer" class="bouton secondaire" type="button">Non</button>
+          <button id="btn-oui-supprimer" class="bouton rouge" type="button" data-son="retour">Oui, supprimer</button>
+          <button id="btn-non-supprimer" class="bouton secondaire" type="button" data-son="clic">Non</button>
         </div>
       </div>
     </section>
@@ -142,8 +142,11 @@
         if (!courant) html += '<p class="invite" style="grid-column:1/-1">👆 Clique sur ton nom pour commencer!</p>';
         html += Jeu.ACTIVITES.map((a) => {
           const p = courant ? Jeu.progres(courant.id, a.id) : null;
-          const medailles = Jeu.NIVEAUX.map((niv) => Jeu.medailleSVG(niv, p ? p.medailles[niv] : false, 34)).join('')
-            + (p ? Jeu.PIERRES.filter((x) => p.pierres[x]).map((x) => Jeu.pierreSVG(x, true, 28)).join('') : '');
+          const medailles = Jeu.NIVEAUX.map((niv) => Jeu.medailleSVG(niv, p ? p.medailles[niv] : false, 34)).join('');
+          // Les pierres restent secrètes jusqu'à la médaille d'or; ensuite, grises ou en couleur.
+          const pierres = p && p.medailles.or
+            ? `<div class="rangee-pierres">${Jeu.PIERRES.map((x) => Jeu.pierreSVG(x, p.pierres[x], 30)).join('')}</div>`
+            : '';
           const bouton = courant
             ? `<a class="bouton" href="${a.page}">Jouer ▸</a>`
             : '<span class="bouton" aria-disabled="true">Jouer ▸</span>';
@@ -151,6 +154,7 @@
                     <div class="vignette" aria-hidden="true">${a.vignette}</div>
                     <h3>${a.titre}</h3>
                     <p>${a.description}</p>
+                    ${pierres}
                     <div class="bas-carte"><div class="rangee-medailles">${medailles}</div>${bouton}</div>
                   </article>`;
         }).join('');
@@ -289,6 +293,7 @@
       }
       $('btn-son').addEventListener('click', () => { Jeu.basculerSon(); rendreSon(); });
       rendreSon();
+      Jeu.brancherSonsNavigation();
 
       // ---------- Application Windows ----------
 

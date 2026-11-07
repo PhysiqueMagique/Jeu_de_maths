@@ -242,6 +242,7 @@ p { margin: 0 0 0.8em; }
 .carte-activite h3 { font-size: 1.2rem; margin: 0; }
 .carte-activite p { color: var(--doux); margin: 0; font-size: 0.95rem; }
 .carte-activite .bas-carte { display: flex; justify-content: space-between; align-items: center; margin-top: auto; gap: 10px; }
+.rangee-pierres { display: flex; gap: 6px; align-items: center; background: #2b2d42; border-radius: 12px; padding: 6px 10px; align-self: flex-start; }
 .carte-activite.a-venir { opacity: 0.6; box-shadow: none; border: 2px dashed var(--bordure); background: transparent; }
 
 .invite { color: var(--doux); font-weight: 700; text-align: center; padding: 16px; }
@@ -269,8 +270,13 @@ p { margin: 0 0 0.8em; }
 .bouton-son.coin { position: absolute; top: 16px; right: 18px; }
 .page { position: relative; }
 
-.pierre { display: inline-block; vertical-align: middle; }
-.pierre.verrouillee { opacity: 0.6; }
+.pierre { display: inline-block; vertical-align: middle; overflow: visible; }
+.pierre.verrouillee { opacity: 0.75; }
+.pierre.gagnee { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.18)); }
+.pierre .reflet { animation: reflet 3.2s ease-in-out infinite; }
+.pierre .etincelle { transform-box: fill-box; transform-origin: center; animation: etincelle 1.8s ease-in-out infinite; }
+@keyframes reflet { 0%, 55% { transform: translateX(0); } 100% { transform: translateX(56px); } }
+@keyframes etincelle { 0%, 100% { transform: scale(0.3); opacity: 0.2; } 50% { transform: scale(1.15); opacity: 1; } }
 
 /* ---------- Bandeaux (mise à jour, avertissement) ---------- */
 
