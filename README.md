@@ -22,9 +22,10 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `js/soustraction-modele.js` | Logique de l'activité (emprunts, indices, génération des défis), sans affichage |
 | `js/soustraction-emprunt.js` | Affichage et déroulement : tutoriel, défis, médailles |
 | `css/activite.css` | Styles communs aux activités (menus, défis, bulles, clavier, fins) et grille de la soustraction |
-| `activites/division-tables.html` | Activité 2 : tables de division |
-| `js/division-tables.js` | Tables de division : tutoriel, défis, médailles, pierres |
-| `css/division.css` | Styles de la division (équation, jetons en groupes) |
+| `js/tables-moteur.js` | Moteur commun des activités « tables » : tutoriel, défis, médailles, pierres |
+| `activites/multiplication-tables.html`, `js/multiplication-tables.js` | Activité 2 : tables de multiplication (textes, niveaux, trucs) |
+| `activites/division-tables.html`, `js/division-tables.js` | Activité 3 : tables de division (textes, niveaux, trucs) |
+| `css/tables.css` | Styles des tables (équation, jetons en groupes, explication du diamant) |
 | `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
 | `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
 | `scripts/nouvelle-version.mjs` | Change le numéro de version partout |
@@ -52,6 +53,17 @@ Si on change d'idée, on reclique sur un chiffre barré pour défaire l'emprunt 
 
 Les réglages entre parenthèses sont au début de `js/soustraction-emprunt.js`.
 Les sons sont fabriqués par le fureteur (Web Audio, aucun fichier); le bouton 🔊 les coupe, et ce choix est gardé dans la sauvegarde.
+
+### Activité : tables de multiplication (de 1 à 12)
+
+1. **Tutoriel** en 3 parties : 3 × 4 avec des jetons (3 groupes de 4, compter par bonds); 5 × 6 en comptant par bonds;
+   7 × 8 en découpant en morceaux faciles (5 × 8 + 2 × 8).
+2. **Défis** de 10 multiplications (l'ordre des facteurs varie : 7 × 8 ou 8 × 7) : 🥉 tables de 1, 2, 5 et 10;
+   🥈 tables de 3, 4, 6 et 11; 🥇 tables de 7, 8, 9 et 12.
+3. **Pierres** (après l'or) : comme pour la division; le diamant ajoute un zéro à un facteur (7 × 80 = 560).
+
+Les tables de multiplication et de division partagent le même moteur (`js/tables-moteur.js`);
+chaque activité n'est qu'une configuration : textes, niveaux, façon de fabriquer un problème et ses indices.
 
 ### Activité : tables de division (sans reste, jusqu'à 10)
 

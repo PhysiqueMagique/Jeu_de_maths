@@ -45,6 +45,13 @@ const Jeu = (() => {
       vignette: '52 − 28 = <span class="rouge">?</span>',
     },
     {
+      id: 'multiplication-tables',
+      titre: 'Tables de multiplication',
+      description: 'Des groupes égaux, des bonds et des trucs : les tables de 1 à 12.',
+      page: 'activites/multiplication-tables.html',
+      vignette: '7 × 8 = <span class="rouge">?</span>',
+    },
+    {
       id: 'division-tables',
       titre: 'Tables de division',
       description: 'Combien de groupes peut-on faire? Les tables de division jusqu’à 10.',
