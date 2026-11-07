@@ -1,0 +1,72 @@
+/* ==========================================================
+   Activité : tables de division
+   ========================================================== */
+
+.equation-carte { padding: 26px 34px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+
+.equation {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: clamp(2.6rem, 9vw, 4.4rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.equation .signe-op { color: var(--bleu); }
+.equation .zero-cache { color: #c9c2b5; text-decoration: line-through; text-decoration-color: var(--rouge); text-decoration-thickness: 0.08em; }
+
+.case-quotient {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.6em;
+  height: 1.25em;
+  padding: 0 0.15em;
+  border: 4px solid var(--bleu);
+  border-radius: 16px;
+  background: var(--bleu-pale);
+  color: var(--encre);
+}
+.case-quotient.vide::after { content: "?"; color: #b9c6e4; }
+.case-quotient.ok { border-color: var(--vert); background: var(--vert-pale); color: #1f7a48; }
+.case-quotient.faux { border-color: var(--rouge); background: #ffecec; color: var(--rouge); }
+
+.rappel-multiplication { font-size: 1.15rem; font-weight: 800; color: var(--doux); }
+.rappel-multiplication b { color: var(--bleu-fonce); }
+
+/* ---------- Jetons et groupes ---------- */
+
+.visuel { padding: 16px 18px; max-width: 520px; display: flex; flex-direction: column; gap: 12px; }
+.visuel .entete-visuel { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 800; }
+.reserve { display: flex; flex-wrap: wrap; gap: 5px; min-height: 22px; }
+.jeton-rond { width: 16px; height: 16px; border-radius: 50%; background: var(--orange); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15); }
+.groupes { display: flex; flex-wrap: wrap; gap: 8px; }
+.groupe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 96px;
+  padding: 6px;
+  border: 3px solid var(--couleur);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--couleur) 12%, #fff);
+  position: relative;
+}
+.groupe.nouveau { animation: apparaitre 0.3s both; }
+.groupe .jeton-rond { background: var(--couleur); }
+.groupe .numero {
+  position: absolute; top: -10px; left: -8px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--couleur); color: #fff; font-size: 0.75rem; font-weight: 900;
+  display: grid; place-items: center;
+}
+
+/* ---------- Explication du défi diamant ---------- */
+
+.demo-zero { display: flex; flex-direction: column; gap: 10px; align-items: center; font-weight: 900; font-size: clamp(1.5rem, 5vw, 2.2rem); font-variant-numeric: tabular-nums; }
+.demo-zero .ligne { display: flex; gap: 0.4em; align-items: center; }
+.demo-zero .fleche { color: var(--doux); font-size: 0.8em; }
+.demo-zero .zero-cache { color: #c9c2b5; }
+.demo-zero .zero-remis { color: var(--rouge); }
+.demo-zero .legende { font-size: 0.95rem; color: var(--doux); font-weight: 800; }

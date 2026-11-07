@@ -21,7 +21,10 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `activites/soustraction-emprunt.html` | Activité 1 : soustraction avec emprunt |
 | `js/soustraction-modele.js` | Logique de l'activité (emprunts, indices, génération des défis), sans affichage |
 | `js/soustraction-emprunt.js` | Affichage et déroulement : tutoriel, défis, médailles |
-| `css/soustraction.css` | Styles de l'activité |
+| `css/activite.css` | Styles communs aux activités (menus, défis, bulles, clavier, fins) et grille de la soustraction |
+| `activites/division-tables.html` | Activité 2 : tables de division |
+| `js/division-tables.js` | Tables de division : tutoriel, défis, médailles, pierres |
+| `css/division.css` | Styles de la division (équation, jetons en groupes) |
 | `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
 | `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
 | `scripts/nouvelle-version.mjs` | Change le numéro de version partout |
@@ -49,6 +52,19 @@ Si on change d'idée, on reclique sur un chiffre barré pour défaire l'emprunt 
 
 Les réglages entre parenthèses sont au début de `js/soustraction-emprunt.js`.
 Les sons sont fabriqués par le fureteur (Web Audio, aucun fichier); le bouton 🔊 les coupe, et ce choix est gardé dans la sauvegarde.
+
+### Activité : tables de division (sans reste, jusqu'à 10)
+
+1. **Tutoriel** en 3 parties : 12 ÷ 3 avec des jetons à placer en groupes de 3; 20 ÷ 5 avec jetons au choix;
+   42 ÷ 7 avec le truc de la multiplication à l'envers (7 × ? = 42).
+2. **Défis** de 10 divisions : 🥉 tables de 1, 2, 5 et 10; 🥈 tables de 3, 4 et 6; 🥇 tables de 7, 8 et 9.
+   Une bonne réponse passe toute seule à la suivante. « Besoin d'aide? » montre les jetons et la table.
+3. **Pierres** (après l'or) : 💎 rubis, 10 divisions en 1 min 30 (`CHRONO_RUBIS`); 💎 émeraude, défi de tête
+   sans jetons ni indices, une seule erreur (`MAX_ERREURS_EMERAUDE`); 💎 saphir, trois médailles sans faute;
+   💎 diamant, les tables avec un zéro de plus (720 ÷ 9 = 80), avec une explication au début.
+
+Dans les deux activités, vérifier deux fois la même réponse fausse ne compte qu'une erreur, et quand on dépasse
+le nombre d'erreurs permis pour l'émeraude, le jeu propose de recommencer le défi tout de suite.
 
 ## Profils et sauvegarde du progrès
 

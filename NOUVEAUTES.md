@@ -3,6 +3,12 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.4.0
+
+Nouvelle activité : les tables de division jusqu'à 10, avec médailles et pierres précieuses!
+Défi sur papier : une seule erreur permise, et on peut recommencer tout de suite si on la dépasse.
+Vérifier deux fois la même réponse ne compte plus deux erreurs.
+
 ## 0.3.0
 
 Des petits sons dans les menus.

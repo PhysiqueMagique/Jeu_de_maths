@@ -37,8 +37,8 @@ Jeu.demarrer().then(() => {
     },
     emeraude: {
       titre: 'Défi sur papier', pierre: 'emeraude', generer: 'papier', papier: true, maxErreurs: MAX_ERREURS_EMERAUDE,
-      desc: `Fais tes emprunts sur une feuille : ici, tu écris seulement la réponse. Au plus ${MAX_ERREURS_EMERAUDE} erreur.`,
-      intro: 'Défi sur papier! Prends une feuille et un crayon. Recopie la soustraction, fais tes emprunts sur ta feuille, puis écris seulement la réponse ici.',
+      desc: `Fais tes emprunts sur une feuille : ici, tu écris seulement la réponse. Une seule erreur permise!`,
+      intro: `Défi sur papier! Prends une feuille et un crayon. Recopie la soustraction, fais tes emprunts sur ta feuille, puis écris seulement la réponse ici. <b>Attention : une seule erreur est permise</b> pour gagner l’émeraude.`,
     },
     saphir: {
       titre: 'Sans faute', pierre: 'saphir',
@@ -108,7 +108,7 @@ Jeu.demarrer().then(() => {
     retour: $('#btn-retour'), badge: $('#badge-joueur'),
     titre: $('#titre-phase'), progression: $('#progression'),
     probleme: $('#probleme'), blocs: $('#blocs'), bulle: $('#bulle'), choix: $('#choix'),
-    clavier: $('#clavier'), actions: $('.actions'), chrono: $('#chrono'), son: $('#btn-son'), verifier: $('#btn-verifier'), suivant: $('#btn-suivant'), aide: $('#btn-aide'),
+    clavier: $('#clavier'), actions: $('.actions'), chrono: $('#chrono'), compteur: $('#compteur-erreurs'), son: $('#btn-son'), verifier: $('#btn-verifier'), suivant: $('#btn-suivant'), aide: $('#btn-aide'),
   };
 
   el.badge.innerHTML = `<span class="avatar petit" style="--couleur:${joueur.couleur}" aria-hidden="true">${joueur.emoji}</span>${Jeu.echapper(joueur.nom)}`;
@@ -138,7 +138,9 @@ Jeu.demarrer().then(() => {
 
   function montrer(nom) {
     for (const [k, e] of Object.entries(ecrans)) e.hidden = k !== nom;
-    if (nom !== 'jeu') arreterChrono();
+    // Le bouton cliqué est maintenant caché : on lui retire le focus, sinon Entrée le « recliquerait ».
+    if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+    if (nom !== 'jeu') { arreterChrono(); el.compteur.hidden = true; }
     document.querySelectorAll('.confetti, .jeton-volant').forEach((c) => c.remove());
     if (nom === 'menu') {
       el.retour.textContent = '← Accueil';
@@ -275,6 +277,16 @@ Jeu.demarrer().then(() => {
     if (reste <= 0) tempsEcoule();
   }
 
+  // Compteur d'erreurs (défis où le nombre d'erreurs est limité)
+  function majCompteurErreurs() {
+    const N = S && S.niveau ? NIVEAUX[S.niveau] : null;
+    if (!N || N.maxErreurs === undefined) { el.compteur.hidden = true; return; }
+    el.compteur.hidden = false;
+    el.compteur.textContent = `❌ ${S.erreurs} / ${N.maxErreurs}`;
+    el.compteur.title = `Erreurs : ${S.erreurs} (une seule permise)`;
+    el.compteur.classList.toggle('presse', S.erreurs > N.maxErreurs);
+  }
+
   function arreterChrono() {
     if (minuterie) clearInterval(minuterie);
     minuterie = null;
@@ -308,6 +320,8 @@ Jeu.demarrer().then(() => {
     else if (a === 'defi') demarrerDefi(b.dataset.niveau);
     else if (a === 'menu') afficherMenu();
     else if (a === 'aide') aide();
+    else if (a === 'recommencer' && S) demarrerDefi(S.niveau);
+    else if (a === 'continuer') dire('D’accord, on continue pour pratiquer! Corrige la case en rouge, puis vérifie.');
   }
   ecrans.menu.addEventListener('click', actionBouton);
   ecrans.fin.addEventListener('click', actionBouton);
@@ -353,8 +367,9 @@ Jeu.demarrer().then(() => {
     Object.assign(S, {
       P: M.creer(a, b),
       mode: S.index === 0 && NIVEAUX[S.niveau].coupDePouce ? 'semi' : 'defi',
-      fini: false, sel: null, cible: null, aideVisible: false, dernierRecu: null, dernierPrete: null,
+      fini: false, sel: null, cible: null, aideVisible: false, dernierRecu: null, dernierPrete: null, derniereFausse: null,
     });
+    majCompteurErreurs();
     const N = NIVEAUX[S.niveau];
     el.titre.innerHTML = N.titre + (S.mode === 'semi' ? '<span class="etiquette-aide">avec coup de pouce</span>' : '');
     el.progression.innerHTML = S.liste.map((_, k) =>
@@ -694,7 +709,16 @@ Jeu.demarrer().then(() => {
       reussite();
       return;
     }
+    // Vérifier deux fois la même réponse ne compte qu'une seule erreur.
+    const signature = P.reponse.join(',');
+    if (S.derniereFausse === signature) {
+      son('oups');
+      dire('Ta réponse n’a pas changé : corrige d’abord la case en rouge, puis vérifie.', 'oups');
+      return;
+    }
+    S.derniereFausse = signature;
     S.erreurs++;
+    majCompteurErreurs();
     let premiere = null;
     for (let i = P.n - 1; i >= 0; i--) {
       if (M.estCorrecte(P, i)) P.statut[i] = P.reponse[i] === null ? null : 'ok';
@@ -709,7 +733,21 @@ Jeu.demarrer().then(() => {
     secouer(el.probleme);
     const indice = S.papier ? '' : ' <button type="button" class="lien-tuto" data-action="aide">Un indice?</button>';
     const limite = NIVEAUX[S.niveau].maxErreurs;
-    const compte = limite !== undefined ? ` (${S.erreurs} erreur${S.erreurs > 1 ? 's' : ''} jusqu’ici)` : '';
+    if (limite !== undefined && S.erreurs === limite + 1) {
+      // Trop d'erreurs pour la pierre : on propose de recommencer tout de suite.
+      dire(`Oups! C’est ta ${S.erreurs}<sup>e</sup> erreur, et une seule est permise pour gagner ${Jeu.NOM_PIERRE[NIVEAUX[S.niveau].pierre]}.
+        <div class="choix-bulle">
+          <button type="button" class="bouton orange" data-action="recommencer">↻ Recommencer le défi</button>
+          <button type="button" class="bouton secondaire" data-action="continuer">Continuer pour pratiquer</button>
+        </div>`, 'oups');
+      return;
+    }
+    let compte = '';
+    if (limite !== undefined) {
+      compte = S.erreurs > limite
+        ? ` (${S.erreurs} erreurs : cette fois, c’est pour pratiquer)`
+        : ` (${S.erreurs} erreur sur ${limite} permise)`;
+    }
     dire(`Oups! Il y a une erreur (en rouge). Corrige-la, puis vérifie encore.${compte}${indice}`, 'oups');
   }
 
@@ -862,7 +900,7 @@ Jeu.demarrer().then(() => {
       ecrans.fin.innerHTML = `<div class="carte fin">
           <div class="grande-medaille">${Jeu.pierreSVG(pierre, false, 110)}</div>
           <h1>Presque!</h1>
-          <p>Tu as fini les ${NB_DEFIS} problèmes avec ${erreurs} erreurs. Pour ${Jeu.NOM_PIERRE[pierre]}, il faut au plus ${N.maxErreurs} erreur.</p>
+          <p>Tu as fini les ${NB_DEFIS} problèmes avec ${erreurs} erreurs. Pour ${Jeu.NOM_PIERRE[pierre]}, une seule erreur est permise.</p>
           <p>Prends ton temps sur ta feuille, et vérifie avec une addition!</p>
           <div class="rangee">
             <button class="bouton gros" type="button" data-action="defi" data-niveau="${niv}">Réessayer ▸</button>
@@ -987,7 +1025,10 @@ Jeu.demarrer().then(() => {
       ev.preventDefault();
       effacer();
     } else if (ev.key === 'Enter') {
-      if (ev.target.closest && ev.target.closest('button, a')) return; // le bouton gère déjà Entrée
+      // Entrée = Vérifier (ou Suivant), même si un autre bouton du jeu a gardé le focus.
+      // Seuls les boutons de choix (dans la bulle) gardent leur propre Entrée.
+      const bouton = ev.target.closest && ev.target.closest('button, a');
+      if (bouton && bouton.offsetParent !== null && el.bulle.contains(bouton)) return;
       ev.preventDefault();
       if (!el.verifier.hidden) verifier();
       else if (!el.suivant.hidden) suivant();

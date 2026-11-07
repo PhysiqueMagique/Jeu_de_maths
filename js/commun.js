@@ -44,6 +44,13 @@ const Jeu = (() => {
       page: 'activites/soustraction-emprunt.html',
       vignette: '52 − 28 = <span class="rouge">?</span>',
     },
+    {
+      id: 'division-tables',
+      titre: 'Tables de division',
+      description: 'Combien de groupes peut-on faire? Les tables de division jusqu’à 10.',
+      page: 'activites/division-tables.html',
+      vignette: '72 ÷ 9 = <span class="rouge">?</span>',
+    },
   ];
 
   const NIVEAUX = ['bronze', 'argent', 'or'];

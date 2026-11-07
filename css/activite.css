@@ -1,5 +1,5 @@
 /* ==========================================================
-   Activité : soustraction avec emprunt
+   Styles des activités (menus, défis, bulles, clavier, fins) + grille de la soustraction
    ========================================================== */
 
 /* ---------- Menu de l'activité ---------- */
@@ -279,3 +279,5 @@
 @keyframes secouer { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
 @keyframes tomber { to { transform: translateY(105vh) rotate(720deg); } }
 @keyframes rebond { 0% { transform: scale(0.2) rotate(-20deg); opacity: 0; } 60% { transform: scale(1.15) rotate(6deg); opacity: 1; } 100% { transform: scale(1) rotate(0); } }
+
+.choix-bulle { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
