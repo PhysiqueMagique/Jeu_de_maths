@@ -88,7 +88,7 @@ chaque activité n'est qu'une configuration : textes, niveaux, façon de fabriqu
 ### Activité : course des multiplications (vitesse et mémorisation)
 
 Pour chaque niveau (sans « × 1 ») : 🥉 tables de 2, 3 et 5 (14 pas en 60 s); 🥈 tables de 2 à 7 (17 pas en 70 s);
-🥇 tables de 2 à 10 (22 pas en 80 s).
+🥇 tables de 2 à 10 (22 pas en 110 s).
 1. **Échauffement** : une table trouée. Bronze : 40 % des cases des tables de 2, 3 et 5. Argent et or : seulement
    les lignes des nouvelles tables (4, 6, 7 puis 8, 9, 10), en entier. Les deux nombres multipliés (ligne et colonne)
    sont surlignés, et la case choisie montre la multiplication à faire en gris pâle. Une fois la table remplie,
