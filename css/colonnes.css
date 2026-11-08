@@ -52,3 +52,48 @@
   .grille-mult .badge-zeros { font-size: 0.68rem; margin-left: 3px; }
   .grille-mult .badge-zeros .mot { display: none; }
 }
+
+/* Saisie case par case : on clique une case, ou on écrit de droite à gauche */
+.grille-mult .case-saisie {
+  font-family: inherit;
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.grille-mult .case-saisie.curseur {
+  border-style: solid;
+  border-color: var(--orange);
+  background: var(--orange-pale);
+  box-shadow: 0 0 0 4px rgba(255, 138, 61, 0.25);
+}
+.grille-mult .case-saisie.curseur.vide-saisie::after {
+  content: "";
+  width: 3px;
+  height: 55%;
+  background: var(--orange);
+  border-radius: 2px;
+  animation: clignote 1s steps(2, start) infinite;
+}
+@keyframes clignote { to { visibility: hidden; } }
+
+/* Les retenues de la somme : petites cases au-dessus de chaque colonne */
+.grille-mult .retenue {
+  justify-self: center;
+  width: 62%;
+  height: calc(var(--c) * 0.62);
+  display: grid; place-items: center;
+  padding: 0;
+  font-family: inherit;
+  font-size: calc(var(--c) * 0.42);
+  font-weight: 900;
+  color: #6b3fd0;
+  background: #f4efff;
+  border: 2px solid #cbb8f5;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.grille-mult .retenue.vide { border-style: dashed; background: transparent; }
+.grille-mult .retenue.curseur { border-style: solid; border-color: var(--orange); background: var(--orange-pale); box-shadow: 0 0 0 3px rgba(255, 138, 61, 0.25); }
+.grille-mult .retenue.fixe { background: transparent; border: 0; cursor: default; }
+.grille-mult .etiquette-retenues { font-size: 0.8rem; color: #8a74c4; }

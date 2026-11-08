@@ -3,6 +3,11 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.9.1
+
+Multiplication en colonnes : on écrit maintenant case par case, de droite à gauche, comme sur papier. Le zéro va directement dans sa case!
+Pour la somme, de petites cases au-dessus de chaque colonne servent à écrire les retenues.
+
 ## 0.9.0
 
 Le jeu s'ouvre en plein écran (F11 ou le bouton ⛶ pour en sortir, ✕ sur l'accueil pour quitter) et remplit mieux l'écran de l'ordinateur.

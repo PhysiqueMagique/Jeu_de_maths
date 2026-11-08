@@ -49,6 +49,7 @@ Jeu.demarrer().then(() => {
       intro: [
         'On va calculer <b>43 × 2</b> en colonnes. Le truc : on multiplie <b>chiffre par chiffre</b>, une ligne à la fois, en commençant par les unités. À la fin, on <b>additionne</b> toutes les lignes.',
         'Pour savoir combien de <b>zéros</b> ajouter au bout d’une ligne : un chiffre dans les unités donne <b>0 zéro</b>, dans les dizaines <b>1 zéro</b>, dans les centaines <b>2 zéros</b>. On additionne les zéros des deux chiffres multipliés!',
+        'On écrit chaque nombre <b>case par case, de droite à gauche</b>, comme sur papier : d’abord les zéros, puis les autres chiffres. La case orange montre où va ton chiffre; tu peux aussi cliquer sur une case pour la choisir.',
       ],
     },
     {
@@ -235,8 +236,9 @@ Jeu.demarrer().then(() => {
     const P = C.creer(a, b);
     Object.assign(S, {
       P, etape: S.papier ? P.lignes.length : 0, // sur papier : seulement la réponse
-      valeurs: [], saisie: '', statut: null, fini: false, derniereFausse: null, aideVisible: false,
+      valeurs: [], statut: null, fini: false, derniereFausse: null, aideVisible: false, retenues: null,
     });
+    viderSaisie();
   }
 
   function demarrerTutoriel() {
@@ -321,6 +323,61 @@ Jeu.demarrer().then(() => {
     return op + badge;
   }
 
+  // ---------- La saisie, case par case ----------
+  // S.cases[c] : le chiffre écrit dans la colonne c (0 = unités), ou null.
+  // S.zone : 'ligne' (la ligne en cours ou la somme) ou 'retenue' (les petites cases au-dessus de la somme).
+  // S.curseur : la colonne où ira le prochain chiffre. On écrit de droite à gauche : après un chiffre, on passe à gauche.
+  function viderSaisie() {
+    S.cases = Array(S.P.largeur).fill(null);
+    S.curseur = 0;
+    S.zone = 'ligne';
+    if (!S.retenues || S.etape < S.P.lignes.length) S.retenues = Array(S.P.largeur).fill(null);
+  }
+
+  // Le nombre écrit (texte), s'il y a une case vide au milieu ou à droite (trou), ou rien du tout (vide).
+  function lireSaisie() {
+    const cs = S.cases;
+    let haut = -1;
+    for (let c = cs.length - 1; c >= 0; c--) if (cs[c] !== null) { haut = c; break; }
+    if (haut < 0) return { vide: true, trou: false, texte: '' };
+    let texte = '';
+    let trou = false;
+    for (let c = haut; c >= 0; c--) {
+      if (cs[c] === null) trou = true;
+      else texte += cs[c];
+    }
+    return { vide: false, trou, texte: String(Number(texte)) };
+  }
+
+  function rangeeSaisie(signe, etiquette) {
+    const w = S.P.largeur;
+    let h = `<span class="signe">${signe}</span>`;
+    for (let c = w - 1; c >= 0; c--) {
+      const d = S.cases[c];
+      const cls = ['chiffre', 'saisie', 'case-saisie'];
+      if (S.statut === 'faux') cls.push('faux');
+      if (d === null) cls.push('vide-saisie');
+      if (S.zone === 'ligne' && S.curseur === c) cls.push('curseur');
+      h += `<button type="button" class="${cls.join(' ')}" data-c="${c}" aria-label="Case des ${C.NOMS[c]}">${d === null ? '' : d}</button>`;
+    }
+    return h + `<span class="etiquette-ligne active">${etiquette}</span>`;
+  }
+
+  // Les petites cases des retenues, au-dessus de la somme (pas de retenue dans les unités).
+  function rangeeRetenues(modifiable) {
+    const w = S.P.largeur;
+    let h = '<span class="signe"></span>';
+    for (let c = w - 1; c >= 0; c--) {
+      const d = S.retenues[c];
+      if (c === 0) h += '<span class="case-retenue-vide"></span>';
+      else if (modifiable) {
+        const cur = S.zone === 'retenue' && S.curseur === c ? ' curseur' : '';
+        h += `<button type="button" class="retenue${cur}${d === null ? ' vide' : ''}" data-r="${c}" aria-label="Retenue dans les ${C.NOMS[c]}">${d === null ? '' : d}</button>`;
+      } else h += `<span class="retenue fixe">${d === null ? '' : d}</span>`;
+    }
+    return h + `<span class="etiquette-ligne etiquette-retenues">${modifiable ? 'retenues' : ''}</span>`;
+  }
+
   function rendre() {
     const { P } = S;
     const l = ligneCourante();
@@ -336,7 +393,7 @@ Jeu.demarrer().then(() => {
         if (k < S.etape) {
           h += rangee(signe, li.valeur, (c) => `faite ok${c < li.z ? ' zero-ajoute' : ''}`, etiquetteLigne(li, true));
         } else if (k === S.etape && actif) {
-          h += rangee(signe, S.saisie, () => `saisie${S.statut === 'faux' ? ' faux' : ''}${S.saisie ? '' : ' vide-saisie'}`, etiquetteLigne(li, false), 'active');
+          h += rangeeSaisie(signe, etiquetteLigne(li, false));
         } else {
           // Ligne pas encore faite : des pointillés sur toute la largeur (sans dévoiler combien de chiffres elle aura)
           h += rangee(signe, '', () => 'ligne-future pointilles', '');
@@ -347,8 +404,9 @@ Jeu.demarrer().then(() => {
     // La somme (ou la réponse, sur papier)
     const etiquette = S.papier ? 'Réponse' : 'Somme';
     if (S.etape >= P.lignes.length && (actif || S.fini)) {
+      if (!S.papier) h += rangeeRetenues(!S.fini);
       if (S.fini) h += rangee('=', P.total, () => 'faite ok', etiquette);
-      else h += rangee('=', S.saisie, () => `saisie${S.statut === 'faux' ? ' faux' : ''}${S.saisie ? '' : ' vide-saisie'}`, etiquette, 'active');
+      else h += rangeeSaisie('=', etiquette);
     } else {
       h += rangee('=', '', () => 'ligne-future', '');
     }
@@ -384,49 +442,84 @@ Jeu.demarrer().then(() => {
     if (S.mode === 'tuto' && S.partie === 0) {
       return `Dernière étape : <b>additionne</b> les lignes! ${S.P.lignes.map((x) => x.valeur).join(' + ')} = <b>${S.P.total}</b>. Écris-le dans la ligne de la somme.`;
     }
-    if (S.mode === 'defi') return 'Maintenant, additionne toutes les lignes!';
-    return 'Dernière étape : <b>additionne toutes les lignes</b>, colonne par colonne, en commençant par les unités. N’oublie pas les retenues!';
+    if (S.mode === 'defi') return 'Maintenant, additionne toutes les lignes, en commençant par les unités! Tu peux écrire tes retenues dans les petites cases.';
+    return 'Dernière étape : <b>additionne toutes les lignes</b>, colonne par colonne, en commençant par les unités. Si une colonne donne 10 ou plus, écris la <b>retenue</b> dans la petite case au-dessus de la colonne suivante (clique dessus, puis tape le chiffre).';
   }
 
   // ==========================================================
   //  Actions de l'élève
   // ==========================================================
 
+  const enSomme = () => S.etape >= S.P.lignes.length && !S.papier;
+
   function entrer(d) {
     if (!S || S.fini || enIntro()) return;
-    if (S.saisie.length >= S.P.largeur) return;
-    if (S.saisie === '0') S.saisie = '';
-    S.saisie += String(d);
-    S.statut = null;
+    if (S.zone === 'retenue') {
+      // La retenue est notée : on revient écrire le chiffre de la somme dans cette colonne.
+      S.retenues[S.curseur] = d;
+      S.zone = 'ligne';
+    } else {
+      S.cases[S.curseur] = d;
+      if (S.curseur < S.P.largeur - 1) S.curseur++;
+      S.statut = null;
+    }
     son('chiffre');
     rendre();
   }
 
   function effacer() {
-    if (!S || S.fini || enIntro() || !S.saisie) return;
-    S.saisie = S.saisie.slice(0, -1);
+    if (!S || S.fini || enIntro()) return;
+    if (S.zone === 'retenue') {
+      if (S.retenues[S.curseur] === null) return;
+      S.retenues[S.curseur] = null;
+    } else if (S.cases[S.curseur] !== null) {
+      S.cases[S.curseur] = null;
+    } else if (S.curseur > 0 && S.cases[S.curseur - 1] !== null) {
+      // comme un retour arrière : on revient à droite et on efface ce chiffre
+      S.curseur--;
+      S.cases[S.curseur] = null;
+    } else return;
     S.statut = null;
+    son('clic');
+    rendre();
+  }
+
+  // Choisir une case avec la souris (ou les flèches)
+  function choisirCase(zone, c) {
+    if (!S || S.fini || enIntro()) return;
+    if (zone === 'retenue' && (!enSomme() || c < 1 || c >= S.P.largeur)) return;
+    if (c < 0 || c >= S.P.largeur) return;
+    S.zone = zone;
+    S.curseur = c;
     son('clic');
     rendre();
   }
 
   function verifier() {
     if (!S || S.fini || enIntro()) return;
-    if (!S.saisie) {
+    const lu = lireSaisie();
+    if (lu.vide) {
       son('oups');
       dire('Écris d’abord ta réponse avec les chiffres.', 'oups');
       return;
     }
+    if (lu.trou) {
+      // Pas une erreur : il manque seulement un chiffre à droite ou au milieu.
+      son('oups');
+      dire('Il reste une case vide à droite de ton nombre. Chaque case doit avoir un chiffre, même un <b>0</b>!', 'oups');
+      return;
+    }
+    const saisie = lu.texte;
     const l = ligneCourante();
     const attendu = l ? l.valeur : S.P.total;
-    if (Number(S.saisie) === attendu) {
-      S.saisie = '';
+    if (Number(saisie) === attendu) {
       S.statut = null;
       S.derniereFausse = null;
       S.aideVisible = false;
       if (l) {
         S.valeurs.push(l.valeur);
         S.etape++;
+        viderSaisie();
         son('bon');
         rendre();
         const fini = S.etape >= S.P.lignes.length;
@@ -441,19 +534,19 @@ Jeu.demarrer().then(() => {
     S.statut = 'faux';
     rendre();
     secouer(el.calcul);
-    const indice = l ? C.indiceLigne(l, S.saisie) : C.indiceSomme(S.P, S.saisie, S.mode !== 'defi');
+    const indice = l ? C.indiceLigne(l, saisie) : C.indiceSomme(S.P, saisie, S.mode !== 'defi');
     if (S.mode !== 'defi') {
       son('erreur');
       dire(`Pas tout à fait… ${indice}`, 'oups');
       return;
     }
     // Vérifier deux fois la même réponse ne compte qu'une seule erreur.
-    if (S.derniereFausse === `${S.etape}:${S.saisie}`) {
+    if (S.derniereFausse === `${S.etape}:${saisie}`) {
       son('oups');
       dire('Ta réponse n’a pas changé : efface-la (⌫) et essaie autre chose.', 'oups');
       return;
     }
-    S.derniereFausse = `${S.etape}:${S.saisie}`;
+    S.derniereFausse = `${S.etape}:${saisie}`;
     S.erreurs++;
     son('erreur');
     majCompteurErreurs();
@@ -480,8 +573,10 @@ Jeu.demarrer().then(() => {
     if (!S || S.fini || S.mode !== 'defi') return;
     const l = ligneCourante();
     let texte;
-    if (l) texte = S.statut === 'faux' && S.saisie ? C.indiceLigne(l, S.saisie) : C.explication(l, false);
-    else texte = S.statut === 'faux' && S.saisie ? C.indiceSomme(S.P, S.saisie, false) : 'Additionne toutes les lignes, colonne par colonne, en commençant par les unités. N’oublie pas les retenues!';
+    const lu = lireSaisie();
+    const fausse = S.statut === 'faux' && !lu.vide && !lu.trou;
+    if (l) texte = fausse ? C.indiceLigne(l, lu.texte) : C.explication(l, false);
+    else texte = fausse ? C.indiceSomme(S.P, lu.texte, false) : 'Additionne toutes les lignes, colonne par colonne, en commençant par les unités. Écris tes retenues dans les petites cases!';
     dire(`${texte}<br><button type="button" class="lien-tuto" data-action="revoir">📖 Revoir le tutoriel</button>`);
   }
 
@@ -735,6 +830,12 @@ Jeu.demarrer().then(() => {
     if (t.hasAttribute('data-effacer')) effacer();
     else entrer(Number(t.dataset.chiffre));
   });
+  el.calcul.addEventListener('click', (ev) => {
+    const c = ev.target.closest('.case-saisie');
+    if (c) { choisirCase('ligne', Number(c.dataset.c)); return; }
+    const r = ev.target.closest('button.retenue');
+    if (r) choisirCase('retenue', Number(r.dataset.r));
+  });
   el.verifier.addEventListener('click', verifier);
   el.suivant.addEventListener('click', () => { son('nav'); suivant(); });
   el.aide.addEventListener('click', () => { son('clic'); aide(); });
@@ -747,6 +848,12 @@ Jeu.demarrer().then(() => {
     } else if (ev.key === 'Backspace' || ev.key === 'Delete') {
       ev.preventDefault();
       effacer();
+    } else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') {
+      ev.preventDefault();
+      choisirCase(S.zone, S.curseur + (ev.key === 'ArrowLeft' ? 1 : -1));
+    } else if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') {
+      ev.preventDefault();
+      if (enSomme()) choisirCase(ev.key === 'ArrowUp' ? 'retenue' : 'ligne', Math.max(ev.key === 'ArrowUp' ? 1 : 0, S.curseur));
     } else if (ev.key === 'Enter') {
       const bouton = ev.target.closest && ev.target.closest('button, a');
       if (bouton && bouton.offsetParent !== null && el.bulle.contains(bouton)) return;
