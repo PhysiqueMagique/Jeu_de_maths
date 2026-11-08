@@ -97,3 +97,25 @@
 .grille-mult .retenue.curseur { border-style: solid; border-color: var(--orange); background: var(--orange-pale); box-shadow: 0 0 0 3px rgba(255, 138, 61, 0.25); }
 .grille-mult .retenue.fixe { background: transparent; border: 0; cursor: default; }
 .grille-mult .etiquette-retenues { font-size: 0.8rem; color: #8a74c4; }
+
+/* Boutons +0 / −0 à côté de la ligne en cours */
+.grille-mult .boutons-zeros { display: inline-flex; gap: 6px; margin-right: 10px; vertical-align: middle; }
+.grille-mult .bouton-zero {
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 900;
+  min-width: 46px;
+  height: 38px;
+  padding: 0 8px;
+  color: #fff;
+  background: var(--rouge);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 3px 0 #b8343a;
+  cursor: pointer;
+}
+.grille-mult .bouton-zero:hover { background: #ee5c61; }
+.grille-mult .bouton-zero:active { transform: translateY(2px); box-shadow: 0 1px 0 #b8343a; }
+.grille-mult .bouton-zero.moins { background: #fff; color: var(--rouge); border: 2px solid #f3b4b6; box-shadow: 0 3px 0 #f3b4b6; }
+.grille-mult .bouton-zero:disabled { opacity: 0.4; cursor: default; transform: none; }
+.grille-mult .saisie.zero-ajoute { color: var(--rouge); }

@@ -49,7 +49,7 @@ Jeu.demarrer().then(() => {
       intro: [
         'On va calculer <b>43 × 2</b> en colonnes. Le truc : on multiplie <b>chiffre par chiffre</b>, une ligne à la fois, en commençant par les unités. À la fin, on <b>additionne</b> toutes les lignes.',
         'Pour savoir combien de <b>zéros</b> ajouter au bout d’une ligne : un chiffre dans les unités donne <b>0 zéro</b>, dans les dizaines <b>1 zéro</b>, dans les centaines <b>2 zéros</b>. On additionne les zéros des deux chiffres multipliés!',
-        'On écrit chaque nombre <b>case par case, de droite à gauche</b>, comme sur papier : d’abord les zéros, puis les autres chiffres. La case orange montre où va ton chiffre; tu peux aussi cliquer sur une case pour la choisir.',
+        'Pour écrire une ligne : tape le résultat de la multiplication, puis ajoute les zéros avec le bouton <b>+0</b> à côté de la ligne (avant ou après, comme tu veux). Le bouton <b>−0</b> enlève un zéro.',
       ],
     },
     {
@@ -323,11 +323,18 @@ Jeu.demarrer().then(() => {
     return op + badge;
   }
 
-  // ---------- La saisie, case par case ----------
-  // S.cases[c] : le chiffre écrit dans la colonne c (0 = unités), ou null.
-  // S.zone : 'ligne' (la ligne en cours ou la somme) ou 'retenue' (les petites cases au-dessus de la somme).
-  // S.curseur : la colonne où ira le prochain chiffre. On écrit de droite à gauche : après un chiffre, on passe à gauche.
+  // ---------- La saisie ----------
+  // Lignes de multiplication (et réponse sur papier) : on tape le nombre de gauche à droite (les chiffres glissent
+  // vers la gauche) dans S.chiffres; les zéros ajoutés au bout se comptent à part (S.zeros, boutons +0 / −0).
+  // Somme : case par case, de droite à gauche, avec les retenues :
+  //   S.cases[c] : le chiffre écrit dans la colonne c (0 = unités), ou null.
+  //   S.zone : 'ligne' (la somme) ou 'retenue' (les petites cases au-dessus de la somme).
+  //   S.curseur : la colonne où ira le prochain chiffre (après un chiffre, on passe à gauche).
+  const enSomme = () => S.etape >= S.P.lignes.length && !S.papier;
+
   function viderSaisie() {
+    S.chiffres = '';
+    S.zeros = 0;
     S.cases = Array(S.P.largeur).fill(null);
     S.curseur = 0;
     S.zone = 'ligne';
@@ -336,6 +343,10 @@ Jeu.demarrer().then(() => {
 
   // Le nombre écrit (texte), s'il y a une case vide au milieu ou à droite (trou), ou rien du tout (vide).
   function lireSaisie() {
+    if (!enSomme()) {
+      if (!S.chiffres) return { vide: S.zeros === 0, seulementZeros: S.zeros > 0, trou: false, texte: '' };
+      return { vide: false, trou: false, texte: String(Number(S.chiffres + '0'.repeat(S.zeros))) };
+    }
     const cs = S.cases;
     let haut = -1;
     for (let c = cs.length - 1; c >= 0; c--) if (cs[c] !== null) { haut = c; break; }
@@ -347,6 +358,22 @@ Jeu.demarrer().then(() => {
       else texte += cs[c];
     }
     return { vide: false, trou, texte: String(Number(texte)) };
+  }
+
+  function rangeeTapee(signe, etiquette, avecZeros) {
+    const t = S.chiffres + '0'.repeat(S.zeros);
+    const boutons = avecZeros
+      ? `<span class="boutons-zeros">
+           <button type="button" class="bouton-zero" data-zero="1" title="Ajouter un zéro (touche +)">+0</button>
+           <button type="button" class="bouton-zero moins" data-zero="-1" title="Enlever un zéro (touche −)"${S.zeros ? '' : ' disabled'}>−0</button>
+         </span>`
+      : '';
+    return rangee(signe, t, (c, ch) => {
+      let cls = `saisie${S.statut === 'faux' ? ' faux' : ''}`;
+      if (!ch) cls += ' vide-saisie';
+      if (ch && c < S.zeros) cls += ' zero-ajoute';
+      return cls;
+    }, boutons + etiquette, 'active');
   }
 
   function rangeeSaisie(signe, etiquette) {
@@ -393,7 +420,7 @@ Jeu.demarrer().then(() => {
         if (k < S.etape) {
           h += rangee(signe, li.valeur, (c) => `faite ok${c < li.z ? ' zero-ajoute' : ''}`, etiquetteLigne(li, true));
         } else if (k === S.etape && actif) {
-          h += rangeeSaisie(signe, etiquetteLigne(li, false));
+          h += rangeeTapee(signe, etiquetteLigne(li, false), true);
         } else {
           // Ligne pas encore faite : des pointillés sur toute la largeur (sans dévoiler combien de chiffres elle aura)
           h += rangee(signe, '', () => 'ligne-future pointilles', '');
@@ -406,7 +433,7 @@ Jeu.demarrer().then(() => {
     if (S.etape >= P.lignes.length && (actif || S.fini)) {
       if (!S.papier) h += rangeeRetenues(!S.fini);
       if (S.fini) h += rangee('=', P.total, () => 'faite ok', etiquette);
-      else h += rangeeSaisie('=', etiquette);
+      else h += S.papier ? rangeeTapee('=', etiquette, false) : rangeeSaisie('=', etiquette);
     } else {
       h += rangee('=', '', () => 'ligne-future', '');
     }
@@ -440,7 +467,7 @@ Jeu.demarrer().then(() => {
     }
     if (S.papier) return 'Écris ta réponse.';
     if (S.mode === 'tuto' && S.partie === 0) {
-      return `Dernière étape : <b>additionne</b> les lignes! ${S.P.lignes.map((x) => x.valeur).join(' + ')} = <b>${S.P.total}</b>. Écris-le dans la ligne de la somme.`;
+      return `Dernière étape : <b>additionne</b> les lignes! ${S.P.lignes.map((x) => x.valeur).join(' + ')} = <b>${S.P.total}</b>. Écris-le dans la ligne de la somme, case par case, en commençant par les unités (à droite).`;
     }
     if (S.mode === 'defi') return 'Maintenant, additionne toutes les lignes, en commençant par les unités! Tu peux écrire tes retenues dans les petites cases.';
     return 'Dernière étape : <b>additionne toutes les lignes</b>, colonne par colonne, en commençant par les unités. Si une colonne donne 10 ou plus, écris la <b>retenue</b> dans la petite case au-dessus de la colonne suivante (clique dessus, puis tape le chiffre).';
@@ -450,11 +477,15 @@ Jeu.demarrer().then(() => {
   //  Actions de l'élève
   // ==========================================================
 
-  const enSomme = () => S.etape >= S.P.lignes.length && !S.papier;
-
   function entrer(d) {
     if (!S || S.fini || enIntro()) return;
-    if (S.zone === 'retenue') {
+    if (!enSomme()) {
+      // les chiffres glissent vers la gauche, à gauche des zéros ajoutés
+      if (S.chiffres.length + S.zeros >= S.P.largeur) return;
+      if (S.chiffres === '0') S.chiffres = '';
+      S.chiffres += String(d);
+      S.statut = null;
+    } else if (S.zone === 'retenue') {
       // La retenue est notée : on revient écrire le chiffre de la somme dans cette colonne.
       S.retenues[S.curseur] = d;
       S.zone = 'ligne';
@@ -469,7 +500,11 @@ Jeu.demarrer().then(() => {
 
   function effacer() {
     if (!S || S.fini || enIntro()) return;
-    if (S.zone === 'retenue') {
+    if (!enSomme()) {
+      if (S.chiffres) S.chiffres = S.chiffres.slice(0, -1);
+      else if (S.zeros) S.zeros--;
+      else return;
+    } else if (S.zone === 'retenue') {
       if (S.retenues[S.curseur] === null) return;
       S.retenues[S.curseur] = null;
     } else if (S.cases[S.curseur] !== null) {
@@ -481,6 +516,17 @@ Jeu.demarrer().then(() => {
     } else return;
     S.statut = null;
     son('clic');
+    rendre();
+  }
+
+  // Boutons +0 / −0 : les zéros au bout d'une ligne de multiplication
+  function changerZeros(delta) {
+    if (!S || S.fini || enIntro() || !ligneCourante() || S.papier) return;
+    const n = S.zeros + delta;
+    if (n < 0 || n + S.chiffres.length > S.P.largeur) { son('oups'); return; }
+    S.zeros = n;
+    S.statut = null;
+    son(delta > 0 ? 'chiffre' : 'clic');
     rendre();
   }
 
@@ -501,6 +547,11 @@ Jeu.demarrer().then(() => {
     if (lu.vide) {
       son('oups');
       dire('Écris d’abord ta réponse avec les chiffres.', 'oups');
+      return;
+    }
+    if (lu.seulementZeros) {
+      son('oups');
+      dire('Tu as mis les zéros : tape maintenant le résultat de la multiplication.', 'oups');
       return;
     }
     if (lu.trou) {
@@ -831,6 +882,8 @@ Jeu.demarrer().then(() => {
     else entrer(Number(t.dataset.chiffre));
   });
   el.calcul.addEventListener('click', (ev) => {
+    const z = ev.target.closest('[data-zero]');
+    if (z) { changerZeros(Number(z.dataset.zero)); return; }
     const c = ev.target.closest('.case-saisie');
     if (c) { choisirCase('ligne', Number(c.dataset.c)); return; }
     const r = ev.target.closest('button.retenue');
@@ -848,9 +901,12 @@ Jeu.demarrer().then(() => {
     } else if (ev.key === 'Backspace' || ev.key === 'Delete') {
       ev.preventDefault();
       effacer();
+    } else if (ev.key === '+' || ev.key === '-') {
+      ev.preventDefault();
+      changerZeros(ev.key === '+' ? 1 : -1);
     } else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') {
       ev.preventDefault();
-      choisirCase(S.zone, S.curseur + (ev.key === 'ArrowLeft' ? 1 : -1));
+      if (enSomme()) choisirCase(S.zone, S.curseur + (ev.key === 'ArrowLeft' ? 1 : -1));
     } else if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') {
       ev.preventDefault();
       if (enSomme()) choisirCase(ev.key === 'ArrowUp' ? 'retenue' : 'ligne', Math.max(ev.key === 'ArrowUp' ? 1 : 0, S.curseur));

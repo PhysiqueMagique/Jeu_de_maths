@@ -3,6 +3,11 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.9.2
+
+Multiplication en colonnes : on tape de nouveau les lignes dans l'ordre habituel (18, et non 8 puis 1).
+Les zéros s'ajoutent avec les boutons +0 et −0 à côté de la ligne, avant ou après le résultat. La somme se fait toujours case par case, avec les retenues.
+
 ## 0.9.1
 
 Multiplication en colonnes : on écrit maintenant case par case, de droite à gauche, comme sur papier. Le zéro va directement dans sa case!

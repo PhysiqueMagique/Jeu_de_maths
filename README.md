@@ -68,8 +68,9 @@ Les deux chiffres à multiplier sont en couleur; les zéros ajoutés s'affichent
 1. **Tutoriel** : 43 × 2 et 24 × 13 tout expliqués (où et pourquoi placer les zéros), puis 137 × 26 avec indices.
 2. **Défis** : 🥉 2 chiffres × 1 chiffre (5 problèmes); 🥈 2 × 2 chiffres et 3 × 1 chiffre (4); 🥇 3 × 2 chiffres (3).
    Les indices repèrent l'oubli d'un zéro, un mauvais nombre de zéros, ou la colonne fautive de la somme (avec retenues).
-   On écrit **case par case, de droite à gauche** (clic sur une case ou flèches ← →); pour la somme, de petites cases
-   au-dessus de chaque colonne servent à noter les **retenues** (clic dessus, ou flèche ↑).
+   Lignes : on tape le résultat normalement (les chiffres glissent vers la gauche) et on ajoute les zéros avec les boutons
+   **+0 / −0** de la ligne (ou les touches + et −), avant ou après. Somme : **case par case, de droite à gauche**
+   (clic ou flèches ← →), avec de petites cases au-dessus de chaque colonne pour les **retenues** (clic, ou flèche ↑).
 3. **Pierres** (après l'or) : 💎 rubis, 3 multiplications or en 4 minutes; 💎 émeraude, sur papier (la réponse seulement),
    une seule erreur; 💎 saphir, trois médailles sans faute; 💎 diamant, 3 chiffres × 3 chiffres (neuf lignes).
 

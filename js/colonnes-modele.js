@@ -43,7 +43,8 @@ const Colonnes = (() => {
     if (l.z === 0) pourquoi = 'Les deux chiffres sont dans les unités : <b>pas de zéro</b> à ajouter.';
     else pourquoi = `Le <b>${l.da}</b> est ${placeA}, le <b>${l.db}</b> est ${placeB} : <b>${zeros(l.z)}</b> en tout.`;
     if (complet) {
-      return `<b>${l.db} × ${l.da} = ${l.p}</b>. ${pourquoi} Écris <b>${l.valeur}</b>.`;
+      const ecris = l.z === 0 ? `Écris <b>${l.p}</b>.` : `Écris <b>${l.p}</b>, puis ajoute ${zeros(l.z)} avec le bouton <b>+0</b> : ${l.valeur}.`;
+      return `<b>${l.db} × ${l.da} = ${l.p}</b>. ${pourquoi} ${ecris}`;
     }
     return `Multiplie <b>${l.db} × ${l.da}</b>. ${l.z === 0 ? 'Les deux sont dans les unités.' : `Le ${l.da} est ${placeA}, le ${l.db} est ${placeB} : combien de zéros en tout?`}`;
   }
@@ -52,7 +53,7 @@ const Colonnes = (() => {
   function indiceLigne(l, tape) {
     const t = Number(tape);
     if (t === l.p && l.z > 0) {
-      return `${l.db} × ${l.da} = ${l.p}, c’est bien ça… mais il manque ${l.z === 1 ? 'le zéro' : `les ${zeros(l.z)}`}!`;
+      return `${l.db} × ${l.da} = ${l.p}, c’est bien ça… mais il manque ${l.z === 1 ? 'le zéro' : `les ${zeros(l.z)}`}! (bouton <b>+0</b>)`;
     }
     for (let k = 0; k <= 6; k++) {
       if (k !== l.z && t === l.p * 10 ** k) {
