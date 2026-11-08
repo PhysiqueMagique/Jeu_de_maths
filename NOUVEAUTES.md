@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.9.4
+
+Course des multiplications : la course or revient à 80 secondes, et c'est le défi rubis qui donne plus de temps (65 secondes au lieu de 50).
+
 ## 0.9.3
 
 Course des multiplications : la course or donne maintenant 110 secondes (au lieu de 80) pour faire les 22 pas.

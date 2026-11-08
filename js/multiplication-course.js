@@ -28,12 +28,12 @@ Jeu.demarrer().then(() => {
     },
     or: {
       titre: 'Course or', desc: 'Tables de 2 à 10', tables: DE(2, 10), nouvelles: [8, 9, 10], proportionTrous: 1,
-      facteurs: F10, pas: 22, temps: 110, requis: 'argent',
+      facteurs: F10, pas: 22, temps: 80, requis: 'argent',
     },
     // Accomplissements secrets (pierres précieuses), visibles après la médaille d'or
     rubis: {
-      titre: 'Course éclair', pierre: 'rubis', tables: DE(2, 10), facteurs: F10, pas: 22, temps: 50,
-      desc: 'La course or… en 50 secondes seulement!',
+      titre: 'Course éclair', pierre: 'rubis', tables: DE(2, 10), facteurs: F10, pas: 22, temps: 65,
+      desc: 'La course or… en 65 secondes seulement!',
     },
     emeraude: {
       titre: 'La grande table trouée', pierre: 'emeraude', type: 'table', tables: DE(2, 10), facteurs: F10,
