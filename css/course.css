@@ -94,8 +94,26 @@
 }
 .compte-rebours span { animation: rebond 0.6s both; }
 
-.equation .case-quotient.ok { animation: apparaitre 0.25s both; }
-.correction { font-size: 1.4rem; font-weight: 900; }
-.correction .rouge { color: var(--rouge); }
+.correction { font-size: 1.3rem; font-weight: 900; }
+.correction .vert { color: #1f7a48; }
+
+/* ---------- Ruban : calculs précédents, actuel, suivant ---------- */
+
+.ruban { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 230px; justify-content: flex-end; }
+.ruban .item { font-variant-numeric: tabular-nums; }
+.ruban .passe { font-size: 1.35rem; font-weight: 800; color: var(--doux); opacity: 0.75; }
+.ruban .passe:first-child:not(:last-child) { opacity: 0.45; font-size: 1.15rem; }
+.ruban .passe .marque { margin-left: 4px; }
+.ruban .passe.ok .marque { color: var(--vert); }
+.ruban .passe.faux s { color: var(--rouge); }
+.ruban .passe.faux .bonne { color: #1f7a48; }
+.ruban .passe.faux .marque { color: var(--rouge); }
+.ruban .actuel { padding: 8px 18px; border-radius: 18px; background: #fff; }
+.ruban .suivant { font-size: 1.35rem; font-weight: 800; color: #b9b2a5; }
+.ruban .etiquette-suivant { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 6px; }
+.ruban .case-quotient s { text-decoration-thickness: 0.08em; }
+.ruban .fleche-correction { color: var(--doux); font-size: 0.7em; }
+.ruban.defile .passe, .ruban.defile .actuel, .ruban.defile .suivant { animation: monter 0.25s ease-out both; }
+@keyframes monter { from { transform: translateY(26px); opacity: 0.2; } to { transform: none; } }
 
 @keyframes sautille { 40% { transform: translateY(-14px); } }

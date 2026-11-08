@@ -3,6 +3,11 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.8.1
+
+Course des multiplications : tu vois maintenant le calcul que tu viens de faire et celui qui s'en vient.
+Quand tu te trompes, le jeu montre ta réponse barrée, puis la bonne réponse.
+
 ## 0.8.0
 
 Nouvelle activité : la multiplication en colonnes des grands nombres (137 × 26), une ligne par multiplication avec les bons zéros, puis la somme!

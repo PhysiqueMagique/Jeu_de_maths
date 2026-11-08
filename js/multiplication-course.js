@@ -427,7 +427,7 @@ Jeu.demarrer().then(() => {
   function demarrerCourse(niv) {
     const N = NIVEAUX[niv];
     C = {
-      niv, N, pos: 0, erreurs: 0, saisie: '', q: null, dernierCle: null, rates: [],
+      niv, N, pos: 0, erreurs: 0, saisie: '', q: null, suivante: null, faites: [], rates: [],
       verrou: true, debut: null, fin: null, termine: false, minuteries: [], raf: null, dernierTic: null,
     };
     montrer('course');
@@ -510,38 +510,56 @@ Jeu.demarrer().then(() => {
     el.pasCourse.textContent = `🏁 ${C.pos} / ${C.N.pas}`;
   }
 
+  const cleQ = (q) => (q ? `${q.a}x${q.b}` : '');
+
   function choisirQuestion() {
     // D'abord les multiplications ratées, qui reviennent quelques questions plus tard
     for (const r of C.rates) r.dans--;
-    const i = C.rates.findIndex((r) => r.dans <= 0);
+    const i = C.rates.findIndex((r) => r.dans <= 0 && cleQ(r.q) !== cleQ(C.q) && cleQ(r.q) !== cleQ(C.suivante));
     if (i >= 0) return C.rates.splice(i, 1)[0].q;
     let q;
     for (let essai = 0; essai < 30; essai++) {
       const t = choisir(C.N.tables);
       const f = choisir(C.N.facteurs);
       q = Math.random() < 0.5 ? { a: t, b: f } : { a: f, b: t };
-      if (`${q.a}x${q.b}` !== C.dernierCle) break;
+      if (cleQ(q) !== cleQ(C.q) && cleQ(q) !== cleQ(C.suivante)) break;
     }
     return q;
   }
 
+  // La question suivante est tirée d'avance : on la voit sous la question actuelle.
   function nouvelleQuestion() {
-    C.q = choisirQuestion();
-    C.dernierCle = `${C.q.a}x${C.q.b}`;
+    C.q = C.suivante || choisirQuestion();
+    C.suivante = choisirQuestion();
     C.saisie = '';
     C.statut = null;
-    rendreQuestion();
+    C.tape = null;
+    rendreQuestion(true);
   }
 
-  function rendreQuestion(montrerReponse = false) {
+  // Le ruban : les 2 derniers calculs, le calcul actuel (en gros), puis le suivant.
+  function rendreQuestion(defile = false) {
     const { a, b } = C.q;
-    const classe = ['case-quotient'];
-    if (!C.saisie && !montrerReponse) classe.push('vide');
-    if (C.statut) classe.push(C.statut);
-    const contenu = montrerReponse ? a * b : C.saisie;
-    el.equation.innerHTML = `<div class="equation" aria-label="${a} fois ${b}">
-        <span>${a}</span><span class="signe-op">×</span><span>${b}</span><span class="signe-op">=</span>
-        <span class="${classe.join(' ')}">${contenu}</span>
+    const passes = C.faites.slice(-2).map((f) => {
+      const r = f.q.a * f.q.b;
+      return f.ok
+        ? `<div class="item passe ok">${f.q.a} × ${f.q.b} = ${r} <span class="marque">✓</span></div>`
+        : `<div class="item passe faux">${f.q.a} × ${f.q.b} = <s>${f.tape}</s> <span class="bonne">${r}</span> <span class="marque">✗</span></div>`;
+    }).join('');
+    let caseReponse;
+    if (C.statut === 'faux') {
+      // Erreur : ta réponse barrée, puis la bonne réponse
+      caseReponse = `<span class="case-quotient faux"><s>${C.tape}</s></span><span class="fleche-correction">→</span><span class="case-quotient ok">${a * b}</span>`;
+    } else {
+      caseReponse = `<span class="case-quotient${C.saisie ? '' : ' vide'}">${C.saisie}</span>`;
+    }
+    const suivante = C.suivante ? `<div class="item suivant"><span class="etiquette-suivant">ensuite</span> ${C.suivante.a} × ${C.suivante.b}</div>` : '';
+    el.equation.innerHTML = `<div class="ruban${defile ? ' defile' : ''}">
+        ${passes}
+        <div class="item actuel"><div class="equation" aria-label="${a} fois ${b}">
+          <span>${a}</span><span class="signe-op">×</span><span>${b}</span><span class="signe-op">=</span>${caseReponse}
+        </div></div>
+        ${suivante}
       </div>`;
   }
 
@@ -571,6 +589,7 @@ Jeu.demarrer().then(() => {
       majPiste('avance');
       if (C.pos >= C.N.pas) { gagne(); return; }
       dire(el.bulleCourse, `${choisir(BRAVOS)} ${a} × ${b} = ${a * b}`, 'bravo');
+      C.faites.push({ q: C.q, ok: true });
       nouvelleQuestion();
       return;
     }
@@ -581,11 +600,12 @@ Jeu.demarrer().then(() => {
     majPiste('recule');
     C.rates.push({ q: C.q, dans: 3 });
     C.statut = 'faux';
-    const tape = C.saisie;
-    rendreQuestion(true);
-    dire(el.bulleCourse, `<span class="correction">${a} × ${b} = <span class="rouge">${a * b}</span></span> (pas ${tape}). Retiens-la, elle va revenir!`, 'oups');
+    C.tape = C.saisie;
+    rendreQuestion();
+    dire(el.bulleCourse, `Tu as écrit <b>${C.tape}</b>, mais <span class="correction">${a} × ${b} = <span class="vert">${a * b}</span></span>. Retiens-la, elle va revenir!`, 'oups');
     C.verrou = true;
-    plusTard(() => { C.verrou = false; nouvelleQuestion(); }, 1100);
+    const rate = { q: C.q, ok: false, tape: C.tape };
+    plusTard(() => { C.verrou = false; C.faites.push(rate); nouvelleQuestion(); }, 1400);
   }
 
   function gagne() {
