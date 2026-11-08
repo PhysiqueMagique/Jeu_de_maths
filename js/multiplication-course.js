@@ -28,7 +28,7 @@ Jeu.demarrer().then(() => {
     },
     or: {
       titre: 'Course or', desc: 'Tables de 2 à 10', tables: DE(2, 10), nouvelles: [8, 9, 10], proportionTrous: 1,
-      facteurs: F10, pas: 22, temps: 80, requis: 'argent',
+      facteurs: F10, pas: 22, temps: 110, requis: 'argent',
     },
     // Accomplissements secrets (pierres précieuses), visibles après la médaille d'or
     rubis: {

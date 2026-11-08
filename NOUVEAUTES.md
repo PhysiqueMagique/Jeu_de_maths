@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.9.3
+
+Course des multiplications : la course or donne maintenant 110 secondes (au lieu de 80) pour faire les 22 pas.
+
 ## 0.9.2
 
 Multiplication en colonnes : on tape de nouveau les lignes dans l'ordre habituel (18, et non 8 puis 1).
