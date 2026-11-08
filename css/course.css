@@ -13,7 +13,7 @@
 .zone-table { padding: 14px; display: flex; justify-content: center; }
 .defilement { overflow-x: auto; max-width: 100%; }
 .table-trouee { border-collapse: separate; border-spacing: 5px; font-variant-numeric: tabular-nums; }
-.table-trouee th, .table-trouee td { width: 64px; height: 56px; text-align: center; font-weight: 900; font-size: 1.35rem; border-radius: 12px; padding: 0; }
+.table-trouee th, .table-trouee td { width: 64px; height: 52px; text-align: center; font-weight: 900; font-size: 1.35rem; border-radius: 12px; padding: 0; }
 .table-trouee th { background: var(--bleu-pale); color: var(--bleu-fonce); transition: background 0.15s, color 0.15s, transform 0.15s; }
 .table-trouee th.coin { background: var(--bleu); color: #fff; }
 /* Les deux nombres multipliés ensemble (ligne et colonne de la case choisie) */

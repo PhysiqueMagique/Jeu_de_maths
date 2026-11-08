@@ -19,7 +19,7 @@
   --jaune: #ffd23f;
   --ombre: 0 4px 0 rgba(43, 45, 66, 0.08), 0 10px 24px rgba(43, 45, 66, 0.08);
   --rayon: 18px;
-  --case: clamp(54px, 13vw, 82px);
+  --case: 82px;
   font-size: 18px;
 }
 
@@ -34,16 +34,15 @@ body {
   background-size: 22px 22px;
   color: var(--encre);
   line-height: 1.45;
-  min-height: 100vh;
 }
 
 h1, h2, h3 { line-height: 1.15; margin: 0 0 0.4em; }
-h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 900; }
+h1 { font-size: 2.6rem; font-weight: 900; }
 h2 { font-size: 1.35rem; font-weight: 800; }
 p { margin: 0 0 0.8em; }
 
 .page {
-  max-width: 900px;
+  max-width: 1180px;
   margin: 0 auto;
   padding: 20px 18px 60px;
 }
@@ -101,25 +100,26 @@ p { margin: 0 0 0.8em; }
 
 /* ---------- Accueil ---------- */
 
-.entete-accueil { text-align: center; margin: 10px 0 26px; }
+.entete-accueil { text-align: center; margin: 0 0 6px; }
 .entete-accueil .logo {
   display: inline-block;
   font-weight: 900;
-  font-size: 1rem;
+  font-size: 0.9rem;
   background: var(--orange);
   color: #fff;
   border-radius: 999px;
   padding: 0.2em 0.9em;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
   transform: rotate(-3deg);
 }
-.entete-accueil p { color: var(--doux); font-size: 1.1rem; }
+.entete-accueil p { color: var(--doux); font-size: 1.1rem; margin: 0; }
+.entete-accueil h1 { margin-bottom: 0.15em; }
 
-.section-titre { display: flex; align-items: baseline; gap: 10px; margin: 28px 0 12px; }
+.section-titre { display: flex; align-items: baseline; gap: 10px; margin: 14px 0 10px; }
 
 .grille-joueurs {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  grid-template-columns: repeat(auto-fill, 150px);
   gap: 14px;
 }
 .carte-joueur {
@@ -138,13 +138,13 @@ p { margin: 0 0 0.8em; }
   background: none;
   border: 0;
   width: 100%;
-  padding: 18px 10px 14px;
+  padding: 12px 10px 10px;
   border-radius: inherit;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   -webkit-tap-highlight-color: transparent;
 }
 .choisir-joueur:focus-visible, .nouveau-joueur:focus-visible, .modifier-joueur:focus-visible { outline: 3px solid var(--jaune); outline-offset: 2px; }
@@ -216,21 +216,21 @@ p { margin: 0 0 0.8em; }
 .bouton.rouge:hover { background: #ee5c61; }
 
 .avatar {
-  width: 74px; height: 74px;
+  width: 62px; height: 62px;
   border-radius: 50%;
   background: var(--couleur);
   display: grid; place-items: center;
-  font-size: 40px;
+  font-size: 34px;
   box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.15);
 }
 .avatar.petit { width: 38px; height: 38px; font-size: 21px; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15); }
 
-.grille-activites { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
-.carte-activite { display: flex; flex-direction: column; gap: 10px; }
+.grille-activites { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px 40px; padding: 14px 4px; }
+.carte-activite { display: flex; flex-direction: column; gap: 8px; }
 .carte-activite .vignette {
   background: var(--bleu-pale);
   border-radius: 12px;
-  padding: 14px;
+  padding: 12px;
   font-weight: 900;
   font-size: 1.6rem;
   text-align: center;
@@ -260,6 +260,85 @@ a.carte-activite { color: inherit; text-decoration: none; }
 .carte-activite.inactive .fleche-jouer { background: #d9d6cf; box-shadow: 0 3px 0 #bdb9b0; }
 .carte-activite.a-venir { opacity: 0.6; box-shadow: none; border: 2px dashed var(--bordure); background: transparent; }
 
+/* ---------- Tuile dorée : les trois médailles de l'activité ---------- */
+
+.carte-activite { position: relative; }
+.carte-activite.doree {
+  --ombre-or: inset 0 0 0 2px #fffaf0, inset 0 0 0 4px rgba(214, 160, 40, 0.45), 0 0 0 1px rgba(150, 100, 10, 0.35);
+  border: 6px solid transparent;
+  padding: 18px;
+  background:
+    linear-gradient(170deg, #fffef8 0%, #fff7df 100%) padding-box,
+    linear-gradient(115deg, #9c6a0a 0%, #e9b53d 16%, #fff1b8 28%, #d79c25 42%, #9c6a0a 55%, #f0c450 70%, #fff6cc 82%, #b97f15 100%) border-box;
+  background-size: 100% 100%, 280% 280%;
+  animation: or-brille 5s ease-in-out infinite alternate;
+  box-shadow: var(--ombre-or), 0 5px 0 rgba(156, 106, 10, 0.25), 0 12px 28px rgba(240, 180, 40, 0.35);
+}
+.carte-activite.doree.cliquable:hover {
+  box-shadow: var(--ombre-or), 0 7px 0 rgba(156, 106, 10, 0.25), 0 20px 36px rgba(240, 180, 40, 0.5);
+}
+/* un reflet de lumière passe sur la tuile */
+.carte-activite.doree::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 42%, rgba(255, 255, 255, 0.75) 50%, transparent 58%) no-repeat;
+  background-size: 260% 100%;
+  background-position: 130% 0;
+  animation: reflet-tuile 6s ease-in-out infinite;
+}
+.carte-activite.doree .vignette {
+  background: linear-gradient(180deg, #fff3c4, #ffe08a);
+  color: #8a5300;
+  box-shadow: inset 0 0 0 2px rgba(214, 160, 40, 0.35);
+}
+.carte-activite.doree .vignette .rouge { color: #c2410c; }
+.carte-activite.doree h3 { color: #6b4300; }
+.titre-or { display: inline-block; margin-left: 4px; font-size: 0.9em; }
+
+/* Les quatre sertis des pierres précieuses, aux coins de la tuile dorée */
+.sertis {
+  position: absolute;
+  z-index: 1;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(circle, #4a3714 0 50%, transparent 51%),
+    conic-gradient(#9c6a0a, #ffe69a, #c98d1c, #fff4c2, #9c6a0a, #f0c450, #b97f15, #fff1b8, #9c6a0a);
+  box-shadow: 0 3px 5px rgba(80, 50, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+.sertis.hg { top: -17px; left: -17px; }
+.sertis.hd { top: -17px; right: -17px; }
+.sertis.bg { bottom: -17px; left: -17px; }
+.sertis.bd { bottom: -17px; right: -17px; }
+.sertis .pierre { width: 28px; height: 28px; }
+.sertis.vide .pierre { opacity: 0.35; filter: grayscale(1); }
+.sertis.pleine {
+  width: 50px; height: 50px;
+  background:
+    radial-gradient(circle, #fffdf3 0 48%, transparent 49%),
+    conic-gradient(#9c6a0a, #ffe69a, #c98d1c, #fff4c2, #9c6a0a, #f0c450, #b97f15, #fff1b8, #9c6a0a);
+  box-shadow: 0 3px 6px rgba(80, 50, 0, 0.3), 0 0 14px 3px rgba(255, 215, 90, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+.sertis.pleine.hg { top: -20px; left: -20px; }
+.sertis.pleine.hd { top: -20px; right: -20px; }
+.sertis.pleine.bg { bottom: -20px; left: -20px; }
+.sertis.pleine.bd { bottom: -20px; right: -20px; }
+.sertis.pleine .pierre { width: 34px; height: 34px; }
+
+/* Les quatre pierres : la tuile rayonne */
+.carte-activite.doree.parfaite { animation: or-brille 5s ease-in-out infinite alternate, aura 2.6s ease-in-out infinite; }
+
+@keyframes or-brille { from { background-position: 0 0, 0% 50%; } to { background-position: 0 0, 100% 50%; } }
+@keyframes reflet-tuile { 0%, 60% { background-position: 130% 0; } 100% { background-position: -30% 0; } }
+@keyframes aura {
+  50% { box-shadow: var(--ombre-or), 0 5px 0 rgba(156, 106, 10, 0.25), 0 0 34px 8px rgba(255, 205, 70, 0.6); }
+}
+
 .invite { color: var(--doux); font-weight: 700; text-align: center; padding: 16px; }
 
 .pied { margin-top: 40px; }
@@ -282,7 +361,7 @@ a.carte-activite { color: inherit; text-decoration: none; }
   -webkit-tap-highlight-color: transparent;
 }
 .bouton-son[aria-pressed="false"] { opacity: 0.6; }
-.bouton-son.coin { position: absolute; top: 16px; right: 18px; }
+.boutons-coin { position: absolute; top: 16px; right: 18px; display: flex; gap: 10px; z-index: 2; }
 .page { position: relative; }
 
 .pierre { display: inline-block; vertical-align: middle; overflow: visible; }
@@ -317,7 +396,7 @@ a.carte-activite { color: inherit; text-decoration: none; }
   justify-content: space-between;
   align-items: center;
   padding: 12px 18px;
-  max-width: 900px;
+  max-width: 1180px;
   margin: 0 auto;
 }
 .lien-retour {

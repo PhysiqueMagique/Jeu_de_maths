@@ -9,6 +9,8 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
   Windows peut afficher « Windows a protégé votre ordinateur » (l'installateur n'est pas signé avec un certificat payant) :
   cliquer sur **Informations complémentaires → Exécuter quand même**.
   Ensuite, le jeu se met à jour lui-même : un bandeau « Nouvelle version disponible » apparaît sur l'accueil.
+  Le jeu s'ouvre en plein écran : **F11** (ou le bouton ⛶ de l'accueil) pour en sortir, le bouton ✕ de l'accueil pour quitter.
+  L'affichage est pensé pour un écran d'ordinateur : il s'agrandit pour remplir l'écran.
 - **Dans un fureteur** (pour tester) : ouvrir `index.html`. Le progrès est alors gardé dans le fureteur.
 
 ## Ce qu'il y a dedans

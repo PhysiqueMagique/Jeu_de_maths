@@ -4,7 +4,8 @@
 
 /* ---------- Menu de l'activité ---------- */
 
-.entete-activite { text-align: center; margin: 4px 0 20px; }
+.entete-activite { text-align: center; margin: 0 0 16px; }
+.entete-activite p { margin-bottom: 0; }
 .entete-activite p { color: var(--doux); font-size: 1.05rem; }
 
 .carte-tuto {
@@ -48,7 +49,7 @@
 
 .grille {
   /* les cases rapetissent pour les très grands nombres (défi diamant) */
-  --case: clamp(30px, calc((min(100vw, 900px) - 150px) / (var(--n) + 0.7)), 82px);
+  --case: clamp(30px, calc((100cqw - 110px) / (var(--n) + 0.7)), 82px);
   display: grid;
   grid-template-columns: calc(var(--case) * 0.6) repeat(var(--n), var(--case));
   justify-content: center;
@@ -281,3 +282,81 @@
 @keyframes rebond { 0% { transform: scale(0.2) rotate(-20deg); opacity: 0; } 60% { transform: scale(1.15) rotate(6deg); opacity: 1; } 100% { transform: scale(1) rotate(0); } }
 
 .choix-bulle { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+
+/* ---------- Écran d'ordinateur : le problème à gauche, consignes et clavier à droite ---------- */
+
+.ecran-jeu {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 370px;
+  column-gap: 28px;
+  align-items: start;
+}
+.ecran-jeu > .entete-jeu, .ecran-jeu > .temps-barre, .ecran-jeu > .piste-carte { grid-column: 1 / -1; }
+.ecran-jeu > .zone-jeu, .ecran-jeu > .zone-table { grid-column: 1; container-type: inline-size; }
+.panneau { grid-column: 2; display: flex; flex-direction: column; gap: 16px; }
+.panneau .bulle { margin: 0; max-width: none; font-size: 1.08rem; }
+.panneau .choix { margin-top: 0; justify-content: flex-start; }
+.panneau .controles { margin-top: 0; flex-direction: column; align-items: stretch; gap: 14px; }
+.panneau .clavier { grid-template-columns: repeat(6, 1fr); width: 100%; }
+.panneau .actions { flex-direction: row; flex-wrap: wrap; min-width: 0; }
+.panneau .actions .bouton { flex: 1 1 auto; }
+
+/* ---------- Menu d'une activité avec les pierres secrètes : deux colonnes ---------- */
+
+#ecran-menu:has(> .secrets) {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  column-gap: 28px;
+  align-items: start;
+}
+#ecran-menu:has(> .secrets) > * { grid-column: 1 / -1; }
+#ecran-menu:has(> .secrets) > h2,
+#ecran-menu:has(> .secrets) > .liste-niveaux,
+#ecran-menu:has(> .secrets) > .revoir { grid-column: 1; }
+#ecran-menu:has(> .secrets) { grid-template-rows: auto auto auto auto 1fr; }
+#ecran-menu:has(> .secrets) > .secrets { grid-column: 2; grid-row: 2 / -1; margin-top: 0; }
+#ecran-menu:has(> .secrets) > .revoir { margin-top: 16px; }
+#ecran-menu:has(> .secrets) .entete-activite { margin-bottom: 8px; }
+
+/* les trois défis, l'un sous l'autre : médaille | texte | bouton */
+#ecran-menu:has(> .secrets) .liste-niveaux { grid-template-columns: 1fr; gap: 12px; }
+#ecran-menu:has(> .secrets) .carte-niveau {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: 16px;
+  row-gap: 2px;
+  align-items: center;
+  text-align: left;
+  padding: 14px 18px;
+}
+#ecran-menu:has(> .secrets) .carte-niveau > .medaille { grid-column: 1; grid-row: 1 / span 4; width: 46px; height: auto; }
+#ecran-menu:has(> .secrets) .carte-niveau > * { grid-column: 2; }
+#ecran-menu:has(> .secrets) .carte-niveau > .bouton,
+#ecran-menu:has(> .secrets) .carte-niveau > .boutons-niveau,
+#ecran-menu:has(> .secrets) .carte-niveau > .verrou { grid-column: 3; grid-row: 1 / span 4; width: 170px; margin: 0; }
+#ecran-menu:has(> .secrets) .carte-niveau h3 { margin: 0; }
+#ecran-menu:has(> .secrets) .carte-niveau .record:empty { display: none; }
+
+#ecran-menu:has(> .secrets) .boutons-niveau { width: 210px !important; }
+
+/* les quatre pierres, l'une sous l'autre : pierre | texte | bouton */
+#ecran-menu:has(> .secrets) .secrets { padding: 16px 18px 18px; }
+#ecran-menu:has(> .secrets) .secrets > p { margin-bottom: 10px; }
+#ecran-menu:has(> .secrets) .liste-pierres { grid-template-columns: 1fr; gap: 10px; }
+#ecran-menu:has(> .secrets) .carte-pierre {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: 14px;
+  row-gap: 2px;
+  align-items: center;
+  text-align: left;
+  padding: 10px 16px;
+}
+#ecran-menu:has(> .secrets) .carte-pierre > * { grid-column: 2; }
+#ecran-menu:has(> .secrets) .carte-pierre > .pierre { grid-column: 1; grid-row: 1 / span 4; }
+#ecran-menu:has(> .secrets) .carte-pierre > .bouton { grid-column: 3; grid-row: 1 / span 4; width: 130px; margin: 0; }
+#ecran-menu:has(> .secrets) .carte-pierre .record:empty { display: none; }
+#ecran-menu:has(> .secrets) .entete-activite h1 { font-size: 2.2rem; }
+#ecran-menu:has(> .secrets) .carte-pierre { padding: 8px 14px; }
+#ecran-menu:has(> .secrets) .carte-pierre p { font-size: 0.82rem; }
+#ecran-menu:has(> .secrets) .carte-pierre > .bouton { padding: 0.55em 1em; }

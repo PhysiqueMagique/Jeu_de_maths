@@ -954,8 +954,10 @@ Jeu.demarrer().then(() => {
     const cible = el.probleme.querySelector(`.case-haut[data-col="${i}"] .un.pop`);
     if (!cible) return;
     const arrivee = cible.getBoundingClientRect();
-    const x0 = depart.left + depart.width / 2;
-    const y0 = depart.top + depart.height * 0.3;
+    // Les rectangles sont en pixels d'écran; la page est agrandie (zoom), donc on ramène en pixels de la page.
+    const z = Jeu.zoom();
+    const x0 = (depart.left + depart.width / 2) / z;
+    const y0 = (depart.top + depart.height * 0.3) / z;
     const j = document.createElement('div');
     j.className = 'jeton-volant';
     j.textContent = '1';
@@ -964,8 +966,8 @@ Jeu.demarrer().then(() => {
     j.style.top = `${y0}px`;
     j.style.transform = 'translate(-50%, -50%) scale(1.6)';
     document.body.appendChild(j);
-    const dx = arrivee.left + arrivee.width / 2 - x0;
-    const dy = arrivee.top + arrivee.height / 2 - y0;
+    const dx = (arrivee.left + arrivee.width / 2) / z - x0;
+    const dy = (arrivee.top + arrivee.height / 2) / z - y0;
     requestAnimationFrame(() => requestAnimationFrame(() => {
       j.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1)`;
       j.style.opacity = '0';

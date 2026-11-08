@@ -5,7 +5,7 @@
 .calcul { padding: 18px 22px 22px; }
 
 .grille-mult {
-  --c: clamp(32px, calc((min(100vw, 900px) - 230px) / (var(--w) + 4)), 50px);
+  --c: clamp(32px, calc((100cqw - 150px) / (var(--w) + 4)), 56px);
   display: grid;
   grid-template-columns: var(--c) repeat(var(--w), var(--c)) minmax(0, auto);
   align-items: center;

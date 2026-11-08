@@ -567,6 +567,50 @@ const Jeu = (() => {
     </svg>`;
   }
 
+  // ---------- Écran d'ordinateur : taille et plein écran ----------
+
+  // Les pages sont dessinées pour un écran de 1280 × 780; on agrandit (ou rapetisse un peu)
+  // le tout pour remplir l'écran, comme le zoom du fureteur.
+  const LARGEUR_BASE = 1280;
+  const HAUTEUR_BASE = 780;
+  let zoomActuel = 1;
+  function ajusterZoom() {
+    const z = Math.min(window.innerWidth / LARGEUR_BASE, window.innerHeight / HAUTEUR_BASE);
+    zoomActuel = Math.round(Math.max(0.8, Math.min(1.7, z)) * 100) / 100;
+    document.documentElement.style.zoom = zoomActuel;
+    document.documentElement.style.setProperty('--zoom', zoomActuel);
+  }
+  function zoom() { return zoomActuel; }
+
+  async function estPleinEcran() {
+    if (estApplication && tauri.window) return tauri.window.getCurrentWindow().isFullscreen();
+    return !!document.fullscreenElement;
+  }
+  async function basculerPleinEcran() {
+    try {
+      if (estApplication && tauri.window) {
+        const f = tauri.window.getCurrentWindow();
+        await f.setFullscreen(!(await f.isFullscreen()));
+      } else if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await document.documentElement.requestFullscreen();
+      }
+    } catch (err) { /* tant pis */ }
+  }
+  async function quitter() {
+    if (estApplication && tauri.window) await tauri.window.getCurrentWindow().close();
+  }
+
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    ajusterZoom();
+    window.addEventListener('resize', ajusterZoom);
+    // F11 : entrer ou sortir du plein écran (dans l'application comme dans un fureteur)
+    window.addEventListener('keydown', (ev) => {
+      if (ev.key === 'F11') { ev.preventDefault(); basculerPleinEcran(); }
+    });
+  }
+
   // Pour afficher un nom tapé par l'utilisateur dans du HTML sans risque.
   function echapper(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -583,6 +627,7 @@ const Jeu = (() => {
     estApplication, infosApplication, verifierMiseAJour, installerMiseAJour,
     avertissement: () => avertissement,
     medailleSVG, pierreSVG, echapper,
+    zoom, estPleinEcran, basculerPleinEcran, quitter,
     // pour l'application Windows et les tests
     _migrer: migrer,
     _utiliserStockage(s) { stockage = s; },

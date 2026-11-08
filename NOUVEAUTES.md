@@ -3,6 +3,12 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.9.0
+
+Le jeu s'ouvre en plein écran (F11 ou le bouton ⛶ pour en sortir, ✕ sur l'accueil pour quitter) et remplit mieux l'écran de l'ordinateur.
+Les consignes et le clavier sont maintenant à droite du problème.
+Toutes les médailles d'une activité? Sa tuile devient dorée, et chaque pierre précieuse trouvée vient briller dans un coin!
+
 ## 0.8.1
 
 Course des multiplications : tu vois maintenant le calcul que tu viens de faire et celui qui s'en vient.

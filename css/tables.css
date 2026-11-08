@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   gap: 0.35em;
-  font-size: clamp(2.6rem, 9vw, 4.4rem);
+  font-size: 4.4rem;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -64,7 +64,7 @@
 
 /* ---------- Explication du défi diamant ---------- */
 
-.demo-zero { display: flex; flex-direction: column; gap: 10px; align-items: center; font-weight: 900; font-size: clamp(1.5rem, 5vw, 2.2rem); font-variant-numeric: tabular-nums; }
+.demo-zero { display: flex; flex-direction: column; gap: 10px; align-items: center; font-weight: 900; font-size: 2.2rem; font-variant-numeric: tabular-nums; }
 .demo-zero .ligne { display: flex; gap: 0.4em; align-items: center; }
 .demo-zero .fleche { color: var(--doux); font-size: 0.8em; }
 .demo-zero .zero-cache { color: #c9c2b5; }

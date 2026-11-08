@@ -12,7 +12,11 @@
 </head>
 <body>
   <main class="page">
-    <button id="btn-son" class="bouton-son coin" type="button" aria-pressed="true" title="Son">🔊</button>
+    <div class="boutons-coin">
+      <button id="btn-plein-ecran" class="bouton-son" type="button" title="Plein écran (F11)">⛶</button>
+      <button id="btn-son" class="bouton-son" type="button" aria-pressed="true" title="Son">🔊</button>
+      <button id="btn-quitter" class="bouton-son" type="button" title="Quitter le jeu" hidden>✕</button>
+    </div>
     <header class="entete-accueil">
       <span class="logo">+ − × ÷</span>
       <h1>Jeu de maths</h1>
@@ -143,27 +147,34 @@
         html += Jeu.ACTIVITES.map((a) => {
           const p = courant ? Jeu.progres(courant.id, a.id) : null;
           const medailles = Jeu.NIVEAUX.map((niv) => Jeu.medailleSVG(niv, p ? p.medailles[niv] : false, 34)).join('');
-          // Les pierres restent secrètes jusqu'à la médaille d'or; ensuite, grises ou en couleur.
-          const pierres = p && p.medailles.or
+          // Les trois médailles : la tuile devient dorée, avec un serti à chaque coin.
+          // Les sertis restent vides (pierre grise) jusqu'à ce que la pierre soit trouvée.
+          const doree = !!(p && Jeu.NIVEAUX.every((niv) => p.medailles[niv]));
+          const nbPierres = p ? Jeu.PIERRES.filter((x) => p.pierres[x]).length : 0;
+          const coins = ['hg', 'hd', 'bg', 'bd'];
+          const sertis = doree
+            ? Jeu.PIERRES.map((x, i) => `<span class="sertis ${coins[i]} ${p.pierres[x] ? 'pleine' : 'vide'}">${Jeu.pierreSVG(x, p.pierres[x], 34)}</span>`).join('')
+            : '';
+          // Pas encore toutes les médailles, mais l'or : les pierres secrètes, grises ou en couleur.
+          const pierres = p && p.medailles.or && !doree
             ? `<div class="rangee-pierres">${Jeu.PIERRES.map((x) => Jeu.pierreSVG(x, p.pierres[x], 30)).join('')}</div>`
             : '';
+          const classes = `carte carte-activite${doree ? ' doree' : ''}${doree && nbPierres === 4 ? ' parfaite' : ''}`;
+          const etiquette = doree ? ` (toutes les médailles, ${nbPierres} pierre${nbPierres > 1 ? 's' : ''} sur 4)` : '';
           // Toute la tuile lance l'activité (si un joueur est choisi)
           const debut = courant
-            ? `<a class="carte carte-activite cliquable" href="${a.page}" aria-label="Jouer : ${a.titre}">`
-            : '<div class="carte carte-activite inactive" aria-disabled="true">';
+            ? `<a class="${classes} cliquable" href="${a.page}" aria-label="Jouer : ${a.titre}${etiquette}">`
+            : `<div class="${classes} inactive" aria-disabled="true">`;
           const finTuile = courant ? '</a>' : '</div>';
           return `${debut}
+                    ${sertis}
                     <div class="vignette" aria-hidden="true">${a.vignette}</div>
-                    <h3>${a.titre}</h3>
+                    <h3>${a.titre}${doree ? '<span class="titre-or" aria-hidden="true">🏆</span>' : ''}</h3>
                     <p>${a.description}</p>
                     ${pierres}
                     <div class="bas-carte"><div class="rangee-medailles">${medailles}</div><span class="fleche-jouer" aria-hidden="true">▸</span></div>
                   ${finTuile}`;
         }).join('');
-        html += `<article class="carte carte-activite a-venir">
-                   <div class="vignette" aria-hidden="true">…</div>
-                   <h3>D'autres activités s'en viennent!</h3>
-                 </article>`;
         zoneActivites.innerHTML = html;
         montrer('accueil');
       }
@@ -296,6 +307,14 @@
       $('btn-son').addEventListener('click', () => { Jeu.basculerSon(); rendreSon(); });
       rendreSon();
       Jeu.brancherSonsNavigation();
+
+      // ---------- Plein écran et quitter ----------
+
+      $('btn-plein-ecran').addEventListener('click', () => { Jeu.jouer('clic'); Jeu.basculerPleinEcran(); });
+      if (Jeu.estApplication) {
+        $('btn-quitter').hidden = false;
+        $('btn-quitter').addEventListener('click', () => Jeu.quitter());
+      }
 
       // ---------- Application Windows ----------
 
