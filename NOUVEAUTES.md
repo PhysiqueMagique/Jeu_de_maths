@@ -3,6 +3,11 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.10.2
+
+Garde-robe : les accessoires coûtent plus cher (il faut environ 80 % de toutes les médailles et pierres pour tout acheter). Les accessoires déjà achetés restent à toi!
+Le nœud papillon est plus haut dans le cou, par-dessus les bras, et le renard tient maintenant ses objets par-dessus sa patte.
+
 ## 0.10.1
 
 Nouvelle icône : le visage du renard! (Windows peut prendre un moment avant de la montrer sur le bureau.)

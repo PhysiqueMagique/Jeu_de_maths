@@ -55,7 +55,7 @@ const Mascotte = (() => {
         <path d="M97 98 C99 91 106 87 112 86" stroke="#fff" stroke-width="2.4" fill="none" opacity=".45"/>`,
     },
     {
-      id: 'magicien', article: 'mon', nom: 'Chapeau de magicien', emplacement: 'tete', prix: { or: 1, saphir: 1 }, vue: '80 24 84 90',
+      id: 'magicien', article: 'mon', nom: 'Chapeau de magicien', emplacement: 'tete', prix: { saphir: 2, emeraude: 1 }, vue: '80 24 84 90',
       svg: `<g transform="rotate(7 120 104)">
         <path d="M93 104 L121 36 L149 104 Z" fill="url(#@g-violet)" stroke="#3b1f73" stroke-width="2.4"/>
         <path d="M121 36 L110 104" stroke="#fff" stroke-width="2" opacity=".2"/>
@@ -68,7 +68,7 @@ const Mascotte = (() => {
       </g>`,
     },
     {
-      id: 'couronne', article: 'ma', nom: 'Couronne', emplacement: 'tete', prix: { or: 1, diamant: 1 }, vue: '88 60 64 50',
+      id: 'couronne', article: 'ma', nom: 'Couronne', emplacement: 'tete', prix: { diamant: 2 }, vue: '88 60 64 50',
       svg: `<g transform="rotate(-8 120 92)">
         <path d="M100 103 L97 79 L110 90 L120 70 L130 90 L143 79 L140 103 Z" fill="url(#@g-or)" stroke="#8a5d04" stroke-width="2.4"/>
         <path d="M100 98 L140 98" stroke="#8a5d04" stroke-width="1.6" opacity=".6"/>
@@ -93,7 +93,7 @@ const Mascotte = (() => {
         <path d="M82 138 L64 133 M158 138 L176 133" stroke="#2d2d3a" stroke-width="3"/>`,
     },
     {
-      id: 'soleil', article: 'mes', nom: 'Lunettes de soleil', emplacement: 'yeux', prix: { argent: 1 }, vue: '60 122 120 36',
+      id: 'soleil', article: 'mes', nom: 'Lunettes de soleil', emplacement: 'yeux', prix: { argent: 1, rubis: 1 }, vue: '60 122 120 36',
       svg: `<path d="M82 130 H114 Q115 146 107 152 Q99 157 90 152 Q81 146 82 130 Z" fill="url(#@g-fume)" stroke="#111" stroke-width="3"/>
         <path d="M126 130 H158 Q159 146 151 152 Q143 157 134 152 Q125 146 126 130 Z" fill="url(#@g-fume)" stroke="#111" stroke-width="3"/>
         <path d="M114 133 Q120 129 126 133" stroke="#111" stroke-width="3.4" fill="none"/>
@@ -101,7 +101,7 @@ const Mascotte = (() => {
         <path d="M88 136 L96 134 M90 143 L101 138 M132 136 L140 134 M134 143 L145 138" stroke="#fff" stroke-width="2.2" opacity=".55"/>`,
     },
     {
-      id: 'etoiles', article: 'mes', nom: 'Lunettes étoiles', emplacement: 'yeux', prix: { or: 1, rubis: 1 }, vue: '60 116 120 52',
+      id: 'etoiles', article: 'mes', nom: 'Lunettes étoiles', emplacement: 'yeux', prix: { or: 1, rubis: 2 }, vue: '60 116 120 52',
       svg: `<path d="${etoile(98, 142, 20, 11)}" fill="url(#@g-rose-verre)" stroke="#d6246e" stroke-width="3" stroke-linejoin="round"/>
         <path d="${etoile(142, 142, 20, 11)}" fill="url(#@g-rose-verre)" stroke="#d6246e" stroke-width="3" stroke-linejoin="round"/>
         <path d="M114 138 Q120 133 126 138" stroke="#d6246e" stroke-width="3.2" fill="none"/>
@@ -111,15 +111,15 @@ const Mascotte = (() => {
 
     // ---------- Cou ----------
     {
-      id: 'noeud', article: 'mon', nom: 'Nœud papillon', emplacement: 'cou', prix: { bronze: 1 }, vue: '96 194 48 30',
-      svg: `<g transform="translate(0 6)"><path d="M120 203 L101 193 Q96 203 101 213 Z" fill="url(#@g-rouge)" stroke="#7a1418" stroke-width="2"/>
+      id: 'noeud', article: 'mon', nom: 'Nœud papillon', emplacement: 'cou', calque: 'devant', prix: { bronze: 1, argent: 1 }, vue: '96 186 48 30',
+      svg: `<g transform="translate(0 -2)"><path d="M120 203 L101 193 Q96 203 101 213 Z" fill="url(#@g-rouge)" stroke="#7a1418" stroke-width="2"/>
         <path d="M120 203 L139 193 Q144 203 139 213 Z" fill="url(#@g-rouge)" stroke="#7a1418" stroke-width="2"/>
         <circle cx="105" cy="199" r="1.6" fill="#fff"/><circle cx="104" cy="207" r="1.6" fill="#fff"/><circle cx="110" cy="203" r="1.6" fill="#fff"/>
         <circle cx="135" cy="199" r="1.6" fill="#fff"/><circle cx="136" cy="207" r="1.6" fill="#fff"/><circle cx="130" cy="203" r="1.6" fill="#fff"/>
         <rect x="115" y="197" width="10" height="12" rx="4" fill="url(#@g-rouge)" stroke="#7a1418" stroke-width="2"/></g>`,
     },
     {
-      id: 'cravate', article: 'ma', nom: 'Cravate', emplacement: 'cou', prix: { argent: 1 }, vue: '100 194 40 56',
+      id: 'cravate', article: 'ma', nom: 'Cravate', emplacement: 'cou', prix: { argent: 1, or: 1 }, vue: '100 194 40 56',
       svg: `<clipPath id="@clip-cravate"><path d="M116 208 L124 208 L129 236 L120 246 L111 236 Z"/></clipPath>
         <path d="M116 208 L124 208 L129 236 L120 246 L111 236 Z" fill="url(#@g-bleu)" stroke="#1d4384" stroke-width="2"/>
         <g clip-path="url(#@clip-cravate)" stroke="#cfe3ff" stroke-width="2.6" opacity=".85">
@@ -129,7 +129,7 @@ const Mascotte = (() => {
         <path d="M116 201 L118 207" stroke="#fff" stroke-width="1.6" opacity=".6"/>`,
     },
     {
-      id: 'bandana', article: 'mon', nom: 'Bandana', emplacement: 'cou', prix: { argent: 1 }, vue: '96 190 48 46',
+      id: 'bandana', article: 'mon', nom: 'Bandana', emplacement: 'cou', prix: { or: 1, emeraude: 1 }, vue: '96 190 48 46',
       svg: `<path d="M101 195 Q120 205 139 195 L120 232 Z" fill="url(#@g-rouge)" stroke="#7a1418" stroke-width="2.2"/>
         <path d="M104 199 Q120 207 136 199" stroke="#7a1418" stroke-width="1.4" fill="none" opacity=".5"/>
         <circle cx="113" cy="206" r="2" fill="#fff"/><circle cx="127" cy="206" r="2" fill="#fff"/>
@@ -137,7 +137,7 @@ const Mascotte = (() => {
         <circle cx="126" cy="219" r="1.6" fill="#fff"/><circle cx="120" cy="225" r="1.6" fill="#fff"/>`,
     },
 
-    // ---------- Main (dans la main droite : coordonnées du bras au repos) ----------
+    // ---------- Main (dans la main droite, par-dessus la patte : coordonnées du bras au repos) ----------
     {
       id: 'crayon', article: 'mon', nom: 'Crayon géant', emplacement: 'main', prix: { bronze: 1 }, vue: '136 180 58 72',
       svg: `<g transform="translate(152 239) rotate(32)">
@@ -150,7 +150,7 @@ const Mascotte = (() => {
       </g>`,
     },
     {
-      id: 'loupe', article: 'ma', nom: 'Loupe', emplacement: 'main', prix: { argent: 1 }, vue: '136 172 62 76',
+      id: 'loupe', article: 'ma', nom: 'Loupe', emplacement: 'main', prix: { or: 1, saphir: 1 }, vue: '136 172 62 76',
       svg: `<g transform="translate(152 239) rotate(26)">
         <rect x="-3.5" y="-26" width="7" height="32" rx="3.5" fill="url(#@g-bois)" stroke="#3a240f" stroke-width="1.8"/>
         <circle cx="0" cy="-40" r="14" fill="url(#@g-verre)" stroke="url(#@g-or)" stroke-width="5"/>
@@ -159,7 +159,7 @@ const Mascotte = (() => {
       </g>`,
     },
     {
-      id: 'baguette', article: 'ma', nom: 'Baguette magique', emplacement: 'main', prix: { or: 1, emeraude: 1 }, vue: '142 186 56 64',
+      id: 'baguette', article: 'ma', nom: 'Baguette magique', emplacement: 'main', prix: { emeraude: 1, diamant: 1 }, vue: '142 186 56 64',
       svg: `<circle cx="173" cy="207" r="17" fill="url(#@g-lueur)"/>
         <path d="M150 242 L172 210" stroke="#3a240f" stroke-width="6"/>
         <path d="M150 242 L172 210" stroke="url(#@g-bois)" stroke-width="3.6"/>
@@ -202,8 +202,9 @@ const Mascotte = (() => {
 
   const TETE_CONTOUR = 'M131 97 C154 99 173 112 179 134 L193 146 L184 152 L198 164 L176 167 C163 183 143 194 120 194 C97 194 77 183 64 167 L42 164 L56 152 L47 146 L61 134 C67 112 86 99 108 98 L113 87 L119 96 L125 85 Z';
 
-  function accessoires(emplacement) {
-    return CATALOGUE.filter((a) => a.emplacement === emplacement)
+  // calque 'devant' : dessiné par-dessus les bras et la tête (ex. le nœud papillon)
+  function accessoires(emplacement, calque = 'normal') {
+    return CATALOGUE.filter((a) => a.emplacement === emplacement && (a.calque || 'normal') === calque)
       .map((a) => `<g class="accessoire" data-acc="${a.id}" style="display:none">${a.svg}</g>`).join('');
   }
 
@@ -298,13 +299,14 @@ const Mascotte = (() => {
         <circle cx="86" cy="236.5" r="2" fill="#fff" opacity=".22"/>
       </g>
       <g data-p="bras-d" style="transform-origin:140px 204px">
-        ${accessoires('main')}
         <path d="M140 204 L152 238" stroke="#6b3416" stroke-width="16.5"/>
         <path d="M140 204 L152 238" stroke="#ee7a2a" stroke-width="11.5"/>
         <path d="M143 207 L150 228" stroke="#ffb06a" stroke-width="3" opacity=".5"/>
         <circle cx="152" cy="239" r="8" fill="url(#@g-sombre)" stroke="#2a160c" stroke-width="2"/>
         <circle cx="150" cy="236.5" r="2" fill="#fff" opacity=".22"/>
+        ${accessoires('main')}
       </g>
+      <g data-p="devant">${accessoires('cou', 'devant')}</g>
     </g>`;
 
   let compteur = 0;

@@ -130,13 +130,14 @@ de son propre point, et les animations utilisent `element.animate()`. Il cligne 
 
 | Emplacement | Accessoires (prix) |
 |---|---|
-| Tête | casquette (bronze) · chapeau de magicien (or + saphir) · couronne (or + diamant) |
-| Yeux | lunettes rondes (bronze) · lunettes de soleil (argent) · lunettes étoiles (or + rubis) |
-| Cou | nœud papillon (bronze) · cravate (argent) · bandana (argent) |
-| Main | crayon géant (bronze) · loupe (argent) · baguette magique (or + émeraude) |
+| Tête | casquette (bronze) · chapeau de magicien (2 saphirs + émeraude) · couronne (2 diamants) |
+| Yeux | lunettes rondes (bronze) · lunettes de soleil (argent + rubis) · lunettes étoiles (or + 2 rubis) |
+| Cou | nœud papillon (bronze + argent) · cravate (argent + or) · bandana (or + émeraude) |
+| Main | crayon géant (bronze) · loupe (or + saphir) · baguette magique (émeraude + diamant) |
 
-Les prix sont dans `CATALOGUE` (`js/mascotte.js`). Avec 4 activités, il y a exactement 4 médailles de chaque sorte :
-on peut tout acheter en gagnant toutes les médailles et une pierre de chaque sorte.
+Les prix sont dans `CATALOGUE` (`js/mascotte.js`). Avec 4 activités, il y a 28 récompenses (4 de chaque sorte);
+tout acheter en demande 23 (environ 80 %). Le nœud papillon est dessiné par-dessus les bras (`calque: 'devant'`),
+et les objets de la main par-dessus la patte.
 
 ## Profils et sauvegarde du progrès
 
