@@ -12,8 +12,15 @@ Jeu.demarrer().then(() => {
 
   $('badge-joueur').innerHTML = `<span class="avatar petit" style="--couleur:${joueur.couleur}" aria-hidden="true">${joueur.emoji}</span>${ech(joueur.nom)}`;
 
-  const renard = Mascotte.creer($('scene'), { porte: Jeu.mascotte(joueur.id).porte, taille: 'grand' });
-  setTimeout(() => renard.dire('Salut! On se fait beau?'), 400);
+  // Le personnage choisi (on le refait quand on change de personnage)
+  let renard = null;
+  function creerPersonnage() {
+    if (renard) renard.detruire();
+    const m = Jeu.mascotte(joueur.id);
+    renard = Mascotte.creer($('scene'), { porte: m.porte, espece: m.espece, taille: 'grand' });
+  }
+  creerPersonnage();
+  setTimeout(() => renard.dire(Mascotte.personnage(Jeu.mascotte(joueur.id).espece).salut), 400);
 
   // ---------- Monnaies ----------
 
@@ -76,9 +83,40 @@ Jeu.demarrer().then(() => {
     }).join('');
   }
 
+  // Choix du personnage : gratuit; chaque vignette porte la tenue actuelle.
+  let vignettes = [];
+  function rendrePersonnages() {
+    vignettes.forEach((v) => v.detruire());
+    vignettes = [];
+    const m = Jeu.mascotte(joueur.id);
+    const zone = $('personnages');
+    zone.innerHTML = Mascotte.PERSONNAGES.ORDRE.map((id) => {
+      const e = Mascotte.personnage(id);
+      const choisi = e.id === Mascotte.personnage(m.espece).id;
+      return `<button type="button" class="choix-perso${choisi ? ' choisi' : ''}" data-espece="${id}" aria-pressed="${choisi}" aria-label="${e.nom}">
+                <span class="image"></span><span class="nom">${e.nom}</span></button>`;
+    }).join('');
+    zone.querySelectorAll('.choix-perso').forEach((b) => {
+      vignettes.push(Mascotte.creer(b.querySelector('.image'), { espece: b.dataset.espece, porte: m.porte, taille: 'mini', statique: true }));
+    });
+  }
+
+  $('personnages').addEventListener('click', (ev) => {
+    const b = ev.target.closest('.choix-perso');
+    if (!b) return;
+    if (b.dataset.espece === Mascotte.personnage(Jeu.mascotte(joueur.id).espece).id) return;
+    Jeu.choisirPersonnage(joueur.id, b.dataset.espece);
+    Jeu.jouer('clic');
+    creerPersonnage();
+    renard.reagir('bon');
+    renard.dire(Mascotte.personnage(b.dataset.espece).salut);
+    rendrePersonnages();
+  });
+
   function rendre() {
     rendreTresor();
     rendreRayons();
+    rendrePersonnages();
   }
 
   // ---------- Essayer (survol), mettre, acheter ----------

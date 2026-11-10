@@ -104,6 +104,7 @@
   </main>
 
   <script src="js/commun.js"></script>
+  <script src="js/personnages.js"></script>
   <script src="js/mascotte.js"></script>
   <script>
     'use strict';
@@ -196,12 +197,13 @@
         const sousTitre = abordables
           ? `<span class="nouveau">🛍️ Tu peux acheter ${abordables > 1 ? `${abordables} accessoires` : 'un accessoire'}!</span>`
           : `${m.achats.length} accessoire${m.achats.length > 1 ? 's' : ''} sur ${Mascotte.CATALOGUE.length}`;
-        zone.innerHTML = `<a class="carte carte-renard cliquable" href="renard.html" aria-label="La garde-robe du renard">
+        const perso = Mascotte.personnage(m.espece);
+        zone.innerHTML = `<a class="carte carte-renard cliquable" href="renard.html" aria-label="La garde-robe ${perso.du}">
             <span class="place-renard"></span>
-            <span class="texte"><b>La garde-robe du renard</b><span class="sous">${sousTitre}</span></span>
+            <span class="texte"><b>La garde-robe ${perso.du}</b><span class="sous">${sousTitre}</span></span>
             <span class="fleche-jouer" aria-hidden="true">▸</span>
           </a>`;
-        renardAccueil = Mascotte.creer(zone.querySelector('.place-renard'), { porte: m.porte, taille: 'mini' });
+        renardAccueil = Mascotte.creer(zone.querySelector('.place-renard'), { porte: m.porte, espece: m.espece, taille: 'mini' });
       }
 
       zoneJoueurs.addEventListener('click', (ev) => {

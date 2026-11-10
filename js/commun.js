@@ -14,7 +14,7 @@
          "activites": {
            "soustraction-emprunt": { "tutorielFait": true, "medailles": { … }, "records": { … } }
          },
-         "mascotte": { "achats": ["casquette"], "porte": { "tete": "casquette" }, "depense": { "bronze": 1 } }
+         "mascotte": { "espece": "renard", "achats": ["casquette"], "porte": { "tete": "casquette" }, "depense": { "bronze": 1 } }
        }
      }
    }
@@ -340,6 +340,7 @@ const Jeu = (() => {
     const d = estObjet(r.depense) ? r.depense : {};
     r.depense = { ...d };
     for (const k of MONNAIES) r.depense[k] = Math.max(0, Math.floor(Number(d[k]) || 0));
+    r.espece = typeof r.espece === 'string' && r.espece ? r.espece : 'renard';
     return r;
   }
 
@@ -392,6 +393,11 @@ const Jeu = (() => {
       m.porte[emplacement] = id;
     });
     return true;
+  }
+
+  // Choisit le personnage (renard, lapin, chat, grenouille, dragon…) : gratuit, les accessoires suivent.
+  function choisirPersonnage(joueurId, espece) {
+    majMascotte(joueurId, (m) => { m.espece = String(espece || 'renard'); });
   }
 
   // Met un accessoire déjà acheté (ou enlève celui de cet emplacement avec id = null).
@@ -722,7 +728,7 @@ const Jeu = (() => {
     joueurs, joueur, joueurCourant, choisirJoueur,
     verifierNom, creerJoueur, modifierJoueur, supprimerJoueur,
     progres, majProgres, nombreMedailles, nombrePierres,
-    MONNAIES, EMPLACEMENTS, mascotte, gains, tresor, peutAcheter, acheter, porter,
+    MONNAIES, EMPLACEMENTS, mascotte, gains, tresor, peutAcheter, acheter, porter, choisirPersonnage,
     jouer, sonActif, basculerSon, brancherSonsNavigation,
     exporter, importer,
     estApplication, infosApplication, verifierMiseAJour, installerMiseAJour,

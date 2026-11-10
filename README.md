@@ -20,7 +20,8 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `index.html` | Page d'accueil : profils (création, choix, modification), activités et médailles |
 | `js/commun.js` | Profils, liste des activités, sauvegarde du progrès, dessin des médailles |
 | `css/style.css` | Styles communs |
-| `js/mascotte.js`, `css/mascotte.css` | Le renard : dessin SVG, animations, réactions, catalogue des 12 accessoires |
+| `js/mascotte.js`, `css/mascotte.css` | Le personnage animé : squelette SVG commun, animations, réactions, catalogue des 12 accessoires |
+| `js/personnages.js` | Les 5 personnages (renard, lapin, chat, grenouille, dragon) : couleurs et morceaux de dessin |
 | `renard.html`, `js/garde-robe.js`, `css/garde-robe.css` | La garde-robe : acheter les accessoires avec ses médailles et ses pierres, les essayer, les porter |
 | `activites/soustraction-emprunt.html` | Activité 1 : soustraction avec emprunt |
 | `js/soustraction-modele.js` | Logique de l'activité (emprunts, indices, génération des défis), sans affichage |
@@ -117,7 +118,15 @@ Les temps, nombres de pas et proportions de trous sont au début de `js/multipli
 Dans les deux activités, vérifier deux fois la même réponse fausse ne compte qu'une erreur, et quand on dépasse
 le nombre d'erreurs permis pour l'émeraude, le jeu propose de recommencer le défi tout de suite.
 
-## Le renard et sa garde-robe
+## Le renard (et ses amis) et sa garde-robe
+
+**Personnages** (`js/personnages.js`) : renard, lapin, chat, grenouille, dragon. Ils partagent le même squelette
+(mêmes parties et pivots, mêmes yeux et bouches), donc les mêmes animations et les mêmes accessoires.
+Chaque personnage donne ses couleurs (les dégradés en sont fabriqués), ses oreilles, sa tête, son corps, sa queue,
+au besoin ses jambes, sa bouche ou des ailes (le dragon les bat au repos), et des décalages pour ses accessoires
+(la grenouille a la tête plus basse : ses chapeaux descendent). Le choix se fait dans la garde-robe (gratuit) et est gardé
+dans `mascotte.espece`. Pour ajouter un personnage : une entrée dans `PERSONNAGES` et dans `PERSONNAGES.ORDRE`.
+
 
 Le renard est une « marionnette » SVG (`js/mascotte.js`) : chaque partie (tête, oreilles, bras, queue) pivote autour
 de son propre point, et les animations utilisent `element.animate()`. Il cligne des yeux, respire et remue la queue au repos.
@@ -158,7 +167,7 @@ Tout tient dans un seul objet JSON, le même que le fichier de copie de sauvegar
       "activites": {
         "soustraction-emprunt": { "tutorielFait": true, "medailles": { "bronze": true, "argent": false, "or": false } }
       },
-      "mascotte": { "achats": ["casquette"], "porte": { "tete": "casquette" }, "depense": { "bronze": 1 } }
+      "mascotte": { "espece": "renard", "achats": ["casquette"], "porte": { "tete": "casquette" }, "depense": { "bronze": 1 } }
     }
   }
 }

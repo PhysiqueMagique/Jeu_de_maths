@@ -11,7 +11,7 @@
    corps, bras droit) : ils suivent donc tous les mouvements.
 
    Utilisation :
-     const r = Mascotte.creer(conteneur, { porte, taille: 'petit' | 'grand' | 'mini' });
+     const r = Mascotte.creer(conteneur, { porte, espece: 'renard' | 'lapin' | …, taille: 'petit' | 'grand' | 'mini', statique });
      r.reagir('bon' | 'erreur' | 'medaille' | 'hmm');
      r.habiller({ tete: 'casquette', yeux: null, cou: 'cravate', main: null });
    Dans les activités : Mascotte.brancherActivite() (fait tout seul au chargement).
@@ -174,21 +174,18 @@ const Mascotte = (() => {
   const PAR_ID = Object.fromEntries(CATALOGUE.map((a) => [a.id, a]));
 
   // ==========================================================
-  //  Dessin (les « @ » deviennent un préfixe unique par renard)
+  //  Dessin (les « @ » deviennent un préfixe unique par personnage)
+  //  Les personnages eux-mêmes sont dans js/personnages.js.
   // ==========================================================
 
-  const DEFS = `
-    <radialGradient id="@g-tete" cx="42%" cy="34%" r="70%"><stop offset="0" stop-color="#ffad5c"/><stop offset=".55" stop-color="#f07f2c"/><stop offset="1" stop-color="#c9561a"/></radialGradient>
-    <linearGradient id="@g-corps" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#cf5c1c"/><stop offset=".35" stop-color="#f58a36"/><stop offset=".7" stop-color="#ee7a2a"/><stop offset="1" stop-color="#c4521a"/></linearGradient>
-    <linearGradient id="@g-oreille" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#e06f26"/><stop offset="1" stop-color="#f7934a"/></linearGradient>
-    <linearGradient id="@g-oreille-int" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#e9a08a"/><stop offset="1" stop-color="#fbd9c4"/></linearGradient>
-    <linearGradient id="@g-creme" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fffaf2"/><stop offset="1" stop-color="#f1d6b8"/></linearGradient>
-    <linearGradient id="@g-sombre" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#6a4129"/><stop offset="1" stop-color="#2f1a10"/></linearGradient>
-    <radialGradient id="@g-iris" cx="50%" cy="78%" r="70%"><stop offset="0" stop-color="#d08a3c"/><stop offset=".45" stop-color="#7a3d17"/><stop offset="1" stop-color="#1e0e06"/></radialGradient>
-    <radialGradient id="@g-nez" cx="40%" cy="30%" r="70%"><stop offset="0" stop-color="#6b4433"/><stop offset="1" stop-color="#140905"/></radialGradient>
+  const PERSOS = typeof PERSONNAGES !== 'undefined' ? PERSONNAGES
+    : (typeof require !== 'undefined' ? require('./personnages.js') : { renard: null, ORDRE: [] });
+  const persoDe = (id) => PERSOS[id] || PERSOS.renard;
+
+  // Dégradés des accessoires (les mêmes pour tous)
+  const DEFS_COMMUNS = `
     <radialGradient id="@g-joue"><stop offset="0" stop-color="#ff7d6b" stop-opacity=".6"/><stop offset="1" stop-color="#ff7d6b" stop-opacity="0"/></radialGradient>
     <radialGradient id="@g-ombre"><stop offset="0" stop-color="#5a2e10" stop-opacity=".32"/><stop offset="1" stop-color="#5a2e10" stop-opacity="0"/></radialGradient>
-    <linearGradient id="@g-queue" x1="0" x2="1" y1="1" y2="0"><stop offset="0" stop-color="#c9561a"/><stop offset=".5" stop-color="#f58a36"/><stop offset="1" stop-color="#ffa556"/></linearGradient>
     <linearGradient id="@g-or" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff1a8"/><stop offset=".45" stop-color="#f6c433"/><stop offset="1" stop-color="#c98a0c"/></linearGradient>
     <linearGradient id="@g-bleu" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5a9cf0"/><stop offset="1" stop-color="#2b5fb4"/></linearGradient>
     <linearGradient id="@g-rouge" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff6b6b"/><stop offset="1" stop-color="#c8262c"/></linearGradient>
@@ -200,7 +197,22 @@ const Mascotte = (() => {
     <linearGradient id="@g-rose-verre" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ffd6ea" stop-opacity=".6"/><stop offset="1" stop-color="#ff7ab8" stop-opacity=".3"/></linearGradient>
     <linearGradient id="@g-fume" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4a4f5c"/><stop offset="1" stop-color="#14161c"/></linearGradient>`;
 
-  const TETE_CONTOUR = 'M131 97 C154 99 173 112 179 134 L193 146 L184 152 L198 164 L176 167 C163 183 143 194 120 194 C97 194 77 183 64 167 L42 164 L56 152 L47 146 L61 134 C67 112 86 99 108 98 L113 87 L119 96 L125 85 Z';
+  // Dégradés du personnage, fabriqués à partir de ses couleurs
+  function degrades(e) {
+    const c = e.c;
+    const st = (couleurs) => couleurs.map((k, i) => `<stop offset="${couleurs.length > 1 ? i / (couleurs.length - 1) : 0}" stop-color="${k}"/>`).join('');
+    return `
+      <radialGradient id="@g-tete" cx="42%" cy="34%" r="70%"><stop offset="0" stop-color="${c.fourrure[0]}"/><stop offset=".55" stop-color="${c.fourrure[1]}"/><stop offset="1" stop-color="${c.fourrure[2]}"/></radialGradient>
+      <linearGradient id="@g-corps" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="${c.corps[0]}"/><stop offset=".35" stop-color="${c.corps[1]}"/><stop offset=".7" stop-color="${c.corps[2]}"/><stop offset="1" stop-color="${c.corps[3]}"/></linearGradient>
+      <linearGradient id="@g-queue" x1="0" x2="1" y1="1" y2="0">${st(c.queue)}</linearGradient>
+      <linearGradient id="@g-oreille" x1="0" x2="0" y1="0" y2="1">${st(c.oreille)}</linearGradient>
+      <linearGradient id="@g-oreille-int" x1="0" x2="0" y1="0" y2="1">${st(c.oreilleInt)}</linearGradient>
+      <linearGradient id="@g-creme" x1="0" x2="0" y1="0" y2="1">${st(c.creme)}</linearGradient>
+      <linearGradient id="@g-pattes" x1="0" x2="0" y1="0" y2="1">${st(c.pattes)}</linearGradient>
+      <radialGradient id="@g-iris" cx="50%" cy="78%" r="70%"><stop offset="0" stop-color="${c.iris[0]}"/><stop offset=".45" stop-color="${c.iris[1]}"/><stop offset="1" stop-color="${c.iris[2]}"/></radialGradient>
+      <radialGradient id="@g-nez" cx="40%" cy="30%" r="70%">${st(c.nez)}</radialGradient>
+      ${e.defs || ''}`;
+  }
 
   // calque 'devant' : dessiné par-dessus les bras et la tête (ex. le nœud papillon)
   function accessoires(emplacement, calque = 'normal') {
@@ -208,59 +220,55 @@ const Mascotte = (() => {
       .map((a) => `<g class="accessoire" data-acc="${a.id}" style="display:none">${a.svg}</g>`).join('');
   }
 
-  const CORPS_SVG = () => `
+  function jambesParDefaut(c) {
+    return `<rect x="101" y="249" width="15" height="29" rx="7" fill="url(#@g-pattes)" stroke="${c.pattesContour}" stroke-width="2"/>
+      <ellipse cx="107" cy="280" rx="12.5" ry="6.8" fill="url(#@g-pattes)" stroke="${c.pattesContour}" stroke-width="2"/>
+      <path d="M102 278 L102 283 M107 277 L107 284 M112 278 L112 283" stroke="${c.orteils}" stroke-width="1.3"/>
+      <rect x="124" y="249" width="15" height="29" rx="7" fill="url(#@g-pattes)" stroke="${c.pattesContour}" stroke-width="2"/>
+      <ellipse cx="133" cy="280" rx="12.5" ry="6.8" fill="url(#@g-pattes)" stroke="${c.pattesContour}" stroke-width="2"/>
+      <path d="M128 278 L128 283 M133 277 L133 284 M138 278 L138 283" stroke="${c.orteils}" stroke-width="1.3"/>`;
+  }
+
+  function bras(c, cote) {
+    const [x0, x1, hx0, hx1, op] = cote === 'g' ? [100, 88, '97 207', '90 228', 0.7] : [140, 152, '143 207', '150 228', 0.5];
+    return `<path d="M${x0} 204 L${x1} 238" stroke="${c.contour}" stroke-width="16.5"/>
+      <path d="M${x0} 204 L${x1} 238" stroke="${c.bras}" stroke-width="11.5"/>
+      <path d="M${hx0} L${hx1}" stroke="${c.refletBras}" stroke-width="3" opacity="${op}"/>
+      <circle cx="${x1}" cy="239" r="8" fill="url(#@g-pattes)" stroke="${c.pattesContour}" stroke-width="2"/>
+      <circle cx="${x1 - 2}" cy="236.5" r="2" fill="#fff" opacity=".22"/>`;
+  }
+
+  function corpsSVG(e) {
+    const c = e.c;
+    const d = e.decalage || {};
+    const dec = (emp, contenu) => (d[emp] ? `<g transform="${d[emp]}">${contenu}</g>` : contenu);
+    const pu = e.pupille || { rx: 5.4, ry: 7 };
+    const ailes = e.ailes
+      ? `<g data-p="aile-g" style="transform-origin:${e.ailes.pivotG}">${e.ailes.g}</g>
+         <g data-p="aile-d" style="transform-origin:${e.ailes.pivotD}">${e.ailes.d}</g>`
+      : '';
+    return `
     <ellipse data-p="ombre" cx="120" cy="287" rx="50" ry="8" fill="url(#@g-ombre)" style="transform-origin:120px 287px"/>
     <g data-p="perso" style="transform-origin:120px 285px" stroke-linejoin="round" stroke-linecap="round">
-      <g data-p="queue" style="transform-origin:136px 250px">
-        <path d="M134 254 C162 267 203 254 210 216 L214 209 L209 205 C211 186 202 166 186 150 C192 178 186 206 162 226 C152 234 142 240 134 246 Z" fill="url(#@g-queue)" stroke="#6b3416" stroke-width="2.6"/>
-        <path d="M186 150 C198 160 207 174 209 192 L203 188 L199 196 L193 187 L187 191 C190 177 189 163 186 150 Z" fill="url(#@g-creme)" stroke="#6b3416" stroke-width="2.2"/>
-        <path d="M148 238 C170 228 186 212 194 194 M156 247 C178 242 196 230 204 214" fill="none" stroke="#b9501a" stroke-width="1.6" opacity=".55"/>
-        <path d="M156 226 C174 212 184 198 188 184" fill="none" stroke="#fff" stroke-width="2" opacity=".3"/>
-      </g>
-      <g>
-        <rect x="101" y="249" width="15" height="29" rx="7" fill="url(#@g-sombre)" stroke="#2a160c" stroke-width="2"/>
-        <ellipse cx="107" cy="280" rx="12.5" ry="6.8" fill="url(#@g-sombre)" stroke="#2a160c" stroke-width="2"/>
-        <path d="M102 278 L102 283 M107 277 L107 284 M112 278 L112 283" stroke="#7d5238" stroke-width="1.3"/>
-        <rect x="124" y="249" width="15" height="29" rx="7" fill="url(#@g-sombre)" stroke="#2a160c" stroke-width="2"/>
-        <ellipse cx="133" cy="280" rx="12.5" ry="6.8" fill="url(#@g-sombre)" stroke="#2a160c" stroke-width="2"/>
-        <path d="M128 278 L128 283 M133 277 L133 284 M138 278 L138 283" stroke="#7d5238" stroke-width="1.3"/>
-      </g>
+      ${ailes}
+      <g data-p="queue" style="transform-origin:136px 250px">${e.queue || ''}</g>
+      <g>${e.jambes || jambesParDefaut(c)}</g>
       <g data-p="corps" style="transform-origin:120px 262px">
-        <path d="M97 196 C91 214 91 244 100 258 C110 268 130 268 140 258 C149 244 149 214 143 196 C134 189 106 189 97 196 Z" fill="url(#@g-corps)" stroke="#6b3416" stroke-width="2.6"/>
-        <path d="M104 197 L109 206 L114 199 L120 208 L126 199 L131 206 L136 197 C141 216 139 248 120 256 C101 248 99 216 104 197 Z" fill="url(#@g-creme)"/>
-        <path d="M112 226 L116 232 M124 232 L128 226 M114 242 L118 247 M122 247 L126 242" stroke="#e2bc96" stroke-width="1.4"/>
-        <ellipse cx="120" cy="199" rx="24" ry="7" fill="#6b2c0a" opacity=".22"/>
+        ${e.corps}
+        <ellipse cx="120" cy="199" rx="24" ry="7" fill="${c.ombreCou}" opacity=".22"/>
         <path d="M98 208 C95 224 95 240 100 251" fill="none" stroke="#fff" stroke-width="2.2" opacity=".3"/>
-        ${accessoires('cou')}
+        ${dec('cou', accessoires('cou'))}
       </g>
       <g data-p="tete" style="transform-origin:120px 192px">
-        <g data-p="oreille-g" style="transform-origin:92px 108px">
-          <path d="M80 119 L65 58 L111 102 Z" fill="url(#@g-oreille)" stroke="#6b3416" stroke-width="2.6"/>
-          <path d="M86 111 L74 74 L102 102 Z" fill="url(#@g-oreille-int)"/>
-          <path d="M84 108 L80 94 M89 107 L86 92 M94 106 L92 96" stroke="#fffaf2" stroke-width="1.8"/>
-          <path d="M70 78 L65 58 L83 74 Z" fill="url(#@g-sombre)" stroke="#2a160c" stroke-width="2.2"/>
-        </g>
-        <g data-p="oreille-d" style="transform-origin:148px 108px">
-          <path d="M160 119 L175 58 L129 102 Z" fill="url(#@g-oreille)" stroke="#6b3416" stroke-width="2.6"/>
-          <path d="M154 111 L166 74 L138 102 Z" fill="url(#@g-oreille-int)"/>
-          <path d="M156 108 L160 94 M151 107 L154 92 M146 106 L148 96" stroke="#fffaf2" stroke-width="1.8"/>
-          <path d="M170 78 L175 58 L157 74 Z" fill="url(#@g-sombre)" stroke="#2a160c" stroke-width="2.2"/>
-        </g>
-        <path d="${TETE_CONTOUR}" fill="url(#@g-tete)"/>
-        <path d="M179 134 L193 146 L184 152 L198 164 L176 167 C178 156 180 145 179 134 Z" fill="url(#@g-creme)"/>
-        <path d="M61 134 L47 146 L56 152 L42 164 L64 167 C62 156 60 145 61 134 Z" fill="url(#@g-creme)"/>
-        <path d="M82 157 C92 147 108 149 120 159 C132 149 148 147 158 157 C152 179 137 192 120 192 C103 192 88 179 82 157 Z" fill="url(#@g-creme)"/>
-        <path d="${TETE_CONTOUR}" fill="none" stroke="#6b3416" stroke-width="2.8"/>
-        <path d="M68 130 C73 115 88 104 104 101" fill="none" stroke="#fff" stroke-width="3" opacity=".35"/>
-        <path d="M114 104 L117 112 M124 103 L122 111" stroke="#c9561a" stroke-width="1.6" opacity=".6"/>
-        <ellipse cx="85" cy="164" rx="11" ry="7" fill="url(#@g-joue)"/>
-        <ellipse cx="155" cy="164" rx="11" ry="7" fill="url(#@g-joue)"/>
+        <g data-p="oreille-g" style="transform-origin:${e.pivots.og}">${e.oreilleG || ''}</g>
+        <g data-p="oreille-d" style="transform-origin:${e.pivots.od}">${e.oreilleD || ''}</g>
+        ${e.tete}
         <g data-p="regard">
           <g data-p="yeux" data-e="yeux-normaux" style="transform-origin:120px 141px">
             <ellipse cx="98" cy="141" rx="11" ry="13.5" fill="url(#@g-iris)" stroke="#1e0e06" stroke-width="1.5"/>
             <ellipse cx="142" cy="141" rx="11" ry="13.5" fill="url(#@g-iris)" stroke="#1e0e06" stroke-width="1.5"/>
-            <ellipse cx="98" cy="142" rx="5.4" ry="7" fill="#120804"/>
-            <ellipse cx="142" cy="142" rx="5.4" ry="7" fill="#120804"/>
+            <ellipse cx="98" cy="142" rx="${pu.rx}" ry="${pu.ry}" fill="#120804"/>
+            <ellipse cx="142" cy="142" rx="${pu.rx}" ry="${pu.ry}" fill="#120804"/>
             <circle cx="102" cy="135.5" r="4.2" fill="#fff"/>
             <circle cx="146" cy="135.5" r="4.2" fill="#fff"/>
             <circle cx="94.5" cy="147" r="1.9" fill="#fff" opacity=".9"/>
@@ -272,14 +280,10 @@ const Mascotte = (() => {
           <path d="M131 145 Q142 129 153 145" stroke="#2a1206" stroke-width="5" fill="none"/>
         </g>
         <g data-e="sourcils" style="display:none">
-          <path d="M86 120 Q96 119 106 123" fill="none" stroke="#5a2e14" stroke-width="4"/>
-          <path d="M154 120 Q144 119 134 123" fill="none" stroke="#5a2e14" stroke-width="4"/>
+          <path d="M86 120 Q96 119 106 123" fill="none" stroke="${c.sourcils}" stroke-width="4"/>
+          <path d="M154 120 Q144 119 134 123" fill="none" stroke="${c.sourcils}" stroke-width="4"/>
         </g>
-        <path d="M111 158 Q120 152 129 158 Q126 167 120 168 Q114 167 111 158 Z" fill="url(#@g-nez)"/>
-        <ellipse cx="116.5" cy="157.5" rx="3" ry="1.5" fill="#fff" opacity=".55"/>
-        <circle cx="105" cy="168" r="1.3" fill="#c29372"/><circle cx="101" cy="164" r="1.3" fill="#c29372"/>
-        <circle cx="135" cy="168" r="1.3" fill="#c29372"/><circle cx="139" cy="164" r="1.3" fill="#c29372"/>
-        <path data-e="bouche-normale" d="M111 172 Q115.5 177 120 172 Q124.5 177 129 172" stroke="#2a1206" stroke-width="2.6" fill="none"/>
+        <g data-e="bouche-normale">${e.bouche || '<path d="M111 172 Q115.5 177 120 172 Q124.5 177 129 172" stroke="#2a1206" stroke-width="2.6" fill="none"/>'}</g>
         <g data-e="bouche-ouverte" style="display:none">
           <path d="M108 170 Q120 174 132 170 Q130 188 120 188 Q110 188 108 170 Z" fill="#5e1f1f" stroke="#2a1206" stroke-width="2"/>
           <path d="M113 182 Q120 177 127 182 Q125 187 120 187 Q115 187 113 182 Z" fill="#f28b8b"/>
@@ -288,33 +292,25 @@ const Mascotte = (() => {
           <path d="M108 171 Q120 174 132 171 Q128 184 120 184 Q112 184 108 171 Z" fill="#5e1f1f" stroke="#2a1206" stroke-width="2.2"/>
           <path d="M114 180.5 Q120 177 126 180.5 Q124 183.5 120 183.5 Q116 183.5 114 180.5 Z" fill="#f28b8b"/>
         </g>
-        ${accessoires('yeux')}
-        ${accessoires('tete')}
+        ${dec('yeux', accessoires('yeux'))}
+        ${dec('tete', accessoires('tete'))}
       </g>
-      <g data-p="bras-g" style="transform-origin:100px 204px">
-        <path d="M100 204 L88 238" stroke="#6b3416" stroke-width="16.5"/>
-        <path d="M100 204 L88 238" stroke="#ee7a2a" stroke-width="11.5"/>
-        <path d="M97 207 L90 228" stroke="#ffb06a" stroke-width="3" opacity=".7"/>
-        <circle cx="88" cy="239" r="8" fill="url(#@g-sombre)" stroke="#2a160c" stroke-width="2"/>
-        <circle cx="86" cy="236.5" r="2" fill="#fff" opacity=".22"/>
-      </g>
+      <g data-p="bras-g" style="transform-origin:100px 204px">${bras(c, 'g')}</g>
       <g data-p="bras-d" style="transform-origin:140px 204px">
-        <path d="M140 204 L152 238" stroke="#6b3416" stroke-width="16.5"/>
-        <path d="M140 204 L152 238" stroke="#ee7a2a" stroke-width="11.5"/>
-        <path d="M143 207 L150 228" stroke="#ffb06a" stroke-width="3" opacity=".5"/>
-        <circle cx="152" cy="239" r="8" fill="url(#@g-sombre)" stroke="#2a160c" stroke-width="2"/>
-        <circle cx="150" cy="236.5" r="2" fill="#fff" opacity=".22"/>
-        ${accessoires('main')}
+        ${bras(c, 'd')}
+        ${dec('main', accessoires('main'))}
       </g>
-      <g data-p="devant">${accessoires('cou', 'devant')}</g>
+      <g data-p="devant">${dec('cou', accessoires('cou', 'devant'))}</g>
     </g>`;
+  }
 
   let compteur = 0;
   const avecPrefixe = (texte, p) => texte.replace(/@/g, p);
 
-  function svgRenard(p) {
-    return avecPrefixe(`<svg class="renard" viewBox="0 0 240 300" role="img" aria-label="Le renard" style="overflow:visible">
-      <defs>${DEFS}</defs>${CORPS_SVG()}</svg>`, p);
+  function svgPersonnage(p, espece) {
+    const e = persoDe(espece);
+    return avecPrefixe(`<svg class="renard" viewBox="0 0 240 300" role="img" aria-label="${e.nom}" style="overflow:visible">
+      <defs>${DEFS_COMMUNS}${degrades(e)}</defs>${corpsSVG(e)}</svg>`, p);
   }
 
   // Petite image d'un accessoire seul (pour la garde-robe)
@@ -323,7 +319,7 @@ const Mascotte = (() => {
     if (!a) return '';
     const p = `mv${++compteur}-`;
     return avecPrefixe(`<svg class="vignette-acc" viewBox="${a.vue}" role="img" aria-label="${a.nom}">
-      <defs>${DEFS}</defs><g stroke-linejoin="round" stroke-linecap="round">${a.svg}</g></svg>`, p);
+      <defs>${DEFS_COMMUNS}</defs><g stroke-linejoin="round" stroke-linecap="round">${a.svg}</g></svg>`, p);
   }
 
   // ==========================================================
@@ -457,11 +453,20 @@ const Mascotte = (() => {
   //  Un renard
   // ==========================================================
 
+  function habillerSVG(svg, porte = {}) {
+    svg.querySelectorAll('.accessoire').forEach((g) => { g.style.display = 'none'; });
+    for (const id of Object.values(porte || {})) {
+      const g = id && svg.querySelector(`.accessoire[data-acc="${id}"]`);
+      if (g) g.style.display = '';
+    }
+  }
+
   function creer(conteneur, options = {}) {
     const p = `m${++compteur}-`;
     const racine = document.createElement('div');
     racine.className = `mascotte ${['grand', 'mini'].includes(options.taille) ? options.taille : 'petit'}`;
-    racine.innerHTML = `<div class="mascotte-bulle" aria-live="polite"></div>${svgRenard(p)}`;
+    racine.innerHTML = `<div class="mascotte-bulle" aria-live="polite"></div>${svgPersonnage(p, options.espece)}`;
+    racine.dataset.espece = persoDe(options.espece).id;
     conteneur.appendChild(racine);
     const svg = racine.querySelector('svg');
     const bulle = racine.querySelector('.mascotte-bulle');
@@ -477,7 +482,18 @@ const Mascotte = (() => {
     }
 
     // ---------- Repos ----------
+    // statique : une simple image (vignettes du choix de personnage), sans animation ni réaction.
+    if (options.statique) {
+      habillerSVG(svg, options.porte);
+      return { el: racine, reagir() {}, habiller: (porte) => habillerSVG(svg, porte), dire() {}, detruire: () => racine.remove() };
+    }
     const boucle = { iterations: Infinity, easing: 'ease-in-out' };
+    if (P['aile-g']) {
+      boucles.push(
+        P['aile-g'].animate([T('rotate(0deg)'), T('rotate(9deg)'), T('rotate(0deg)')], { ...boucle, duration: 1400 }),
+        P['aile-d'].animate([T('rotate(0deg)'), T('rotate(-9deg)'), T('rotate(0deg)')], { ...boucle, duration: 1400 }),
+      );
+    }
     boucles.push(
       P.corps.animate([T('scaleY(1)'), T('scaleY(1.025)'), T('scaleY(1)')], { ...boucle, duration: 3000 }),
       P.tete.animate([T('translateY(0)'), T('translateY(1.6px)'), T('translateY(0)')], { ...boucle, duration: 3000 }),
@@ -563,13 +579,7 @@ const Mascotte = (() => {
       if (type !== 'hmm') dire(choisir(MESSAGES[type], `m-${type}`));
     }
 
-    function habiller(porte = {}) {
-      svg.querySelectorAll('.accessoire').forEach((g) => { g.style.display = 'none'; });
-      for (const id of Object.values(porte || {})) {
-        const g = id && svg.querySelector(`.accessoire[data-acc="${id}"]`);
-        if (g) g.style.display = '';
-      }
-    }
+    const habiller = (porte) => habillerSVG(svg, porte);
 
     function detruire() {
       boucles.forEach((a) => a.cancel());
@@ -594,12 +604,14 @@ const Mascotte = (() => {
   const REACTION = { bon: 'bon', reussite: 'bon', erreur: 'erreur', oups: 'hmm', medaille: 'medaille', pierre: 'medaille' };
   let dernier = { type: null, quand: 0 };
 
-  function porteCourant() {
+  // Tenue et personnage du joueur choisi
+  function tenueCourante() {
     try {
       const j = typeof Jeu !== 'undefined' && Jeu.joueurCourant();
-      return j ? Jeu.mascotte(j.id).porte : {};
+      const m = j ? Jeu.mascotte(j.id) : null;
+      return m ? { porte: m.porte, espece: m.espece } : { porte: {}, espece: 'renard' };
     } catch (err) {
-      return {};
+      return { porte: {}, espece: 'renard' };
     }
   }
 
@@ -619,13 +631,13 @@ const Mascotte = (() => {
   function brancherActivite() {
     if (branche) return;
     branche = true;
-    const porte = porteCourant();
+    const tenue = tenueCourante();
     const zones = [];
     document.querySelectorAll('.panneau').forEach((panneau) => {
       const zone = document.createElement('div');
       zone.className = 'zone-mascotte';
       panneau.appendChild(zone);
-      creer(zone, { porte });
+      creer(zone, tenue);
       zones.push(zone);
     });
     // Le renard prend la place qui reste sous le panneau, sans jamais faire défiler la page :
@@ -659,7 +671,7 @@ const Mascotte = (() => {
         const zone = document.createElement('div');
         zone.className = 'zone-mascotte-fin';
         fin.appendChild(zone);
-        renardFin = creer(zone, { porte: porteCourant(), taille: 'grand' });
+        renardFin = creer(zone, { ...tenueCourante(), taille: 'grand' });
         // Le son de la fin a pu jouer juste avant l'affichage : on le rejoue pour ce renard.
         if (dernier.type && Date.now() - dernier.quand < 1500) {
           const type = dernier.type === 'hmm' ? 'erreur' : dernier.type;
@@ -680,7 +692,7 @@ const Mascotte = (() => {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
   }
 
-  return { CATALOGUE, EMPLACEMENTS, PAR_ID, creer, vignette, brancherActivite };
+  return { CATALOGUE, EMPLACEMENTS, PAR_ID, PERSONNAGES: PERSOS, personnage: persoDe, creer, vignette, brancherActivite };
 })();
 
 if (typeof module !== 'undefined') module.exports = Mascotte;

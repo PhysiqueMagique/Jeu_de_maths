@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.11.0
+
+Choisis ton personnage dans la garde-robe : renard, lapin, chat, grenouille ou dragon! Ils ont tous les mêmes animations et peuvent porter tous les accessoires. Changer de personnage est gratuit, et tes accessoires suivent.
+
 ## 0.10.3
 
 Le tutoriel n'est plus obligatoire : le défi bronze est ouvert tout de suite, et un bouton « Sauter le tutoriel » est offert. Le tutoriel reste disponible avec « Revoir le tutoriel ».

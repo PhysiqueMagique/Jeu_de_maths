@@ -26,8 +26,8 @@
 .piece.vide { opacity: 0.4; filter: grayscale(0.6); }
 .tresor .note { color: var(--doux); font-size: 0.85rem; margin: 10px 0 0; }
 
-.rayon { margin-bottom: 14px; }
-.rayon h2 { font-size: 1.15rem; margin: 0 0 8px; }
+.rayon { margin-bottom: 8px; }
+.rayon h2 { font-size: 1.1rem; margin: 0 0 6px; }
 .articles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
 .article {
@@ -42,18 +42,18 @@
   border: 3px solid transparent;
   border-radius: 16px;
   box-shadow: var(--ombre);
-  padding: 8px 10px;
+  padding: 5px 10px;
   cursor: pointer;
   color: var(--encre);
   transition: transform 0.12s, border-color 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
 .article:hover, .article:focus-visible { transform: translateY(-3px); outline: none; border-color: var(--bleu-pale); }
-.article .image { grid-row: 1 / 3; display: flex; align-items: center; justify-content: center; width: 74px; height: 56px;
+.article .image { grid-row: 1 / 3; display: flex; align-items: center; justify-content: center; width: 74px; height: 50px;
   background: #fbf6ee; border-radius: 12px; }
-.article .image svg { width: 66px; height: 50px; }
+.article .image svg { width: 62px; height: 44px; }
 .article .nom { font-weight: 900; font-size: 1rem; line-height: 1.15; }
-.article .bas { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 30px; }
+.article .bas { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 26px; }
 .article .prix { display: flex; gap: 4px; align-items: center; }
 .pastille { display: inline-flex; align-items: center; gap: 2px; font-size: 0.85rem; }
 .pastille svg { display: block; }
@@ -81,3 +81,17 @@
 .fenetre .rangee-boutons { display: flex; gap: 12px; justify-content: center; margin-top: 8px; }
 
 .barre-haut .droite { display: flex; align-items: center; gap: 12px; }
+
+/* Choix du personnage */
+.personnages { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.choix-perso {
+  font: inherit; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: #fff; border: 3px solid transparent; border-radius: 16px; box-shadow: var(--ombre);
+  padding: 4px 4px 5px; cursor: pointer; color: var(--encre); transition: transform 0.12s, border-color 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.choix-perso:hover, .choix-perso:focus-visible { transform: translateY(-3px); outline: none; border-color: var(--bleu-pale); }
+.choix-perso.choisi { border-color: var(--vert); background: var(--vert-pale); }
+.choix-perso .image { display: block; height: 64px; overflow: hidden; }
+.choix-perso .mascotte.mini svg { width: 54px; height: 68px; }
+.choix-perso .nom { font-weight: 900; font-size: 0.95rem; }
