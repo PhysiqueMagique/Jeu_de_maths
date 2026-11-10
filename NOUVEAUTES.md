@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.10.1
+
+Nouvelle icône : le visage du renard! (Windows peut prendre un moment avant de la montrer sur le bureau.)
+
 ## 0.10.0
 
 Voici le renard! Il t'accompagne dans toutes les activités : il saute de joie quand tu réussis, t'encourage quand tu te trompes (« Lâche pas, tu vas l'avoir! ») et danse quand tu gagnes une médaille.
