@@ -1,6 +1,6 @@
 [package]
 name = "jeu-de-maths"
-version = "0.10.2"
+version = "0.10.3"
 description = "Jeu de maths pour le primaire"
 edition = "2021"
 

@@ -15,6 +15,7 @@
 }
 .carte-tuto .texte { flex: 1 1 260px; }
 .carte-tuto h2 { color: #d96a22; }
+.boutons-tuto { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
 
 .liste-niveaux { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .carte-niveau { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }

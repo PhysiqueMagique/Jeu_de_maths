@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.10.3
+
+Le tutoriel n'est plus obligatoire : le défi bronze est ouvert tout de suite, et un bouton « Sauter le tutoriel » est offert. Le tutoriel reste disponible avec « Revoir le tutoriel ».
+
 ## 0.10.2
 
 Garde-robe : les accessoires coûtent plus cher (il faut environ 80 % de toutes les médailles et pierres pour tout acheter). Les accessoires déjà achetés restent à toi!

@@ -48,6 +48,7 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
    - 🥇 **Or** : emprunter à travers un zéro (403 − 158, 600 − 247) et nombres à 4 chiffres (1er problème avec coup de pouce).
 
 Chaque défi réussi donne sa médaille, visible sur la page d'accueil. Argent se débloque avec bronze, or avec argent.
+Le tutoriel n'est pas obligatoire (dans toutes les activités) : le défi bronze est ouvert dès le départ, et « Sauter le tutoriel » cache la carte « Commence ici ».
 Pendant un défi, « Besoin d'aide? » donne l'indice de la prochaine étape et un lien pour revoir le tutoriel.
 Si on change d'idée, on reclique sur un chiffre barré pour défaire l'emprunt (le plus récent d'abord).
 

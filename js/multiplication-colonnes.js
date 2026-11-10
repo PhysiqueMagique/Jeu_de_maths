@@ -151,8 +151,11 @@ Jeu.demarrer().then(() => {
     if (!p.tutorielFait) {
       h += `<div class="carte carte-tuto">
           <div class="texte"><h2>Commence ici!</h2>
-            <p>Trois exemples pour apprendre la méthode et où placer les zéros. Ensuite, les défis seront débloqués.</p></div>
-          <button class="bouton orange gros" type="button" data-action="tuto">Commencer le tutoriel ▸</button>
+            <p>Trois exemples pour apprendre la méthode et où placer les zéros. Tu peux aussi le sauter et aller directement aux défis.</p></div>
+          <div class="boutons-tuto">
+            <button class="bouton orange gros" type="button" data-action="tuto">Commencer le tutoriel ▸</button>
+            <button class="bouton secondaire" type="button" data-action="sauter-tuto">Sauter le tutoriel</button>
+          </div>
         </div>`;
     }
     h += '<h2>Les défis</h2><div class="liste-niveaux">';
@@ -160,8 +163,7 @@ Jeu.demarrer().then(() => {
       const N = NIVEAUX[niv];
       const gagnee = p.medailles[niv];
       let bloque = null;
-      if (!p.tutorielFait) bloque = 'Fais d’abord le tutoriel';
-      else if (N.requis && !p.medailles[N.requis]) bloque = `Gagne d’abord la médaille ${Jeu.NOM_MEDAILLE[N.requis]}`;
+      if (N.requis && !p.medailles[N.requis]) bloque = `Gagne d’abord la médaille ${Jeu.NOM_MEDAILLE[N.requis]}`;
       const rec = p.records[niv];
       const record = rec ? (rec.erreurs === 0 ? '⭐ Sans faute!' : `Meilleur : ${rec.erreurs} erreur${rec.erreurs > 1 ? 's' : ''}`) : '';
       h += `<article class="carte carte-niveau${bloque ? ' bloque' : ''}">
@@ -218,6 +220,11 @@ Jeu.demarrer().then(() => {
     const a = b.dataset.action;
     if (!['aide', 'continuer'].includes(a)) son(a === 'menu' ? 'retour' : 'nav');
     if (a === 'tuto' || a === 'revoir') demarrerTutoriel();
+    else if (a === 'sauter-tuto') {
+      // Le tutoriel n'est pas obligatoire : on peut le sauter (il reste offert avec « Revoir le tutoriel »).
+      Jeu.majProgres(joueur.id, ACT, (q) => { q.tutorielFait = true; });
+      afficherMenu();
+    }
     else if (a === 'defi') demarrerDefi(b.dataset.niveau);
     else if (a === 'menu') afficherMenu();
     else if (a === 'aide') aide();
