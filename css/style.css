@@ -420,3 +420,18 @@ a.carte-activite { color: inherit; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Accueil : la garde-robe du renard ---------- */
+
+.rangee-joueurs { display: flex; align-items: flex-start; gap: 14px; }
+.rangee-joueurs .grille-joueurs { flex: 1; }
+.carte-renard {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px 8px 10px; color: var(--encre); text-decoration: none;
+  border: 3px solid transparent; transition: transform 0.12s, border-color 0.12s;
+}
+.carte-renard:hover { transform: translateY(-3px); border-color: var(--orange-pale); }
+.carte-renard .texte { display: flex; flex-direction: column; gap: 4px; max-width: 190px; }
+.carte-renard b { font-size: 1.15rem; font-weight: 900; line-height: 1.15; }
+.carte-renard .sous { color: var(--doux); font-weight: 700; font-size: 0.9rem; }
+.carte-renard .nouveau { color: #c4561a; font-weight: 900; }

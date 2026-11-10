@@ -20,6 +20,8 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `index.html` | Page d'accueil : profils (création, choix, modification), activités et médailles |
 | `js/commun.js` | Profils, liste des activités, sauvegarde du progrès, dessin des médailles |
 | `css/style.css` | Styles communs |
+| `js/mascotte.js`, `css/mascotte.css` | Le renard : dessin SVG, animations, réactions, catalogue des 12 accessoires |
+| `renard.html`, `js/garde-robe.js`, `css/garde-robe.css` | La garde-robe : acheter les accessoires avec ses médailles et ses pierres, les essayer, les porter |
 | `activites/soustraction-emprunt.html` | Activité 1 : soustraction avec emprunt |
 | `js/soustraction-modele.js` | Logique de l'activité (emprunts, indices, génération des défis), sans affichage |
 | `js/soustraction-emprunt.js` | Affichage et déroulement : tutoriel, défis, médailles |
@@ -114,6 +116,28 @@ Les temps, nombres de pas et proportions de trous sont au début de `js/multipli
 Dans les deux activités, vérifier deux fois la même réponse fausse ne compte qu'une erreur, et quand on dépasse
 le nombre d'erreurs permis pour l'émeraude, le jeu propose de recommencer le défi tout de suite.
 
+## Le renard et sa garde-robe
+
+Le renard est une « marionnette » SVG (`js/mascotte.js`) : chaque partie (tête, oreilles, bras, queue) pivote autour
+de son propre point, et les animations utilisent `element.animate()`. Il cligne des yeux, respire et remue la queue au repos.
+
+- **Dans les activités** (pages avec `<body data-mascotte>`) : un renard s'installe sous le panneau de droite et un autre
+  sur l'écran de fin. Il réagit aux sons du jeu : `Jeu.jouer()` envoie aussi l'événement `jeu:evenement`.
+  Bonne réponse → saut, salut, pirouette ou victoire; erreur → encouragement (poing levé, poings prêts, il montre le problème);
+  médaille ou pierre → danse. Il rapetisse (ou se cache) s'il manque de place : il ne fait jamais défiler la page.
+- **Garde-robe** (`renard.html`, carte sur l'accueil) : chaque médaille et chaque pierre gagnée vaut une pièce de sa sorte.
+  On l'échange contre un accessoire (on peut l'essayer en le survolant). Les médailles restent gagnées; on ne dépense que leur valeur.
+
+| Emplacement | Accessoires (prix) |
+|---|---|
+| Tête | casquette (bronze) · chapeau de magicien (or + saphir) · couronne (or + diamant) |
+| Yeux | lunettes rondes (bronze) · lunettes de soleil (argent) · lunettes étoiles (or + rubis) |
+| Cou | nœud papillon (bronze) · cravate (argent) · bandana (argent) |
+| Main | crayon géant (bronze) · loupe (argent) · baguette magique (or + émeraude) |
+
+Les prix sont dans `CATALOGUE` (`js/mascotte.js`). Avec 4 activités, il y a exactement 4 médailles de chaque sorte :
+on peut tout acheter en gagnant toutes les médailles et une pierre de chaque sorte.
+
 ## Profils et sauvegarde du progrès
 
 Aucun profil n'est écrit dans le code : au premier lancement, chaque enfant crée le sien (nom ou surnom, avatar, couleur).
@@ -124,21 +148,22 @@ Tout tient dans un seul objet JSON, le même que le fichier de copie de sauvegar
 ```json
 {
   "format": "jeu-de-maths",
-  "version": 2,
+  "version": 3,
   "joueurCourant": "j-mh3k2x9f",
   "joueurs": {
     "j-mh3k2x9f": {
       "nom": "…", "avatar": "🦊", "couleur": "#3a6fe0",
       "activites": {
         "soustraction-emprunt": { "tutorielFait": true, "medailles": { "bronze": true, "argent": false, "or": false } }
-      }
+      },
+      "mascotte": { "achats": ["casquette"], "porte": { "tete": "casquette" }, "depense": { "bronze": 1 } }
     }
   }
 }
 ```
 
 Pour que les vieilles sauvegardes restent lisibles après une mise à jour :
-- chaque activité n'écrit que dans sa propre section de `activites`;
+- chaque activité n'écrit que dans sa propre section de `activites`; la garde-robe écrit seulement dans `mascotte`;
 - le jeu ne supprime jamais un champ ou une section qu'il ne connaît pas;
 - si le format doit changer, on augmente `version` et on ajoute une étape dans `migrer()` (`js/commun.js`).
 

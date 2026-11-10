@@ -6,14 +6,15 @@
 
    {
      "format": "jeu-de-maths",
-     "version": 2,
+     "version": 3,
      "joueurCourant": "j-abc123",
      "joueurs": {
        "j-abc123": {
          "nom": "…", "avatar": "🦊", "couleur": "#3a6fe0",
          "activites": {
            "soustraction-emprunt": { "tutorielFait": true, "medailles": { … }, "records": { … } }
-         }
+         },
+         "mascotte": { "achats": ["casquette"], "porte": { "tete": "casquette" }, "depense": { "bronze": 1 } }
        }
      }
    }
@@ -28,7 +29,7 @@
 
 const Jeu = (() => {
   const FORMAT = 'jeu-de-maths';
-  const VERSION = 2;
+  const VERSION = 3;
   const CLE_NAVIGATEUR = 'jeuDeMaths.v1';
 
   const AVATARS = ['🦊', '🐢', '🦉', '🐼', '🐯', '🦁', '🐸', '🐙', '🦄', '🐲', '🐧', '🐨', '🐰', '🐶', '🐱', '🦖', '🐝', '🦋', '🐬', '🚀'];
@@ -142,7 +143,13 @@ const Jeu = (() => {
         k++;
       }
     }
-    // (les prochaines migrations iront ici : if (v < 3) { … })
+    if (v < 3) {
+      // v3 : la garde-robe du renard (achats faits avec les médailles et les pierres).
+      for (const j of Object.values(e.joueurs)) {
+        if (estObjet(j) && !estObjet(j.mascotte)) j.mascotte = mascotteVide();
+      }
+    }
+    // (les prochaines migrations iront ici : if (v < 4) { … })
     e.format = FORMAT;
     if (v < VERSION) e.version = VERSION;
     if (e.joueurCourant && !e.joueurs[e.joueurCourant]) e.joueurCourant = null;
@@ -233,6 +240,7 @@ const Jeu = (() => {
       couleur: couleur || COULEURS[0],
       creeLe: new Date().toISOString(),
       activites: {},
+      mascotte: mascotteVide(),
     };
     etat.joueurCourant = id;
     enregistrer();
@@ -304,6 +312,94 @@ const Jeu = (() => {
       for (const pierre of PIERRES) if (p.pierres[pierre]) n++;
     }
     return n;
+  }
+
+  // ==========================================================
+  //  Garde-robe du renard : on « achète » des accessoires avec ses
+  //  médailles et ses pierres. Les médailles restent gagnées dans les
+  //  activités; on dépense seulement leur valeur (mascotte.depense).
+  // ==========================================================
+
+  const MONNAIES = [...NIVEAUX, ...PIERRES]; // bronze, argent, or, rubis, emeraude, saphir, diamant
+  const EMPLACEMENTS = ['tete', 'yeux', 'cou', 'main'];
+
+  function mascotteVide() {
+    return { achats: [], porte: {}, depense: {} };
+  }
+
+  // Complète les champs connus sans effacer ceux qu'on ne connaît pas.
+  function normaliserMascotte(m) {
+    const r = estObjet(m) ? { ...m } : {};
+    r.achats = Array.isArray(r.achats) ? [...new Set(r.achats.filter((x) => typeof x === 'string'))] : [];
+    const porte = estObjet(r.porte) ? r.porte : {};
+    r.porte = { ...porte };
+    for (const e of EMPLACEMENTS) {
+      const id = porte[e];
+      r.porte[e] = typeof id === 'string' && r.achats.includes(id) ? id : null;
+    }
+    const d = estObjet(r.depense) ? r.depense : {};
+    r.depense = { ...d };
+    for (const k of MONNAIES) r.depense[k] = Math.max(0, Math.floor(Number(d[k]) || 0));
+    return r;
+  }
+
+  function mascotte(joueurId) {
+    const j = etat.joueurs[joueurId];
+    return normaliserMascotte(estObjet(j) ? j.mascotte : null);
+  }
+
+  function majMascotte(joueurId, modifier) {
+    const j = etat.joueurs[joueurId];
+    if (!estObjet(j)) return null;
+    const m = normaliserMascotte(j.mascotte);
+    modifier(m);
+    j.mascotte = normaliserMascotte(m);
+    enregistrer();
+    return j.mascotte;
+  }
+
+  // Tout ce qui a été gagné dans les activités : { bronze: 2, argent: 1, …, diamant: 0 }
+  function gains(joueurId) {
+    const g = Object.fromEntries(MONNAIES.map((k) => [k, 0]));
+    for (const a of ACTIVITES) {
+      const p = progres(joueurId, a.id);
+      for (const niv of NIVEAUX) if (p.medailles[niv]) g[niv]++;
+      for (const pierre of PIERRES) if (p.pierres[pierre]) g[pierre]++;
+    }
+    return g;
+  }
+
+  // Ce qui reste à dépenser (gagné − dépensé, jamais sous zéro).
+  function tresor(joueurId) {
+    const g = gains(joueurId);
+    const d = mascotte(joueurId).depense;
+    return Object.fromEntries(MONNAIES.map((k) => [k, Math.max(0, g[k] - d[k])]));
+  }
+
+  // prix : { bronze: 1 } ou { or: 1, diamant: 1 }…
+  function peutAcheter(joueurId, prix) {
+    const t = tresor(joueurId);
+    return Object.entries(prix).every(([k, n]) => MONNAIES.includes(k) && t[k] >= n);
+  }
+
+  // Achète un accessoire et le met tout de suite. Renvoie true si l'achat a eu lieu.
+  function acheter(joueurId, id, emplacement, prix) {
+    if (!etat.joueurs[joueurId] || !EMPLACEMENTS.includes(emplacement)) return false;
+    if (mascotte(joueurId).achats.includes(id) || !peutAcheter(joueurId, prix)) return false;
+    majMascotte(joueurId, (m) => {
+      m.achats.push(id);
+      for (const [k, n] of Object.entries(prix)) m.depense[k] += n;
+      m.porte[emplacement] = id;
+    });
+    return true;
+  }
+
+  // Met un accessoire déjà acheté (ou enlève celui de cet emplacement avec id = null).
+  function porter(joueurId, emplacement, id) {
+    if (!EMPLACEMENTS.includes(emplacement)) return;
+    majMascotte(joueurId, (m) => {
+      m.porte[emplacement] = id && m.achats.includes(id) ? id : null;
+    });
   }
 
   // ==========================================================
@@ -388,6 +484,10 @@ const Jeu = (() => {
   }
 
   function jouer(nom) {
+    // Le renard réagit aux mêmes moments que les sons (même quand le son est coupé).
+    try {
+      if (typeof document !== 'undefined') document.dispatchEvent(new CustomEvent('jeu:evenement', { detail: nom }));
+    } catch (err) { /* sans importance */ }
     if (!sonActif() || !SONS[nom]) return;
     try {
       const ctx = contexteAudio();
@@ -622,6 +722,7 @@ const Jeu = (() => {
     joueurs, joueur, joueurCourant, choisirJoueur,
     verifierNom, creerJoueur, modifierJoueur, supprimerJoueur,
     progres, majProgres, nombreMedailles, nombrePierres,
+    MONNAIES, EMPLACEMENTS, mascotte, gains, tresor, peutAcheter, acheter, porter,
     jouer, sonActif, basculerSon, brancherSonsNavigation,
     exporter, importer,
     estApplication, infosApplication, verifierMiseAJour, installerMiseAJour,

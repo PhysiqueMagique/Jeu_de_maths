@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦊</text></svg>">
+  <title>La garde-robe du renard — Jeu de maths</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/mascotte.css">
+  <link rel="stylesheet" href="css/garde-robe.css">
+</head>
+<body>
+  <header class="barre-haut">
+    <a id="btn-retour" class="lien-retour" href="index.html">← Accueil</a>
+    <div class="droite">
+      <button id="btn-son" class="bouton-son" type="button" aria-pressed="true" title="Son">🔊</button>
+      <div id="badge-joueur" class="badge-joueur"></div>
+    </div>
+  </header>
+
+  <main class="page garde-robe">
+    <section class="carte colonne-renard" aria-label="Ton renard">
+      <h1>La garde-robe</h1>
+      <div id="scene" class="scene-renard"></div>
+      <div class="tresor">
+        <h2>Ton trésor à dépenser</h2>
+        <div id="tresor" class="liste-tresor"></div>
+        <p class="note">Chaque médaille et chaque pierre gagnée vaut une pièce. Tes médailles restent gagnées dans tes activités!</p>
+      </div>
+    </section>
+
+    <section class="boutique" aria-label="Accessoires">
+      <div id="rayons"></div>
+    </section>
+  </main>
+
+  <!-- Confirmation d'achat -->
+  <div id="fenetre" class="fenetre" hidden>
+    <div class="carte boite" role="dialog" aria-modal="true" aria-labelledby="titre-fenetre">
+      <div id="image-fenetre" class="image-fenetre"></div>
+      <h2 id="titre-fenetre"></h2>
+      <p id="texte-fenetre"></p>
+      <div class="rangee-boutons">
+        <button id="btn-acheter" class="bouton vert gros" type="button">✔ Oui, acheter!</button>
+        <button id="btn-pas-maintenant" class="bouton secondaire gros" type="button" data-son="retour">Pas maintenant</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/commun.js"></script>
+  <script src="js/mascotte.js"></script>
+  <script src="js/garde-robe.js"></script>
+</body>
+</html>

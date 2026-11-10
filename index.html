@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/mascotte.css">
 </head>
 <body>
   <main class="page">
@@ -38,7 +39,10 @@
     <div id="vue-accueil" hidden>
       <section aria-labelledby="titre-joueurs">
         <div class="section-titre"><h2 id="titre-joueurs">Qui joue?</h2></div>
-        <div id="joueurs" class="grille-joueurs"></div>
+        <div class="rangee-joueurs">
+          <div id="joueurs" class="grille-joueurs"></div>
+          <div id="zone-renard"></div>
+        </div>
       </section>
 
       <section aria-labelledby="titre-activites">
@@ -100,6 +104,7 @@
   </main>
 
   <script src="js/commun.js"></script>
+  <script src="js/mascotte.js"></script>
   <script>
     'use strict';
     Jeu.demarrer().then(() => {
@@ -176,7 +181,27 @@
                   ${finTuile}`;
         }).join('');
         zoneActivites.innerHTML = html;
+        rendreCarteRenard(courant);
         montrer('accueil');
+      }
+
+      // La garde-robe du renard (pour le joueur choisi)
+      let renardAccueil = null;
+      function rendreCarteRenard(courant) {
+        const zone = $('zone-renard');
+        if (renardAccueil) { renardAccueil.detruire(); renardAccueil = null; }
+        if (!courant) { zone.innerHTML = ''; return; }
+        const m = Jeu.mascotte(courant.id);
+        const abordables = Mascotte.CATALOGUE.filter((a) => !m.achats.includes(a.id) && Jeu.peutAcheter(courant.id, a.prix)).length;
+        const sousTitre = abordables
+          ? `<span class="nouveau">🛍️ Tu peux acheter ${abordables > 1 ? `${abordables} accessoires` : 'un accessoire'}!</span>`
+          : `${m.achats.length} accessoire${m.achats.length > 1 ? 's' : ''} sur ${Mascotte.CATALOGUE.length}`;
+        zone.innerHTML = `<a class="carte carte-renard cliquable" href="renard.html" aria-label="La garde-robe du renard">
+            <span class="place-renard"></span>
+            <span class="texte"><b>La garde-robe du renard</b><span class="sous">${sousTitre}</span></span>
+            <span class="fleche-jouer" aria-hidden="true">▸</span>
+          </a>`;
+        renardAccueil = Mascotte.creer(zone.querySelector('.place-renard'), { porte: m.porte, taille: 'mini' });
       }
 
       zoneJoueurs.addEventListener('click', (ev) => {

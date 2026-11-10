@@ -3,6 +3,11 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.10.0
+
+Voici le renard! Il t'accompagne dans toutes les activités : il saute de joie quand tu réussis, t'encourage quand tu te trompes (« Lâche pas, tu vas l'avoir! ») et danse quand tu gagnes une médaille.
+Nouvelle garde-robe (sur l'accueil) : chaque médaille et chaque pierre gagnée vaut une pièce pour acheter des accessoires au renard. 12 accessoires pour la tête, les yeux, le cou et la main. Tes médailles restent gagnées dans tes activités!
+
 ## 0.9.4
 
 Course des multiplications : la course or revient à 80 secondes, et c'est le défi rubis qui donne plus de temps (65 secondes au lieu de 50).
