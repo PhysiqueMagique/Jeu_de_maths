@@ -97,6 +97,13 @@ const Jeu = (() => {
       page: 'activites/fractions.html',
       vignette: '¾ 🍕',
     },
+    {
+      id: 'decimaux',
+      titre: 'Nombres décimaux',
+      description: 'La droite numérique, la valeur des chiffres, comparer et calculer en alignant les virgules.',
+      page: 'activites/decimaux.html',
+      vignette: '0,75',
+    },
   ];
 
   const NIVEAUX = ['bronze', 'argent', 'or'];

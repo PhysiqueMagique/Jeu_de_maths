@@ -1,0 +1,99 @@
+/* ==========================================================
+   Nombres décimaux
+   ========================================================== */
+
+.dec { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 10px 6px 4px; min-width: 600px; }
+.dec-question { margin: 0; font-size: 1.35rem; font-weight: 900; text-align: center; }
+.dec-ligne { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; }
+.dec-ligne.grande { font-size: 2.6rem; font-weight: 900; margin: 6px 0; }
+.papier-note { color: var(--doux); font-weight: 700; text-align: center; margin: 0; }
+
+/* La case de réponse */
+.dec-boite {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  font-weight: 900;
+  min-width: 150px;
+  height: 68px;
+  padding: 0 14px;
+  border: 3px solid var(--orange);
+  border-radius: 14px;
+  background: #fffaf3;
+  box-shadow: 0 0 0 4px rgba(255, 138, 61, 0.2);
+  letter-spacing: 0.04em;
+}
+.dec-boite.petite { min-width: 72px; }
+.dec-boite.faux { border-color: var(--rouge); color: var(--rouge); background: #fff1f1; box-shadow: none; }
+.dec-boite.ok { border-color: #8fd3ad; color: #1f7a48; background: #eefaf3; box-shadow: none; }
+
+/* La droite numérique */
+.dec-droite { width: 640px; max-width: 100%; height: auto; overflow: visible; }
+.dec-axe { stroke: var(--encre); stroke-width: 4; stroke-linecap: round; }
+.dec-trait { stroke: var(--encre); stroke-width: 3; stroke-linecap: round; }
+.dec-trait.ok { stroke: #2ea866; stroke-width: 6; }
+.dec-trait.faux { stroke: var(--rouge); stroke-width: 6; }
+.dec-etiquette { font: 900 22px Nunito, sans-serif; fill: var(--encre); text-anchor: middle; }
+.dec-etiquette.fleche { fill: var(--orange); font-size: 24px; }
+.dec-fleche { fill: var(--orange); }
+.dec-cible { fill: transparent; cursor: pointer; }
+.dec-cible:hover { fill: rgba(255, 138, 61, 0.22); }
+
+/* Un nombre, un chiffre par case */
+.dec-cases { display: flex; align-items: flex-end; gap: 6px; font-size: 2.6rem; font-weight: 900; }
+.dec-case {
+  position: relative;
+  width: 62px;
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #e6dfd2;
+  border-radius: 12px;
+  background: #fff;
+}
+.dec-case small { position: absolute; bottom: -24px; font-size: 0.95rem; color: var(--doux); }
+.dec-case.ok { border-color: #8fd3ad; background: #eefaf3; color: #1f7a48; }
+.dec-virgule { font-size: 3rem; line-height: 1; padding-bottom: 4px; color: var(--orange); }
+.dec-cases:has(small) { margin-bottom: 22px; }
+
+/* Les boutons < = > */
+.dec-cmps { display: inline-flex; gap: 10px; }
+.dec-cmp {
+  font: inherit;
+  font-size: 2rem;
+  font-weight: 900;
+  width: 68px;
+  height: 68px;
+  border: 3px solid #e6dfd2;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--bleu);
+  box-shadow: 0 4px 0 #e6dfd2;
+  cursor: pointer;
+}
+.dec-cmp:hover:not(:disabled) { border-color: var(--bleu); transform: translateY(-2px); }
+.dec-cmp:disabled { opacity: 0.35; cursor: default; }
+.dec-cmp.ok { opacity: 1; border-color: #8fd3ad; background: #eefaf3; color: #1f7a48; }
+
+/* Le calcul en colonnes, virgules alignées */
+.dec-colonnes {
+  display: grid;
+  grid-template-columns: 44px repeat(var(--ent), 48px) 24px repeat(var(--dec), 48px);
+  row-gap: 4px;
+  font-size: 2.4rem;
+  font-weight: 900;
+  justify-content: center;
+  margin: 6px 0;
+}
+.dec-colonnes .dc-signe { display: flex; align-items: center; justify-content: center; color: var(--doux); }
+.dec-colonnes .dc { height: 58px; display: flex; align-items: center; justify-content: center; }
+.dec-colonnes .dc.virgule { color: var(--orange); }
+.dec-colonnes .dc.saisie.virgule { background: #fffaf3; }
+.dec-colonnes .zero-ajoute { color: #c6bdae; }
+.dec-colonnes .dc-trait { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--encre); margin: 2px 0; }
+.dec-colonnes .dc.saisie { background: #fffaf3; border-bottom: 3px solid var(--orange); }
+.dec-colonnes .dc.saisie.vide { background: #fffaf3; }
+.dec-colonnes .dc.saisie.faux { color: var(--rouge); background: #fff1f1; border-bottom-color: var(--rouge); }
+.dec-colonnes .dc.saisie.ok { color: #1f7a48; background: #eefaf3; border-bottom-color: #8fd3ad; }

@@ -23,6 +23,7 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `js/mascotte.js`, `css/mascotte.css` | Le personnage animé : squelette SVG commun, animations, réactions, catalogue des 12 accessoires |
 | `js/personnages.js` | Les 5 personnages (renard, lapin, chat, grenouille, dragon) : couleurs et morceaux de dessin |
 | `renard.html`, `js/garde-robe.js`, `css/garde-robe.css` | La garde-robe : acheter les accessoires avec ses médailles et ses pierres, les essayer, les porter |
+| `activites/decimaux.html`, `js/decimaux.js`, `js/decimaux-modele.js`, `css/decimaux.css` | Nombres décimaux |
 | `activites/fractions.html`, `js/fractions.js`, `js/fractions-modele.js`, `css/fractions.css` | Fractions |
 | `activites/priorite-operations.html`, `js/priorite-operations.js`, `js/priorite-modele.js`, `css/priorite.css` | Priorité des opérations |
 | `activites/division-reste.html`, `js/division-reste.js`, `js/division-modele.js`, `css/division.css` | Division avec reste (division posée) |
@@ -41,6 +42,20 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
 | `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
 | `scripts/nouvelle-version.mjs` | Change le numéro de version partout |
+
+### Activité : nombres décimaux
+
+Cinq sortes de questions (`js/decimaux-modele.js`; un nombre est `{ v, p }` = v ÷ 10^p, écrit avec une virgule) :
+**lire** le nombre montré par la flèche sur une droite numérique (SVG, 10 petits traits), **placer** un nombre (clic sur un trait),
+**valeur de position** (quel chiffre est aux dixièmes, centièmes, millièmes?), **comparer** (boutons < = >),
+**additionner / soustraire** en colonnes, virgules alignées (les zéros ajoutés sont en gris : 4,7 = 4,70).
+La virgule se tape avec , ou . ; une réponse égale est acceptée (7,50 ou 7,5). Les indices visent les erreurs classiques
+(« 0,65 a plus de chiffres donc il est plus grand », aligner les derniers chiffres au lieu des virgules).
+
+1. **Tutoriel** : lire 0,6, le chiffre des centièmes dans 3,47, comparer 0,7 et 0,65, 4,7 + 2,35, puis placer 2,34 où l'élève répond.
+2. **Défis** : 🥉 droite en dixièmes et valeur de position (6); 🥈 centièmes et comparer avec pièges (6); 🥇 additionner et soustraire (6).
+3. **Pierres** : 💎 rubis, 8 questions mêlées en 2 min 30; 💎 émeraude, calculs écrits en ligne, une erreur permise; 💎 saphir, sans faute;
+   💎 diamant, les millièmes.
 
 ### Activité : fractions
 

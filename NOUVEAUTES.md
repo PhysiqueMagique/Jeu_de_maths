@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.17.0
+
+Nouvelle activité : les nombres décimaux! Lire et placer des nombres sur la droite numérique, trouver la valeur de chaque chiffre (dixièmes, centièmes, millièmes), comparer (attention au piège : 0,65 n'est pas plus grand que 0,7!), puis additionner et soustraire en alignant les virgules.
+
 ## 0.16.0
 
 Nouvelle activité : les fractions! Lire et colorier des fractions sur des pizzas et des barres, trouver des fractions équivalentes, comparer, puis additionner et soustraire. Le diamant : additionner des fractions qui n'ont pas le même dénominateur.
