@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.15.0
+
+Nouvelle activité : la priorité des opérations! Clique sur l'opération à faire en premier, écris son résultat, et l'expression se raccourcit, comme sur une feuille. Parenthèses, puis × et ÷, puis + et − : si tu te trompes d'ordre, le jeu te dit quelle règle regarder.
+
 ## 0.14.0
 
 Nouvelle activité : la division avec reste! La division posée avec le crochet, une étape à la fois : divise, multiplie, soustrais, abaisse. Le tutoriel montre la méthode, et les défis vont jusqu'à 4 chiffres (et le diamant, jusqu'à diviser par un nombre de 2 chiffres). Sur l'accueil, les tuiles sont plus compactes pour faire de la place aux prochaines activités.

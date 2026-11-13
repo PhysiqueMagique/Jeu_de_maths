@@ -83,6 +83,13 @@ const Jeu = (() => {
       page: 'activites/division-reste.html',
       vignette: '742 ÷ 6',
     },
+    {
+      id: 'priorite-operations',
+      titre: 'Priorité des opérations',
+      description: 'Parenthèses, puis × et ÷, puis + et − : dans quel ordre calculer?',
+      page: 'activites/priorite-operations.html',
+      vignette: '3 + 4 × 2',
+    },
   ];
 
   const NIVEAUX = ['bronze', 'argent', 'or'];

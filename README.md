@@ -23,6 +23,7 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `js/mascotte.js`, `css/mascotte.css` | Le personnage animé : squelette SVG commun, animations, réactions, catalogue des 12 accessoires |
 | `js/personnages.js` | Les 5 personnages (renard, lapin, chat, grenouille, dragon) : couleurs et morceaux de dessin |
 | `renard.html`, `js/garde-robe.js`, `css/garde-robe.css` | La garde-robe : acheter les accessoires avec ses médailles et ses pierres, les essayer, les porter |
+| `activites/priorite-operations.html`, `js/priorite-operations.js`, `js/priorite-modele.js`, `css/priorite.css` | Priorité des opérations |
 | `activites/division-reste.html`, `js/division-reste.js`, `js/division-modele.js`, `css/division.css` | Division avec reste (division posée) |
 | `js/defis-moteur.js` | Moteur commun des activités à défis (menu, médailles, pierres, chrono, fins) |
 | `activites/addition-colonnes.html`, `js/addition-colonnes.js`, `js/addition-modele.js` | Addition en colonnes (2 à 4 nombres, retenues); styles dans `css/colonnes.css` |
@@ -39,6 +40,18 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
 | `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
 | `scripts/nouvelle-version.mjs` | Change le numéro de version partout |
+
+### Activité : priorité des opérations
+
+On **clique sur l'opération à faire en premier**, on écrit son résultat, et l'expression se raccourcit d'une ligne à l'autre
+(`= 2 × 5 + 12 ÷ 3`, le résultat en vert). Un mauvais clic donne la règle à regarder : parenthèses d'abord (les plus à l'intérieur),
+× et ÷ avant + et −, ou de gauche à droite. Le rappel des trois règles est affiché sous l'expression.
+Les nombres sont tirés pour que tout se calcule de tête : pas de négatifs, divisions exactes, tables jusqu'à 10 (`js/priorite-modele.js`).
+
+1. **Tutoriel** : 3 + 4 × 2, puis (3 + 4) × 2 (la réponse change!), 18 − 6 + 2 (gauche à droite), et 2 × (9 − 4) + 12 ÷ 3 où l'élève choisit.
+2. **Défis** : 🥉 trois nombres sans parenthèses (6); 🥈 avec parenthèses (5); 🥇 plus long, pièges de gauche à droite (4).
+3. **Pierres** : 💎 rubis, 5 expressions or en 3 minutes; 💎 émeraude, de tête (la réponse seulement), une erreur permise;
+   💎 saphir, sans faute; 💎 diamant, parenthèses dans des parenthèses.
 
 ### Activité : division avec reste
 

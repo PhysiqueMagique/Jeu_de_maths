@@ -1,0 +1,74 @@
+/* ==========================================================
+   Priorité des opérations
+   ========================================================== */
+
+.pdo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 14px 12px 8px;
+  font-variant-numeric: tabular-nums;
+}
+.pdo-ligne { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 2px; font-weight: 900; }
+.pdo-ligne.passee { font-size: 1.6rem; color: #6b7590; }
+.pdo-ligne.actuelle { font-size: 2.5rem; color: var(--encre); margin: 4px 0; }
+.pdo-ligne.finie .pdo-n { color: #1f7a48; background: var(--vert-pale); border-radius: 12px; padding: 0 12px; }
+.pdo-ligne.resultat { font-size: 2.5rem; }
+.egal { width: 1.3em; color: var(--doux); }
+.pdo-n { padding: 0 2px; }
+.pdo-n.nouveau { color: #1f7a48; background: var(--vert-pale); border-radius: 10px; padding: 0 6px; }
+.pdo-p { color: #8a74c4; padding: 0 1px; }
+.pdo-o { padding: 0 8px; color: var(--doux); }
+
+/* Les opérateurs cliquables */
+.pdo-op {
+  font: inherit;
+  min-width: 1.35em;
+  height: 1.35em;
+  margin: 0 4px;
+  padding: 0;
+  border: 3px solid var(--bordure, #e6dfd2);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--bleu);
+  box-shadow: 0 3px 0 #e6dfd2;
+  cursor: pointer;
+  line-height: 1;
+}
+.pdo-op:hover, .pdo-op:focus-visible { border-color: var(--bleu); outline: none; transform: translateY(-2px); }
+.pdo-op.guide { border-color: var(--orange); animation: pulse-op 1.1s ease-in-out infinite; }
+@keyframes pulse-op { 50% { box-shadow: 0 3px 0 #e6dfd2, 0 0 0 7px rgba(255, 138, 61, 0.3); } }
+
+/* L'opération choisie, encadrée */
+.pdo-choix {
+  display: inline-flex;
+  align-items: center;
+  background: var(--orange-pale);
+  border: 3px solid var(--orange);
+  border-radius: 14px;
+  padding: 0 8px;
+}
+
+/* Le calcul de l'opération choisie */
+.pdo-calcul { display: flex; align-items: center; gap: 12px; font-size: 2rem; font-weight: 900; margin: 6px 0 0 1.3em; }
+.pdo-boite {
+  display: inline-grid;
+  place-items: center;
+  min-width: 96px;
+  height: 64px;
+  padding: 0 12px;
+  border: 3px solid var(--orange);
+  border-radius: 14px;
+  background: #fffaf3;
+  box-shadow: 0 0 0 4px rgba(255, 138, 61, 0.2);
+}
+.pdo-boite.faux { border-color: var(--rouge); color: var(--rouge); background: #fff1f1; box-shadow: none; }
+.pdo-boite.ok { border-color: #8fd3ad; color: #1f7a48; background: #eefaf3; box-shadow: none; }
+
+/* Le rappel des règles */
+.pdo-regles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; font-weight: 800; color: var(--doux); font-size: 0.95rem; }
+.pdo-regles span { background: #f4f1ea; border-radius: 999px; padding: 4px 12px; }
+.pdo-regles b { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 4px; border-radius: 50%; background: var(--bleu); color: #fff; font-size: 0.8rem; }
+.pdo-regles .gd { background: transparent; padding-left: 4px; }
+.papier-note { color: var(--doux); font-weight: 700; }
