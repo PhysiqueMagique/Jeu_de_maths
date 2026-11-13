@@ -90,6 +90,13 @@ const Jeu = (() => {
       page: 'activites/priorite-operations.html',
       vignette: '3 + 4 × 2',
     },
+    {
+      id: 'fractions',
+      titre: 'Fractions',
+      description: 'Lire, colorier, comparer et additionner des fractions, avec des pizzas et des barres.',
+      page: 'activites/fractions.html',
+      vignette: '¾ 🍕',
+    },
   ];
 
   const NIVEAUX = ['bronze', 'argent', 'or'];

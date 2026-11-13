@@ -1,0 +1,79 @@
+/* ==========================================================
+   Fractions
+   ========================================================== */
+
+.fr { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 10px 6px 4px; min-width: 560px; }
+.fr-question { margin: 0; font-size: 1.35rem; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+.fr-ligne { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; }
+.fr-ligne.grande { font-size: 2.6rem; font-weight: 900; margin: 6px 0; }
+.fr-egal, .fr-op { font-size: 2.4rem; font-weight: 900; color: var(--doux); }
+.fr-compte { margin: 0; color: var(--doux); font-weight: 800; }
+
+/* Une fraction écrite : numérateur sur dénominateur */
+.frac { display: inline-flex; flex-direction: column; align-items: center; font-weight: 900; line-height: 1.05; vertical-align: middle; }
+.frac .fr-num { padding: 0 8px 4px; border-bottom: 5px solid var(--encre); min-width: 1.3em; text-align: center; }
+.frac .fr-den { padding: 4px 8px 0; min-width: 1.3em; text-align: center; }
+.frac.petite { font-size: 1.5rem; }
+.frac.petite .fr-num { border-bottom-width: 3px; padding-bottom: 2px; }
+.frac.en-ligne { font-size: 0.95em; margin: 0 2px; }
+.frac.en-ligne span:first-child { border-bottom: 2px solid currentColor; padding: 0 3px 1px; }
+.frac.en-ligne span:last-child { padding: 1px 3px 0; }
+.frac.saisie { gap: 6px; }
+.fr-barre { width: 92px; height: 5px; background: var(--encre); border-radius: 3px; }
+
+/* Les cases à remplir */
+.fr-case {
+  font: inherit;
+  font-size: 2.3rem;
+  font-weight: 900;
+  min-width: 84px;
+  height: 64px;
+  padding: 0 10px;
+  border: 3px dashed var(--orange);
+  border-radius: 14px;
+  background: #fffaf3;
+  color: var(--encre);
+  cursor: pointer;
+}
+.frac .fr-num .fr-case, .frac .fr-den .fr-case { font-size: 2.1rem; min-width: 70px; height: 56px; }
+.fr-case.curseur { border-style: solid; box-shadow: 0 0 0 4px rgba(255, 138, 61, 0.25); }
+.fr-case.faux { border-color: var(--rouge); color: var(--rouge); background: #fff1f1; }
+.fr-case.ok { border: 3px solid #8fd3ad; color: #1f7a48; background: #eefaf3; cursor: default; }
+
+/* Les boutons < = > */
+.fr-cmps { display: inline-flex; gap: 10px; }
+.fr-cmp {
+  font: inherit;
+  font-size: 2rem;
+  font-weight: 900;
+  width: 68px;
+  height: 68px;
+  border: 3px solid #e6dfd2;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--bleu);
+  box-shadow: 0 4px 0 #e6dfd2;
+  cursor: pointer;
+}
+.fr-cmp:hover:not(:disabled) { border-color: var(--bleu); transform: translateY(-2px); }
+.fr-cmp:disabled { opacity: 0.35; cursor: default; }
+.fr-cmp.ok { opacity: 1; border-color: #8fd3ad; background: #eefaf3; color: #1f7a48; }
+
+/* Dessins */
+.pizza { width: 210px; height: 210px; }
+.pizza .croute { fill: #e8b46a; stroke: #9a6a2a; stroke-width: 2; }
+.pizza .part, .barre .part { fill: #fffdf6; stroke: #7a5a2a; stroke-width: 2.2; }
+.pizza .part.pleine { fill: #ff8a3d; }
+.barre { width: 100%; max-width: 480px; height: auto; }
+.barre .part { stroke: #4a5068; stroke-width: 2; }
+.barre .part.pleine.a { fill: #5b8def; }
+.barre .part.pleine.b { fill: #ff8a3d; }
+.barre .part.pleine.enleve { fill: url(#hachures); }
+.barre .part.clair { fill: #fff; stroke-dasharray: 5 4; }
+.barre .part.pleine:not(.a):not(.b):not(.enleve) { fill: #5b8def; }
+.part.cliquable { cursor: pointer; }
+.part.cliquable:hover { filter: brightness(0.94); }
+.pizza.faux .part, .barre.faux .part { stroke: var(--rouge); }
+.fr-barres { display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center; margin-top: 4px; }
+
+.papier-note { color: var(--doux); font-weight: 700; text-align: center; }

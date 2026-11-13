@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.16.0
+
+Nouvelle activité : les fractions! Lire et colorier des fractions sur des pizzas et des barres, trouver des fractions équivalentes, comparer, puis additionner et soustraire. Le diamant : additionner des fractions qui n'ont pas le même dénominateur.
+
 ## 0.15.0
 
 Nouvelle activité : la priorité des opérations! Clique sur l'opération à faire en premier, écris son résultat, et l'expression se raccourcit, comme sur une feuille. Parenthèses, puis × et ÷, puis + et − : si tu te trompes d'ordre, le jeu te dit quelle règle regarder.

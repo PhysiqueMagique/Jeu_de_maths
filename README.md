@@ -23,6 +23,7 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `js/mascotte.js`, `css/mascotte.css` | Le personnage animé : squelette SVG commun, animations, réactions, catalogue des 12 accessoires |
 | `js/personnages.js` | Les 5 personnages (renard, lapin, chat, grenouille, dragon) : couleurs et morceaux de dessin |
 | `renard.html`, `js/garde-robe.js`, `css/garde-robe.css` | La garde-robe : acheter les accessoires avec ses médailles et ses pierres, les essayer, les porter |
+| `activites/fractions.html`, `js/fractions.js`, `js/fractions-modele.js`, `css/fractions.css` | Fractions |
 | `activites/priorite-operations.html`, `js/priorite-operations.js`, `js/priorite-modele.js`, `css/priorite.css` | Priorité des opérations |
 | `activites/division-reste.html`, `js/division-reste.js`, `js/division-modele.js`, `css/division.css` | Division avec reste (division posée) |
 | `js/defis-moteur.js` | Moteur commun des activités à défis (menu, médailles, pierres, chrono, fins) |
@@ -40,6 +41,20 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
 | `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
 | `scripts/nouvelle-version.mjs` | Change le numéro de version partout |
+
+### Activité : fractions
+
+Cinq sortes de questions (`js/fractions-modele.js`), avec des dessins en SVG (pizza ou barre coupée en parts égales) :
+**lire** la fraction coloriée (numérateur en haut, dénominateur en bas; Tab ou / pour passer de l'un à l'autre),
+**colorier** une fraction (clic sur les parts), fractions **équivalentes** (2/3 = ?/6, deux barres alignées),
+**comparer** (boutons < = >, ou les touches du clavier), **additionner / soustraire** (barre en deux couleurs, parts enlevées hachurées).
+Une réponse équivalente est acceptée pour les opérations (3/6 ou 1/2). Les indices visent les erreurs classiques
+(additionner les dénominateurs, inverser numérateur et dénominateur, « 5 est plus grand que 3 donc 2/5 > 2/3 »).
+
+1. **Tutoriel** : lire 3/4, colorier 2/5, 1/2 = 2/4, comparer 2/3 et 2/5, puis 2/5 + 1/5 où l'élève calcule.
+2. **Défis** : 🥉 lire et colorier (6); 🥈 équivalentes et comparer (6); 🥇 additionner et soustraire, comparer des dénominateurs multiples (6).
+3. **Pierres** : 💎 rubis, 8 questions mêlées en 2 min 30; 💎 émeraude, sans dessin, une erreur permise; 💎 saphir, sans faute;
+   💎 diamant, dénominateurs différents (1/2 + 1/4, 4/5 + 2/15).
 
 ### Activité : priorité des opérations
 
