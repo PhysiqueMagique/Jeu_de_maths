@@ -149,6 +149,8 @@
                        </button>`;
 
         let html = '';
+        // Plus de 5 activités : des tuiles compactes, sur deux rangées (la description passe dans l'info-bulle)
+        $('activites').classList.toggle('compacte', Jeu.ACTIVITES.length > 5);
         if (!courant) html += '<p class="invite" style="grid-column:1/-1">👆 Clique sur ton nom pour commencer!</p>';
         html += Jeu.ACTIVITES.map((a) => {
           const p = courant ? Jeu.progres(courant.id, a.id) : null;
@@ -169,8 +171,8 @@
           const etiquette = doree ? ` (toutes les médailles, ${nbPierres} pierre${nbPierres > 1 ? 's' : ''} sur 4)` : '';
           // Toute la tuile lance l'activité (si un joueur est choisi)
           const debut = courant
-            ? `<a class="${classes} cliquable" href="${a.page}" aria-label="Jouer : ${a.titre}${etiquette}">`
-            : `<div class="${classes} inactive" aria-disabled="true">`;
+            ? `<a class="${classes} cliquable" href="${a.page}" title="${a.description}" aria-label="Jouer : ${a.titre}${etiquette}">`
+            : `<div class="${classes} inactive" title="${a.description}" aria-disabled="true">`;
           const finTuile = courant ? '</a>' : '</div>';
           return `${debut}
                     ${sertis}

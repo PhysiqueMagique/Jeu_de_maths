@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.14.0
+
+Nouvelle activité : la division avec reste! La division posée avec le crochet, une étape à la fois : divise, multiplie, soustrais, abaisse. Le tutoriel montre la méthode, et les défis vont jusqu'à 4 chiffres (et le diamant, jusqu'à diviser par un nombre de 2 chiffres). Sur l'accueil, les tuiles sont plus compactes pour faire de la place aux prochaines activités.
+
 ## 0.13.0
 
 La garde-robe s'agrandit : 8 nouveaux accessoires (bonnet à pompon, chapeau de pirate, monocle, masque de héros, collier de fleurs, médaille de champion, ballon, cornet de crème glacée) et un objet spécial, plus rare, pour chaque personnage : le chapeau de détective du renard, la carotte géante du lapin, le collier à grelot du chat, le chapeau nénuphar de la grenouille et le collier de trésor du dragon! Les accessoires sont maintenant rangés dans des onglets.

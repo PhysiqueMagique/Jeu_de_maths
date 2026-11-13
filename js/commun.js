@@ -76,6 +76,13 @@ const Jeu = (() => {
       page: 'activites/division-tables.html',
       vignette: '72 ÷ 9 = <span class="rouge">?</span>',
     },
+    {
+      id: 'division-reste',
+      titre: 'Division avec reste',
+      description: 'La division posée : divise, multiplie, soustrais, abaisse… et le reste!',
+      page: 'activites/division-reste.html',
+      vignette: '742 ÷ 6',
+    },
   ];
 
   const NIVEAUX = ['bronze', 'argent', 'or'];

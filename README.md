@@ -23,6 +23,8 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `js/mascotte.js`, `css/mascotte.css` | Le personnage animé : squelette SVG commun, animations, réactions, catalogue des 12 accessoires |
 | `js/personnages.js` | Les 5 personnages (renard, lapin, chat, grenouille, dragon) : couleurs et morceaux de dessin |
 | `renard.html`, `js/garde-robe.js`, `css/garde-robe.css` | La garde-robe : acheter les accessoires avec ses médailles et ses pierres, les essayer, les porter |
+| `activites/division-reste.html`, `js/division-reste.js`, `js/division-modele.js`, `css/division.css` | Division avec reste (division posée) |
+| `js/defis-moteur.js` | Moteur commun des activités à défis (menu, médailles, pierres, chrono, fins) |
 | `activites/addition-colonnes.html`, `js/addition-colonnes.js`, `js/addition-modele.js` | Addition en colonnes (2 à 4 nombres, retenues); styles dans `css/colonnes.css` |
 | `activites/soustraction-emprunt.html` | Activité 1 : soustraction avec emprunt |
 | `js/soustraction-modele.js` | Logique de l'activité (emprunts, indices, génération des défis), sans affichage |
@@ -37,6 +39,23 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
 | `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
 | `scripts/nouvelle-version.mjs` | Change le numéro de version partout |
+
+### Activité : division avec reste
+
+La division posée avec le crochet (dividende à gauche, diviseur à droite, quotient dessous), un chiffre à la fois :
+**divise** (le chiffre du quotient se vérifie dès qu'on le tape), **multiplie**, **soustrais** (Entrée pour vérifier),
+puis le chiffre suivant est **abaissé** tout seul. Le nombre en cours est en orange.
+Si le premier chiffre est trop petit, on commence avec deux chiffres (538 ÷ 7 → 53).
+
+1. **Tutoriel** : 87 ÷ 4 et 742 ÷ 6 expliqués, puis 538 ÷ 7 où l'élève calcule.
+2. **Défis** : 🥉 2 chiffres (5 divisions); 🥈 3 chiffres (4); 🥇 4 chiffres, parfois avec un 0 au quotient (3).
+   Chaque étape fausse compte une erreur, avec un indice tout de suite (« 6 × 3 = 18, c'est plus que 14 : c'est trop! »).
+3. **Pierres** : 💎 rubis, 3 divisions or en 5 minutes; 💎 émeraude, sur papier (quotient et reste seulement), une erreur permise;
+   💎 saphir, les trois médailles sans faute; 💎 diamant, diviser par un nombre de 2 chiffres (844 ÷ 21).
+
+Cette activité utilise le **moteur commun** `js/defis-moteur.js` (`ActiviteDefis(config)`) : menu, médailles, pierres,
+chrono, écrans de fin. L'activité ne fournit que son problème (`charger`, `rendre`, `entrer`, `verifier`, …).
+Les prochaines activités l'utiliseront aussi.
 
 ### Activité : addition en colonnes
 

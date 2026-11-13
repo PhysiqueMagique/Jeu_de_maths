@@ -438,3 +438,23 @@ a.carte-activite { color: inherit; text-decoration: none; }
 .carte-renard b { font-size: 1.15rem; font-weight: 900; line-height: 1.15; }
 .carte-renard .sous { color: var(--doux); font-weight: 700; font-size: 0.9rem; }
 .carte-renard .nouveau { color: #c4561a; font-weight: 900; }
+
+/* Accueil avec plus de 5 activités : tuiles compactes sur deux rangées (0.14.0) */
+.grille-activites.compacte { gap: 24px 28px; padding: 10px 4px 6px; }
+.grille-activites.compacte .carte-activite { padding: 10px 12px 8px; gap: 4px; }
+.grille-activites.compacte .carte-activite.doree { padding: 8px 10px 6px; }
+.grille-activites.compacte .carte-activite p { display: none; }
+.grille-activites.compacte .carte-activite .vignette { font-size: 1.05rem; padding: 3px 4px; }
+.grille-activites.compacte .carte-activite h3 { font-size: 0.98rem; min-height: 2.5em; display: flex; align-items: center; }
+.grille-activites.compacte .rangee-medailles svg { width: 25px; height: auto; }
+.grille-activites.compacte .bas-carte { margin-top: 0; }
+.page:has(.grille-activites.compacte) .section-titre { margin-top: 8px; margin-bottom: 6px; }
+.grille-activites.compacte .fleche-jouer { transform: scale(0.85); }
+.grille-activites.compacte .sertis { width: 38px; height: 38px; }
+.grille-activites.compacte .sertis .pierre { width: 24px; height: 24px; }
+.grille-activites.compacte .sertis.pleine { width: 42px; height: 42px; }
+.grille-activites.compacte .sertis.pleine .pierre { width: 29px; height: 29px; }
+.grille-activites.compacte .sertis.hg, .grille-activites.compacte .sertis.hd { top: -15px; }
+.grille-activites.compacte .sertis.bg, .grille-activites.compacte .sertis.bd { bottom: -15px; }
+.grille-activites.compacte .sertis.hg, .grille-activites.compacte .sertis.bg { left: -15px; }
+.grille-activites.compacte .sertis.hd, .grille-activites.compacte .sertis.bd { right: -15px; }
