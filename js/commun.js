@@ -42,6 +42,13 @@ const Jeu = (() => {
   // { id: 'multiplication-tables', titre: 'Tables de multiplication', page: 'activites/multiplication-tables.html', … }
   const ACTIVITES = [
     {
+      id: 'addition-colonnes',
+      titre: 'Addition en colonnes',
+      description: 'Deux, trois ou quatre grands nombres, colonne par colonne, sans oublier les retenues.',
+      page: 'activites/addition-colonnes.html',
+      vignette: '368 + 275',
+    },
+    {
       id: 'soustraction-emprunt',
       titre: 'Soustraction avec emprunt',
       description: 'Quand le chiffre du haut est trop petit, on emprunte à la dizaine.',

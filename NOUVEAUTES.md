@@ -3,6 +3,10 @@
 Chaque section est affichée dans le bandeau « Nouvelle version disponible » du jeu.
 Ajouter la nouvelle section en haut, avec le même numéro que dans `src-tauri/tauri.conf.json`.
 
+## 0.12.0
+
+Nouvelle activité : l'addition en colonnes! Deux, trois ou quatre grands nombres, une colonne à la fois. Les petites cases au-dessus des nombres servent à noter les retenues. Le tutoriel guide colonne par colonne, et il y a des médailles et des pierres précieuses à gagner, comme ailleurs.
+
 ## 0.11.0
 
 Choisis ton personnage dans la garde-robe : renard, lapin, chat, grenouille ou dragon! Ils ont tous les mêmes animations et peuvent porter tous les accessoires. Changer de personnage est gratuit, et tes accessoires suivent.

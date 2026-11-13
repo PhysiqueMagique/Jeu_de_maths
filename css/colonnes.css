@@ -119,3 +119,12 @@
 .grille-mult .bouton-zero.moins { background: #fff; color: var(--rouge); border: 2px solid #f3b4b6; box-shadow: 0 3px 0 #f3b4b6; }
 .grille-mult .bouton-zero:disabled { opacity: 0.4; cursor: default; transform: none; }
 .grille-mult .saisie.zero-ajoute { color: var(--rouge); }
+
+/* ---------- Addition en colonnes ---------- */
+/* La colonne en cours (tutoriel guidé) */
+.grille-addition .chiffre.col-active { background: var(--orange-pale); box-shadow: inset 0 0 0 2px rgba(255, 138, 61, 0.45); }
+.grille-addition .saisie.col-active.curseur { box-shadow: 0 0 0 4px rgba(255, 138, 61, 0.3); }
+.grille-addition .retenue.col-active { border-color: var(--orange); border-style: solid; }
+.grille-addition .saisie.bonne { color: #1f7a48; border-color: #8fd3ad; background: #eefaf3; }
+.grille-addition .retenue { margin-bottom: 2px; }
+.c-retenue { color: #6b3fd0; }

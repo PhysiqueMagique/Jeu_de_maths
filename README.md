@@ -23,6 +23,7 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `js/mascotte.js`, `css/mascotte.css` | Le personnage animé : squelette SVG commun, animations, réactions, catalogue des 12 accessoires |
 | `js/personnages.js` | Les 5 personnages (renard, lapin, chat, grenouille, dragon) : couleurs et morceaux de dessin |
 | `renard.html`, `js/garde-robe.js`, `css/garde-robe.css` | La garde-robe : acheter les accessoires avec ses médailles et ses pierres, les essayer, les porter |
+| `activites/addition-colonnes.html`, `js/addition-colonnes.js`, `js/addition-modele.js` | Addition en colonnes (2 à 4 nombres, retenues); styles dans `css/colonnes.css` |
 | `activites/soustraction-emprunt.html` | Activité 1 : soustraction avec emprunt |
 | `js/soustraction-modele.js` | Logique de l'activité (emprunts, indices, génération des défis), sans affichage |
 | `js/soustraction-emprunt.js` | Affichage et déroulement : tutoriel, défis, médailles |
@@ -36,6 +37,19 @@ Le jeu est fait en HTML, CSS et JavaScript (sans librairie), emballé dans une a
 | `src-tauri/` | Application Windows : fenêtre, lecture/écriture de `progres.json`, mises à jour |
 | `scripts/preparer-web.mjs` | Copie les fichiers du jeu dans `dist/` avant la construction de l'application |
 | `scripts/nouvelle-version.mjs` | Change le numéro de version partout |
+
+### Activité : addition en colonnes
+
+Deux, trois ou quatre nombres d'au moins trois chiffres, additionnés colonne par colonne en commençant par les unités.
+Une rangée de petites cases au-dessus des nombres sert à noter les **retenues** (clic sur la case, ou flèche ↑).
+
+1. **Tutoriel**, guidé colonne par colonne (chaque chiffre et chaque retenue est vérifié tout de suite) :
+   254 + 138 et 456 + 278 + 139 expliqués (la retenue peut être 2!), puis 2709 + 1347 + 586 + 465 où l'élève calcule.
+2. **Défis** : 🥉 deux nombres de 3 chiffres (5 additions); 🥈 trois nombres de 3 chiffres (4); 🥇 quatre nombres de 3 ou 4 chiffres (3).
+   La somme s'écrit case par case, de droite à gauche; les retenues ne sont pas corrigées (aide-mémoire).
+   L'indice montre la première colonne fausse en partant des unités.
+3. **Pierres** (après l'or) : 💎 rubis, 3 additions or en 4 minutes; 💎 émeraude, sur papier (la réponse seulement),
+   une seule erreur permise; 💎 saphir, les trois médailles sans faute; 💎 diamant, quatre nombres de 5 ou 6 chiffres.
 
 ### Activité : soustraction avec emprunt
 
