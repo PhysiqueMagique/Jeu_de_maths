@@ -170,6 +170,142 @@ const Mascotte = (() => {
           <path d="M184 220 l1 2.5 2.5 1 -2.5 1 -1 2.5 -1 -2.5 -2.5 -1 2.5 -1 Z"/>
         </g>`,
     },
+
+    // ---------- Nouveaux accessoires (0.13.0) ----------
+    {
+      id: 'bonnet', article: 'mon', nom: 'Bonnet à pompon', emplacement: 'tete', prix: { bronze: 1 }, vue: '82 58 76 62',
+      svg: `<path d="M90 108 C87 76 153 76 150 108 Z" fill="url(#@g-rouge)" stroke="#7a1418" stroke-width="2.4"/>
+        <path d="M104 84 C101 92 100 100 100 106 M120 79 V106 M136 84 C139 92 140 100 140 106" stroke="#7a1418" stroke-width="1.4" fill="none" opacity=".45"/>
+        <path d="M86 104 Q120 96 154 104 L154 114 Q120 106 86 114 Z" fill="#fff8ee" stroke="#b9a68a" stroke-width="2.2"/>
+        <path d="M93 104 V112 M101 102.5 V110.5 M109 101.5 V109.5 M117 101 V109 M125 101 V109 M133 101.5 V109.5 M141 102.5 V110.5 M149 104 V112" stroke="#d9c9ae" stroke-width="1.6"/>
+        <path d="M98 90 C101 84 107 81 112 80" stroke="#fff" stroke-width="2.4" fill="none" opacity=".45"/>
+        <circle cx="120" cy="73" r="9" fill="#fff8ee" stroke="#b9a68a" stroke-width="2"/>
+        <path d="M114 70 l3 2 M121 67 l1 3 M126 71 l-3 1 M117 77 l2 -2 M123 77 l-1 -2" stroke="#d9c9ae" stroke-width="1.4"/>`,
+    },
+    {
+      id: 'pirate', article: 'mon', nom: 'Chapeau de pirate', emplacement: 'tete', prix: { argent: 1, rubis: 1 }, vue: '78 54 84 62',
+      svg: `<g transform="rotate(-6 120 100)">
+        <path d="M82 108 Q92 70 120 66 Q148 70 158 108 Q120 96 82 108 Z" fill="#2b2b38" stroke="#111" stroke-width="2.4"/>
+        <path d="M84 105 Q120 93 156 105" stroke="url(#@g-or)" stroke-width="3.4" fill="none"/>
+        <path d="M95 82 Q108 72 120 71" stroke="#fff" stroke-width="2" fill="none" opacity=".18"/>
+        <path d="M110 96 L130 80 M110 80 L130 96" stroke="#f4f1ea" stroke-width="3.4"/>
+        <circle cx="120" cy="84" r="7.2" fill="#f4f1ea" stroke="#9a968c" stroke-width="1.2"/>
+        <rect x="116" y="88" width="8" height="5" rx="1.5" fill="#f4f1ea" stroke="#9a968c" stroke-width="1.2"/>
+        <circle cx="117.3" cy="84" r="1.9" fill="#2b2b38"/><circle cx="122.7" cy="84" r="1.9" fill="#2b2b38"/>
+      </g>`,
+    },
+    {
+      id: 'masque', article: 'mon', nom: 'Masque de héros', emplacement: 'yeux', prix: { or: 1, saphir: 1 }, vue: '58 118 124 44',
+      svg: `<path fill-rule="evenodd" fill="url(#@g-bleu)" stroke="#173a7a" stroke-width="2.4"
+          d="M77 133 Q84 123 100 125 Q113 127 120 132 Q127 127 140 125 Q156 123 163 133 Q166 151 150 157 Q135 161 120 151 Q105 161 90 157 Q74 151 77 133 Z
+             M86.5 141 a11.5 10.5 0 1 0 23 0 a11.5 10.5 0 1 0 -23 0 Z M130.5 141 a11.5 10.5 0 1 0 23 0 a11.5 10.5 0 1 0 -23 0 Z"/>
+        <path d="M78 136 L62 130 L66 140 L60 148 L78 144" fill="url(#@g-bleu)" stroke="#173a7a" stroke-width="2"/>
+        <path d="M162 136 L178 130 L174 140 L180 148 L162 144" fill="url(#@g-bleu)" stroke="#173a7a" stroke-width="2"/>
+        <path d="M84 131 Q92 127 101 128" stroke="#fff" stroke-width="2" fill="none" opacity=".5"/>`,
+    },
+    {
+      id: 'monocle', article: 'mon', nom: 'Monocle', emplacement: 'yeux', prix: { argent: 1 }, vue: '120 120 52 76',
+      svg: `<path d="M152 153 Q164 166 156 178 Q150 188 160 194" stroke="url(#@g-or)" stroke-width="1.8" fill="none" stroke-dasharray="3 2"/>
+        <circle cx="142" cy="141" r="15.5" fill="url(#@g-verre)" stroke="url(#@g-or)" stroke-width="3.6"/>
+        <circle cx="142" cy="141" r="15.5" fill="none" stroke="#8a5d04" stroke-width="1" opacity=".7"/>
+        <path d="M133 133 L139 128" stroke="#fff" stroke-width="2.2" opacity=".8"/>`,
+    },
+    {
+      id: 'fleurs', article: 'mon', nom: 'Collier de fleurs', emplacement: 'cou', calque: 'devant', prix: { bronze: 1 }, vue: '94 186 52 34',
+      svg: `${[[101, 196, '#ff7ab8'], [109.5, 202.5, '#ffd23f'], [120, 205.5, '#ff8a3d'], [130.5, 202.5, '#ff7ab8'], [139, 196, '#ffd23f']].map(([x, y, c]) =>
+        `<g transform="translate(${x} ${y})">${[0, 72, 144, 216, 288].map((r) =>
+          `<ellipse cx="0" cy="-4.2" rx="3" ry="4.2" fill="${c}" stroke="#00000033" stroke-width=".8" transform="rotate(${r})"/>`).join('')}
+          <circle r="2.2" fill="#fff6c2" stroke="#c98a0c" stroke-width=".8"/></g>`).join('')}`,
+    },
+    {
+      id: 'medaille', article: 'ma', nom: 'Médaille de champion', emplacement: 'cou', prix: { or: 1 }, vue: '100 192 40 52',
+      svg: `<path d="M106 196 L116 222 L124 222 L134 196 L127 196 L120 214 L113 196 Z" fill="url(#@g-bleu)" stroke="#173a7a" stroke-width="1.8"/>
+        <path d="M113 196 L120 214 L127 196" stroke="#fff" stroke-width="1.6" fill="none" opacity=".5"/>
+        <circle cx="120" cy="229" r="9" fill="url(#@g-or)" stroke="#8a5d04" stroke-width="2"/>
+        <path d="${etoile(120, 229.5, 5.2, 2.3)}" fill="#fff6c2" stroke="#a87408" stroke-width=".8"/>`,
+    },
+    {
+      id: 'ballon', article: 'mon', nom: 'Ballon', emplacement: 'main', prix: { bronze: 1 }, vue: '140 136 62 110',
+      svg: `<path d="M152 236 Q162 214 170 198 Q176 186 174 176" stroke="#666" stroke-width="1.4" fill="none"/>
+        <path d="M171 171 L177 171 L174 177 Z" fill="#c8262c" stroke="#7a1418" stroke-width="1.2"/>
+        <ellipse cx="174" cy="153" rx="17" ry="19.5" fill="url(#@g-rouge)" stroke="#7a1418" stroke-width="2.2"/>
+        <path d="M164 144 Q166 137 172 135" stroke="#fff" stroke-width="3" fill="none" opacity=".7"/>`,
+    },
+    {
+      id: 'cornet', article: 'mon', nom: 'Cornet de crème glacée', emplacement: 'main', prix: { emeraude: 1 }, vue: '134 168 56 80',
+      svg: `<g transform="translate(152 236) rotate(18)">
+        <path d="M-9 -18 L9 -18 L0 8 Z" fill="#e8b46a" stroke="#9a6a2a" stroke-width="1.8"/>
+        <path d="M-6 -12 L4 -2 M-3 -18 L7 -8 M3 -18 L-5 -3 M8 -15 L-2 -1" stroke="#b9833f" stroke-width="1.1"/>
+        <circle cx="0" cy="-24" r="10" fill="#ff9ec4" stroke="#c4517f" stroke-width="1.8"/>
+        <circle cx="-1" cy="-38" r="8.6" fill="#9be3c3" stroke="#3f9a72" stroke-width="1.8"/>
+        <path d="M-9 -20 Q-5 -16 0 -18 Q5 -15 9 -20" stroke="#c4517f" stroke-width="1.4" fill="#ff9ec4"/>
+        <circle cx="1" cy="-48" r="3.6" fill="#e0245e" stroke="#7a0d2e" stroke-width="1"/>
+        <path d="M1 -51 Q4 -57 8 -57" stroke="#3a6b2a" stroke-width="1.2" fill="none"/>
+        <circle cx="-4" cy="-41" r="1.6" fill="#fff" opacity=".8"/><circle cx="-4" cy="-27" r="1.8" fill="#fff" opacity=".8"/>
+      </g>`,
+    },
+
+    // ---------- Objets spéciaux : un seul personnage peut les porter (espece) ----------
+    {
+      id: 'detective', espece: 'renard', article: 'mon', nom: 'Chapeau de détective', emplacement: 'tete',
+      prix: { or: 1, rubis: 1, saphir: 1, diamant: 1 }, vue: '78 66 84 54',
+      svg: `<clipPath id="@clip-detective"><path d="M89 108 C88 78 152 78 151 108 Z"/></clipPath>
+        <path d="M89 108 C88 78 152 78 151 108 Z" fill="url(#@g-tweed)" stroke="#4a3216" stroke-width="2.4"/>
+        <g clip-path="url(#@clip-detective)" stroke="#5c3d1c" stroke-width="1.4" opacity=".55">
+          <path d="M86 86 H154 M86 94 H154 M86 102 H154 M98 78 V110 M110 78 V110 M122 78 V110 M134 78 V110 M146 78 V110"/>
+        </g>
+        <path d="M89 100 C82 96 80 104 86 110 L94 108 Z" fill="url(#@g-tweed)" stroke="#4a3216" stroke-width="2"/>
+        <path d="M151 100 C158 96 160 104 154 110 L146 108 Z" fill="url(#@g-tweed)" stroke="#4a3216" stroke-width="2"/>
+        <path d="M98 108 Q120 120 142 108 Q120 112 98 108 Z" fill="#8a5a2b" stroke="#4a3216" stroke-width="2"/>
+        <path d="M112 81 Q120 76 128 81 M116 80 L112 74 M124 80 L128 74" stroke="#4a3216" stroke-width="2" fill="none"/>
+        <circle cx="120" cy="80" r="2.6" fill="#8a5a2b" stroke="#4a3216" stroke-width="1.4"/>
+        <path d="M97 95 C99 88 105 84 111 83" stroke="#fff" stroke-width="2.2" fill="none" opacity=".35"/>`,
+    },
+    {
+      id: 'carotte', espece: 'lapin', article: 'ma', nom: 'Carotte géante', emplacement: 'main',
+      prix: { argent: 1, emeraude: 2, diamant: 1 }, vue: '128 164 74 92',
+      svg: `<g transform="translate(152 238) rotate(-28)">
+        <path d="M-6 -50 Q-10 -60 -16 -66 M0 -52 Q0 -64 -2 -72 M5 -50 Q10 -60 16 -64" stroke="#2f8a3a" stroke-width="4.4" fill="none"/>
+        <path d="M-6 -50 Q-10 -60 -16 -66 M0 -52 Q0 -64 -2 -72 M5 -50 Q10 -60 16 -64" stroke="#6fd36f" stroke-width="2" fill="none"/>
+        <path d="M-10 -46 Q0 -54 10 -46 Q9 -10 2 16 Q0 20 -2 16 Q-9 -10 -10 -46 Z" fill="url(#@g-carotte)" stroke="#a8480c" stroke-width="2"/>
+        <path d="M-7 -34 L-2 -34 M3 -24 L8 -24 M-7 -14 L-3 -14 M2 -4 L6 -4" stroke="#a8480c" stroke-width="1.6"/>
+        <path d="M-5 -42 Q-7 -24 -4 -6" stroke="#fff" stroke-width="2.2" fill="none" opacity=".45"/>
+      </g>`,
+    },
+    {
+      id: 'grelot', espece: 'chat', article: 'mon', nom: 'Collier à grelot', emplacement: 'cou', calque: 'devant',
+      prix: { bronze: 1, rubis: 1, saphir: 1, diamant: 1 }, vue: '96 186 48 38',
+      svg: `<path d="M100 192 Q120 203 140 192 L140 199 Q120 210 100 199 Z" fill="url(#@g-rouge)" stroke="#7a1418" stroke-width="2"/>
+        <circle cx="104" cy="196" r="1.4" fill="#fff6c2"/><circle cx="136" cy="196" r="1.4" fill="#fff6c2"/>
+        <circle cx="120" cy="211" r="7.4" fill="url(#@g-or)" stroke="#8a5d04" stroke-width="1.8"/>
+        <path d="M113.4 210 H126.6" stroke="#8a5d04" stroke-width="1.4"/>
+        <circle cx="120" cy="214.2" r="1.8" fill="#5a3a04"/><path d="M120 214.2 V218" stroke="#5a3a04" stroke-width="1.4"/>
+        <circle cx="117" cy="207.5" r="1.7" fill="#fff" opacity=".85"/>`,
+    },
+    {
+      id: 'nenuphar', espece: 'grenouille', article: 'mon', nom: 'Chapeau nénuphar', emplacement: 'tete',
+      prix: { or: 1, emeraude: 2, saphir: 1 }, vue: '82 66 76 50',
+      svg: `<g transform="rotate(-7 120 104)">
+        <path d="M120 104 L151.3 102.1 A32 9 0 1 0 151.3 105.9 Z" fill="url(#@g-nenuphar)" stroke="#1f6b35" stroke-width="2.2"/>
+        <path d="M120 104 L92 101 M120 104 L100 111 M120 104 L130 112 M120 104 L112 96 M120 104 L136 97" stroke="#1f6b35" stroke-width="1.2" opacity=".5"/>
+        ${[-40, -20, 0, 20, 40].map((r) => `<path d="M120 96 Q113 86 120 74 Q127 86 120 96 Z" fill="#ffc2dc" stroke="#d6246e" stroke-width="1.4" transform="rotate(${r} 120 96)"/>`).join('')}
+        ${[-30, -10, 10, 30].map((r) => `<path d="M120 96 Q115 88 120 80 Q125 88 120 96 Z" fill="#ff8fbf" stroke="#d6246e" stroke-width="1.2" transform="rotate(${r} 120 96)"/>`).join('')}
+        <circle cx="120" cy="94" r="3.4" fill="#ffd23f" stroke="#c98a0c" stroke-width="1"/>
+      </g>`,
+    },
+    {
+      id: 'tresor', espece: 'dragon', article: 'mon', nom: 'Collier de trésor', emplacement: 'cou', calque: 'devant',
+      prix: { argent: 1, rubis: 1, diamant: 2 }, vue: '96 186 48 44',
+      svg: `${Array.from({ length: 11 }, (_, k) => {
+        const t = k / 10;
+        const x = 101 + 38 * t;
+        const y = 194 + 40 * t * (1 - t);
+        return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="url(#@g-or)" stroke="#8a5d04" stroke-width="1"/>`;
+      }).join('')}
+        <path d="M120 206 L128 212 L126 222 L120 227 L114 222 L112 212 Z" fill="url(#@g-or)" stroke="#8a5d04" stroke-width="1.8"/>
+        <path d="M120 209.5 L125 213 L123.6 220 L120 223 L116.4 220 L115 213 Z" fill="#e0245e" stroke="#7a0d2e" stroke-width="1.2"/>
+        <path d="M117.5 213 L119 211.5" stroke="#fff" stroke-width="1.6" opacity=".85"/>`,
+    },
   ];
   const PAR_ID = Object.fromEntries(CATALOGUE.map((a) => [a.id, a]));
 
@@ -195,7 +331,10 @@ const Mascotte = (() => {
     <radialGradient id="@g-lueur"><stop offset="0" stop-color="#fff3a0" stop-opacity=".9"/><stop offset="1" stop-color="#ffe066" stop-opacity="0"/></radialGradient>
     <linearGradient id="@g-verre" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#e6f4ff" stop-opacity=".55"/><stop offset="1" stop-color="#9ccbf0" stop-opacity=".2"/></linearGradient>
     <linearGradient id="@g-rose-verre" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ffd6ea" stop-opacity=".6"/><stop offset="1" stop-color="#ff7ab8" stop-opacity=".3"/></linearGradient>
-    <linearGradient id="@g-fume" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4a4f5c"/><stop offset="1" stop-color="#14161c"/></linearGradient>`;
+    <linearGradient id="@g-fume" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4a4f5c"/><stop offset="1" stop-color="#14161c"/></linearGradient>
+    <linearGradient id="@g-tweed" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#c79a62"/><stop offset="1" stop-color="#8a5a2b"/></linearGradient>
+    <linearGradient id="@g-carotte" x1="0" x2="1"><stop offset="0" stop-color="#ffb04a"/><stop offset=".6" stop-color="#f27a1a"/><stop offset="1" stop-color="#c9560c"/></linearGradient>
+    <radialGradient id="@g-nenuphar" cx="45%" cy="35%" r="70%"><stop offset="0" stop-color="#8fe08a"/><stop offset="1" stop-color="#2f9a4a"/></radialGradient>`;
 
   // Dégradés du personnage, fabriqués à partir de ses couleurs
   function degrades(e) {
@@ -215,8 +354,10 @@ const Mascotte = (() => {
   }
 
   // calque 'devant' : dessiné par-dessus les bras et la tête (ex. le nœud papillon)
-  function accessoires(emplacement, calque = 'normal') {
-    return CATALOGUE.filter((a) => a.emplacement === emplacement && (a.calque || 'normal') === calque)
+  // espece : un objet spécial (a.espece) n'est dessiné que sur son personnage
+  function accessoires(emplacement, calque = 'normal', espece = null) {
+    return CATALOGUE.filter((a) => a.emplacement === emplacement && (a.calque || 'normal') === calque
+      && (!a.espece || a.espece === espece))
       .map((a) => `<g class="accessoire" data-acc="${a.id}" style="display:none">${a.svg}</g>`).join('');
   }
 
@@ -257,7 +398,7 @@ const Mascotte = (() => {
         ${e.corps}
         <ellipse cx="120" cy="199" rx="24" ry="7" fill="${c.ombreCou}" opacity=".22"/>
         <path d="M98 208 C95 224 95 240 100 251" fill="none" stroke="#fff" stroke-width="2.2" opacity=".3"/>
-        ${dec('cou', accessoires('cou'))}
+        ${dec('cou', accessoires('cou', 'normal', e.id))}
       </g>
       <g data-p="tete" style="transform-origin:120px 192px">
         <g data-p="oreille-g" style="transform-origin:${e.pivots.og}">${e.oreilleG || ''}</g>
@@ -292,15 +433,15 @@ const Mascotte = (() => {
           <path d="M108 171 Q120 174 132 171 Q128 184 120 184 Q112 184 108 171 Z" fill="#5e1f1f" stroke="#2a1206" stroke-width="2.2"/>
           <path d="M114 180.5 Q120 177 126 180.5 Q124 183.5 120 183.5 Q116 183.5 114 180.5 Z" fill="#f28b8b"/>
         </g>
-        ${dec('yeux', accessoires('yeux'))}
-        ${dec('tete', accessoires('tete'))}
+        ${dec('yeux', accessoires('yeux', 'normal', e.id))}
+        ${dec('tete', accessoires('tete', 'normal', e.id))}
       </g>
       <g data-p="bras-g" style="transform-origin:100px 204px">${bras(c, 'g')}</g>
       <g data-p="bras-d" style="transform-origin:140px 204px">
         ${bras(c, 'd')}
-        ${dec('main', accessoires('main'))}
+        ${dec('main', accessoires('main', 'normal', e.id))}
       </g>
-      <g data-p="devant">${dec('cou', accessoires('cou', 'devant'))}</g>
+      <g data-p="devant">${dec('cou', accessoires('cou', 'devant', e.id))}</g>
     </g>`;
   }
 

@@ -154,13 +154,18 @@ de son propre point, et les animations utilisent `element.animate()`. Il cligne 
 
 | Emplacement | Accessoires (prix) |
 |---|---|
-| Tête | casquette (bronze) · chapeau de magicien (2 saphirs + émeraude) · couronne (2 diamants) |
-| Yeux | lunettes rondes (bronze) · lunettes de soleil (argent + rubis) · lunettes étoiles (or + 2 rubis) |
-| Cou | nœud papillon (bronze + argent) · cravate (argent + or) · bandana (or + émeraude) |
-| Main | crayon géant (bronze) · loupe (or + saphir) · baguette magique (émeraude + diamant) |
+| Tête | casquette (bronze) · bonnet à pompon (bronze) · chapeau de pirate (argent + rubis) · chapeau de magicien (2 saphirs + émeraude) · couronne (2 diamants) |
+| Yeux | lunettes rondes (bronze) · monocle (argent) · lunettes de soleil (argent + rubis) · masque de héros (or + saphir) · lunettes étoiles (or + 2 rubis) |
+| Cou | collier de fleurs (bronze) · médaille de champion (or) · nœud papillon (bronze + argent) · cravate (argent + or) · bandana (or + émeraude) |
+| Main | crayon géant (bronze) · ballon (bronze) · cornet de crème glacée (émeraude) · loupe (or + saphir) · baguette magique (émeraude + diamant) |
+| ⭐ Spéciaux (un par personnage, plus chers) | renard : chapeau de détective (or + rubis + saphir + diamant) · lapin : carotte géante (argent + 2 émeraudes + diamant) · chat : collier à grelot (bronze + rubis + saphir + diamant) · grenouille : chapeau nénuphar (or + 2 émeraudes + saphir) · dragon : collier de trésor (argent + rubis + 2 diamants) |
 
-Les prix sont dans `CATALOGUE` (`js/mascotte.js`). Avec 4 activités, il y a 28 récompenses (4 de chaque sorte);
-tout acheter en demande 23 (environ 80 %). Le nœud papillon est dessiné par-dessus les bras (`calque: 'devant'`),
+Les prix sont dans `CATALOGUE` (`js/mascotte.js`). Avec 5 activités, il y a 35 récompenses (5 de chaque sorte);
+tout acheter en demande 53 (environ 150 %, choix de JF : on ne peut pas tout avoir, et on continuera d'en ajouter).
+Un objet spécial a `espece` : il n'est dessiné que sur ce personnage; dans la garde-robe, il faut choisir ce personnage
+pour l'acheter ou le mettre. La garde-robe est en onglets (Sur la tête, Sur les yeux, Au cou, Dans la main, Spéciaux),
+avec une pastille qui compte ce qu'on peut acheter dans chaque onglet.
+Le nœud papillon et les colliers (fleurs, grelot, trésor) sont dessinés par-dessus les bras (`calque: 'devant'`),
 et les objets de la main par-dessus la patte.
 
 ## Profils et sauvegarde du progrès

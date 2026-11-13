@@ -95,3 +95,21 @@
 .choix-perso .image { display: block; height: 64px; overflow: hidden; }
 .choix-perso .mascotte.mini svg { width: 54px; height: 68px; }
 .choix-perso .nom { font-weight: 900; font-size: 0.95rem; }
+
+/* Onglets des rayons (0.13.0) */
+.onglets { display: flex; gap: 5px; margin: 4px 0 10px; }
+.onglet {
+  font: inherit; font-weight: 900; font-size: 0.88rem; position: relative; white-space: nowrap; flex: 1 1 auto;
+  background: #fff; color: var(--encre); border: 3px solid transparent; border-radius: 999px;
+  box-shadow: var(--ombre); padding: 6px 8px; cursor: pointer;
+}
+.onglet:hover, .onglet:focus-visible { border-color: var(--bleu-pale); outline: none; }
+.onglet.actif { background: var(--bleu); color: #fff; box-shadow: 0 3px 0 var(--bleu-fonce); }
+.pastille-nb {
+  display: inline-grid; place-items: center; min-width: 19px; height: 19px; margin-left: 4px; padding: 0 5px;
+  border-radius: 999px; background: var(--orange); color: #fff; font-size: 0.78rem;
+}
+.note-speciaux { margin: -2px 0 10px; color: var(--doux); font-weight: 700; font-size: 0.9rem; }
+.article .pour { display: block; font-size: 0.78rem; font-weight: 800; color: #b07a00; margin-top: 1px; }
+.article.autre { background: #faf7f1; }
+.article.autre .image svg { filter: grayscale(0.4) opacity(0.75); }

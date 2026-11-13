@@ -59,28 +59,56 @@ Jeu.demarrer().then(() => {
       `<div class="piece${t[k] ? '' : ' vide'}" title="${t[k] ? nomMonnaie(k, t[k]) : `Aucune ${NOMS[k][0]}`}">${icone(k, 28)}<b>${t[k]}</b></div>`).join('');
   }
 
+  // Les rayons sont des onglets : un par emplacement, plus les objets spéciaux (un par personnage).
+  const ONGLETS = [
+    ...Mascotte.EMPLACEMENTS.map((e) => ({ id: e.id, titre: e.titre, icone: { tete: '🎩', yeux: '👓', cou: '🎀', main: '✋' }[e.id] || '•' })),
+    { id: 'special', titre: 'Spéciaux', icone: '⭐' },
+  ];
+  let onglet = 'tete';
+  const especeActuelle = () => Mascotte.personnage(Jeu.mascotte(joueur.id).espece).id;
+  const articlesDe = (o) => (o === 'special'
+    ? Mascotte.PERSONNAGES.ORDRE.map((esp) => Mascotte.CATALOGUE.find((a) => a.espece === esp)).filter(Boolean)
+    : Mascotte.CATALOGUE.filter((a) => a.emplacement === o && !a.espece));
+  const pourAutre = (a) => a.espece && a.espece !== especeActuelle();
+
+  function htmlArticle(a, m) {
+    const achete = m.achats.includes(a.id);
+    const porte = m.porte[a.emplacement] === a.id;
+    const abordable = !achete && Jeu.peutAcheter(joueur.id, a.prix);
+    const autre = pourAutre(a);
+    const perso = a.espece ? Mascotte.personnage(a.espece) : null;
+    let etat = porte ? 'porte' : achete ? 'achete' : abordable ? 'abordable' : 'verrouille';
+    if (autre) etat += ' autre';
+    let bas;
+    if (autre) bas = achete ? '<span class="etat">À toi!</span>' : `<span class="prix">${pastillesPrix(a.prix)}</span>`;
+    else if (porte) bas = '<span class="etat oui">✓ Porté</span>';
+    else if (achete) bas = '<span class="etat">Mettre</span>';
+    else bas = `<span class="prix">${pastillesPrix(a.prix)}</span>${abordable ? '<span class="etat acheter">Acheter</span>' : ''}`;
+    let etiquette = porte ? `${a.nom} : porté. Clique pour l'enlever.`
+      : achete ? `${a.nom} : clique pour le mettre.`
+      : `${a.nom} : coûte ${texteprix(a.prix)}.`;
+    if (autre) etiquette = `${a.nom} : objet spécial pour ${perso.le}.`;
+    const pour = perso ? `<span class="pour">⭐ Pour ${perso.le}</span>` : '';
+    return `<button type="button" class="article ${etat}" data-id="${a.id}" aria-label="${etiquette}">
+              <span class="image">${Mascotte.vignette(a.id)}</span>
+              <span class="nom">${a.nom}${pour}</span>
+              <span class="bas">${bas}</span>
+            </button>`;
+  }
+
   function rendreRayons() {
     const m = Jeu.mascotte(joueur.id);
-    $('rayons').innerHTML = Mascotte.EMPLACEMENTS.map((e) => {
-      const articles = Mascotte.CATALOGUE.filter((a) => a.emplacement === e.id).map((a) => {
-        const achete = m.achats.includes(a.id);
-        const porte = m.porte[e.id] === a.id;
-        const abordable = !achete && Jeu.peutAcheter(joueur.id, a.prix);
-        const etat = porte ? 'porte' : achete ? 'achete' : abordable ? 'abordable' : 'verrouille';
-        const bas = porte ? '<span class="etat oui">✓ Porté</span>'
-          : achete ? '<span class="etat">Mettre</span>'
-          : `<span class="prix">${pastillesPrix(a.prix)}</span>${abordable ? '<span class="etat acheter">Acheter</span>' : ''}`;
-        const etiquette = porte ? `${a.nom} : porté. Clique pour l'enlever.`
-          : achete ? `${a.nom} : clique pour le mettre.`
-          : `${a.nom} : coûte ${texteprix(a.prix)}.`;
-        return `<button type="button" class="article ${etat}" data-id="${a.id}" aria-label="${etiquette}">
-                  <span class="image">${Mascotte.vignette(a.id)}</span>
-                  <span class="nom">${a.nom}</span>
-                  <span class="bas">${bas}</span>
-                </button>`;
-      }).join('');
-      return `<div class="rayon"><h2>${e.titre}</h2><div class="articles">${articles}</div></div>`;
+    const onglets = ONGLETS.map((o) => {
+      // pastille : combien d'objets on peut acheter dans cet onglet
+      const n = articlesDe(o.id).filter((a) => !m.achats.includes(a.id) && Jeu.peutAcheter(joueur.id, a.prix)).length;
+      const actif = o.id === onglet;
+      return `<button type="button" class="onglet${actif ? ' actif' : ''}" data-onglet="${o.id}" role="tab" aria-selected="${actif}">
+                <span aria-hidden="true">${o.icone}</span> ${o.titre}${n ? `<span class="pastille-nb" title="${n} à acheter">${n}</span>` : ''}</button>`;
     }).join('');
+    const note = onglet === 'special'
+      ? '<p class="note-speciaux">Chaque personnage a son objet spécial, plus rare. Seul ce personnage peut le porter!</p>' : '';
+    $('rayons').innerHTML = `<div class="onglets" role="tablist">${onglets}</div>${note}
+      <div class="articles">${articlesDe(onglet).map((a) => htmlArticle(a, m)).join('')}</div>`;
   }
 
   // Choix du personnage : gratuit; chaque vignette porte la tenue actuelle.
@@ -123,6 +151,7 @@ Jeu.demarrer().then(() => {
 
   const porteActuel = () => Jeu.mascotte(joueur.id).porte;
   function essayer(a) {
+    if (pourAutre(a)) return;
     renard.habiller({ ...porteActuel(), [a.emplacement]: a.id });
   }
   const remettre = () => renard.habiller(porteActuel());
@@ -174,10 +203,21 @@ Jeu.demarrer().then(() => {
   document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !fenetre.hidden) fermerAchat(); });
 
   $('rayons').addEventListener('click', (ev) => {
+    const o = ev.target.closest('.onglet');
+    if (o) {
+      if (o.dataset.onglet !== onglet) { onglet = o.dataset.onglet; Jeu.jouer('clic'); rendreRayons(); }
+      return;
+    }
     const b = ev.target.closest('.article');
     if (!b) return;
     const a = Mascotte.PAR_ID[b.dataset.id];
     const m = Jeu.mascotte(joueur.id);
+    if (pourAutre(a)) {
+      const le = Mascotte.personnage(a.espece).le;
+      Jeu.jouer('oups');
+      renard.dire(`C’est l’objet spécial pour ${le}! Choisis ${le} plus haut pour ${m.achats.includes(a.id) ? 'le mettre' : 'l’acheter'}.`, 3800);
+      return;
+    }
     if (m.achats.includes(a.id)) {
       const enlever = m.porte[a.emplacement] === a.id;
       Jeu.porter(joueur.id, a.emplacement, enlever ? null : a.id);
